@@ -1,4 +1,4 @@
-# idst-master-calendar
+# IDST SPFx Product Manager
 
 ## Summary
 
