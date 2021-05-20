@@ -1,3 +1,4 @@
+/*
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
@@ -58,3 +59,9 @@ export default class IdstSpfxProductManagerWebPart extends BaseClientSideWebPart
     };
   }
 }
+*/
+/* tslint:disable */
+
+const externalWP: any = require('../../../../external/dist/idst-spfx-prodmgr-bundle');
+
+export default externalWP.default;

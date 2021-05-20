@@ -4,8 +4,12 @@
   "description": "idst-spfx-product-manager description",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+    "watch-webpack": "webpack --config webpack/webpack.dev.js --watch",
+    "watch-gulp": "gulp watch",
+    "watch": "concurrently \"npm:watch-*\"",
+    "dev": "webpack --config webpack/webpack.dev.js",
+    "build": "webpack --config webpack/webpack.prod.js"
+  },  
   "author": "",
   "license": "ISC",
   "dependencies": {

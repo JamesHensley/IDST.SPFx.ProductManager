@@ -6,8 +6,8 @@ const Visualizer = require('webpack-visualizer-plugin');
 module.exports = merge({
     target: "web",
     entry: {
-        'hello-world-webpart-bundle': path.join(__dirname, '../src/webparts/idstSpfxProductManager/IdstSpfxProductManagerWebPart.ts'),
-        'my-new-webpart-bundle': path.join(__dirname, '../src/webparts/idstSpfxProductManager/IdstSpfxProductManagerWebPart.ts')
+        'old-idst-spfx-prodmgr-bundle': path.join(__dirname, '../src/webparts/idstSpfxProductManager/IdstSpfxProductManagerWebPart.ts'),
+        'idst-spfx-prodmgr-bundle': path.join(__dirname, '../src/webparts/idstSpfxProductManager/IdstSpfxProductManagerWebPart.ts')
     },
     output: {
         path: path.join(__dirname, '../dist'),
@@ -27,7 +27,10 @@ module.exports = merge({
         assets: false
     },
     externals: [
-        /^@microsoft\//
+        /^@microsoft\//,
+        'HelloWorldWebPartStrings',
+        'MyNewWebPartWebPartStrings',
+        'ControlStrings'
     ],
     module: {
         rules: [

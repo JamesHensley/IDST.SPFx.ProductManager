@@ -1,3 +1,0 @@
-        'HelloWorldWebPartStrings',
-        'MyNewWebPartWebPartStrings',
-        'ControlStrings'
