@@ -1,17 +1,16 @@
 const path = require('path');
 const merge = require('webpack-merge');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const SetPublicPathPlugin = require("@rushstack/set-webpack-public-path-plugin").SetPublicPathPlugin;
 const Visualizer = require('webpack-visualizer-plugin');
 
 module.exports = merge({
     target: "web",
     entry: {
-        'old-idst-spfx-prodmgr-bundle': path.join(__dirname, '../src/webparts/idstSpfxProductManager/IdstSpfxProductManagerWebPart.ts'),
         'idst-spfx-prodmgr-bundle': path.join(__dirname, '../src/webparts/idstSpfxProductManager/IdstSpfxProductManagerWebPart.ts')
     },
     output: {
         path: path.join(__dirname, '../dist'),
-        publicPath: "/dist/",
         filename: '[name].js',
         libraryTarget: "umd",
         library: "[name]"
@@ -108,5 +107,11 @@ module.exports = merge({
     },
     plugins: [new ForkTsCheckerWebpackPlugin({
         tslint: true
+    }),
+    new SetPublicPathPlugin({
+        scriptName: {
+            name: '[name]_?[a-zA-Z0-9-_]*\.js',
+            isTokenized: true
+        }
     })]
 });

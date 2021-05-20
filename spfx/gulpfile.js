@@ -35,5 +35,5 @@ exports.watch = function () {
 
 
 
-build.initialize(gulp);
-//build.initialize(require('gulp'));
+//build.initialize(gulp);
+build.initialize(require('gulp'));

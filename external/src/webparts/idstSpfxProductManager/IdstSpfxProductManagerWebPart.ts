@@ -2,12 +2,15 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
-  BaseClientSideWebPart,
-  IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  BaseClientSideWebPart
 } from '@microsoft/sp-webpart-base';
 
-import * as strings from 'IdstSpfxProductManagerWebPartStrings';
+import {
+  IPropertyPaneConfiguration,
+  PropertyPaneTextField
+} from '@microsoft/sp-property-pane';
+
+// import * as strings from 'IdstSpfxProductManagerWebPartStrings';
 import IdstSpfxProductManager from './components/IdstSpfxProductManager';
 import { IIdstSpfxProductManagerProps } from './components/IIdstSpfxProductManagerProps';
 
@@ -41,14 +44,14 @@ export default class IdstSpfxProductManagerWebPart extends BaseClientSideWebPart
       pages: [
         {
           header: {
-            description: strings.PropertyPaneDescription
+            description: 'Description'
           },
           groups: [
             {
-              groupName: strings.BasicGroupName,
+              groupName: '',
               groupFields: [
                 PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                  label: this.properties.description
                 })
               ]
             }
