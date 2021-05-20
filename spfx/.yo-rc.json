@@ -1,0 +1,11 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "isCreatingSolution": true,
+    "environment": "onprem",
+    "version": "1.12.1",
+    "libraryName": "idst-spfx-product-manager",
+    "libraryId": "48812bc4-7b82-4f31-8686-5424687d0b59",
+    "packageManager": "npm",
+    "componentType": "webpart"
+  }
+}

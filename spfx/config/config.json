@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "entry": "./lib/webparts/idstSpfxProductManager/IdstSpfxProductManagerWebPart.js",
+      "manifest": "./src/webparts/idstSpfxProductManager/IdstSpfxProductManagerWebPart.manifest.json",
+      "outputPath": "./dist/idst-spfx-product-manager-web-part.js"
+    }
+  ],
+  "externals": {},
+  "localizedResources": {
+    "IdstSpfxProductManagerWebPartStrings": "webparts/idstSpfxProductManager/loc/{locale}.js"
+  }
+}

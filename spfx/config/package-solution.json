@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "idst-spfx-product-manager-client-side-solution",
+    "id": "48812bc4-7b82-4f31-8686-5424687d0b59",
+    "version": "1.0.0.0"
+  },
+  "paths": {
+    "zippedPackage": "solution/idst-spfx-product-manager.sppkg"
+  }
+}
