@@ -34,9 +34,15 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     ReactDom.render(element, this.domElement);
   }
 
+  /*
+  protected renderCompleted(): void {
+    super.renderCompleted();
+  }
+
   protected get isRenderAsync(): boolean {
     return true;
   }
+  */
 
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
@@ -59,18 +65,18 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
         });
       })
       .then(() => {
-        this.renderCompleted();
+        //this.renderCompleted();
         resolve();
       })
       .catch(e => {
         console.log(e);
-        this.renderCompleted();
+        //this.renderCompleted();
         reject();
       });
     })
     .catch(e => {
       console.log(e);
-      this.renderCompleted();
+      //this.renderCompleted();
     });
   }
 
