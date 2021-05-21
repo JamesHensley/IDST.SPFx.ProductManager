@@ -1,6 +1,6 @@
 import * as React from 'react';
-import styles from './IdstSpfxProductManager.module.scss';
-import { IIdstSpfxProductManagerProps } from './IIdstSpfxProductManagerProps';
+import styles from './ProductManager.module.scss';
+import { IIdstSpfxProductManagerProps } from './ProductManagerProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 
 export default class IdstSpfxProductManager extends React.Component < IIdstSpfxProductManagerProps, {} > {
