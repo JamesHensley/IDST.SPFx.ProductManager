@@ -20,7 +20,9 @@
     "description": { "default": "IdstSpfxProductManager description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "IdstSpfxProductManager"
+      "description": "IdstSpfxProductManager - Externals folder",
+      "isDebugging": true,
+      "teams": []
     }
   }]
 }

@@ -1,0 +1,26 @@
+{
+    "description": "Product Manager",
+    "isDebugging": true,
+    "teams": [
+        {
+            "id": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
+            "name": "Team 1",
+            "description": "Team 1 Description",
+            "members": [
+                { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": 3 },
+                { "spId": "47dc2f4da49d", "name": "Person 2", "email": "person2@email.com", "role": 3 },
+                { "spId": "8f68befdbf8c", "name": "Person 3", "email": "person3@email.com", "role": 3 }
+            ]
+        },
+        {
+            "id": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
+            "name": "Team 2",
+            "description": "Team 2 Description",
+            "members": [
+                { "spId": "0cfd1d22797b", "name": "Person 4", "email": "person4@email.com", "role": 3 },
+                { "spId": "970f0495d8b6", "name": "Person 5", "email": "person5@email.com", "role": 3 },
+                { "spId": "9face56f210c", "name": "Person 6", "email": "person6@email.com", "role": 3 }
+            ]
+        }        
+    ]
+}

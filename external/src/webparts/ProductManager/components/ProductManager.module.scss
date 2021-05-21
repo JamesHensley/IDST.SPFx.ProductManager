@@ -1,6 +1,28 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 
-.idstSpfxProductManager {
+
+/* implementations of the Office UI Fabric grid */
+.grid { @include ms-Grid; }
+.gridRow { @include ms-Grid-row; }
+.gridCol1 { @include ms-Grid-col; @include ms-lg1; }
+.gridCol2 { @include ms-Grid-col; @include ms-lg2; }
+.gridCol3 { @include ms-Grid-col; @include ms-lg3; }
+.gridCol4 { @include ms-Grid-col; @include ms-lg4; }
+.gridCol5 { @include ms-Grid-col; @include ms-lg5; }
+.gridCol6 { @include ms-Grid-col; @include ms-lg6; }
+.gridCol7 { @include ms-Grid-col; @include ms-lg7; }
+.gridCol8 { @include ms-Grid-col; @include ms-lg8; }
+.gridCol9 { @include ms-Grid-col; @include ms-lg9; }
+.gridCol10 { @include ms-Grid-col; @include ms-lg10; }
+.gridCol11 { @include ms-Grid-col; @include ms-lg11; }
+.gridCol12 { @include ms-Grid-col; @include ms-lg12; }
+
+.productManager {
+  .TeamPanel {
+    color: inherit;
+  }
+
+
   .container {
     max-width: 700px;
     margin: 0px auto;

@@ -7,7 +7,7 @@ const Visualizer = require('webpack-visualizer-plugin');
 module.exports = merge({
     target: "web",
     entry: {
-        'idst-spfx-prodmgr-bundle': path.join(__dirname, '../src/webparts/idstSpfxProductManager/IdstSpfxProductManagerWebPart.ts')
+        'idst-spfx-prodmgr-bundle': path.join(__dirname, '../src/webparts/ProductManager/ProductManagerWebPart.ts')
     },
     output: {
         path: path.join(__dirname, '../dist'),
