@@ -7,10 +7,9 @@ Management tool for tracking requests, tasks, and responses for information
 [Experimental use of modern react with SP2016 SPFx](https://spblog.net/post/2019/08/08/build-sharepoint-framework-solutions-for-on-premises-sharepoint-with-any-version-of-react-typescript-or-office-ui-fabric-react)
 
 ## Unfinished Business
-
-> Implement CRUD for SharePoint list data and attachments
-> Refine UI
-> Lots more
+- Implement CRUD for SharePoint list data and attachments
+- Refine UI
+- Lots more
 
 ## Prerequisites
 
