@@ -1,6 +1,7 @@
 {
     "description": "Product Manager",
     "isDebugging": true,
+    "productListUrl": "/dist/mockProductList.json",
     "teams": [
         {
             "id": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
@@ -21,6 +22,16 @@
                 { "spId": "970f0495d8b6", "name": "Person 5", "email": "person5@email.com", "role": 3 },
                 { "spId": "9face56f210c", "name": "Person 6", "email": "person6@email.com", "role": 3 }
             ]
-        }        
+        },
+        {
+            "id": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
+            "name": "Team 3",
+            "description": "Team 3 Description",
+            "members": [
+                { "spId": "b4dacb1080c7", "name": "Person 7", "email": "person7@email.com", "role": 3 },
+                { "spId": "f9ee1234acbd", "name": "Person 8", "email": "person8@email.com", "role": 3 },
+                { "spId": "90073312311f", "name": "Person 9", "email": "person9@email.com", "role": 3 }
+            ]
+        }
     ]
 }

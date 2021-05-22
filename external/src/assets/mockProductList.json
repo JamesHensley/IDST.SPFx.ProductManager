@@ -1,0 +1,49 @@
+[
+    {
+      "Id": 152,
+      "Title": "SP Product List Item",
+      "GUID": "e3d3b2f0-1d9f-4aab-84b0-f9d7fc53c8a0",
+      "AttachmentFiles": [
+        {
+          "Author": {
+            "Name": "Fat Tony"
+          },
+          "Id": "8c6f0122-3ad5-4ee4-920e-b7faf1b290d8",
+          "Updated": "2021-05-22T08:41:38.664Z",
+          "Title": "Attached Document 30"
+        }
+      ],
+      "Description": "Description of product being requested 1",
+      "RequestDate": "2021-05-22T08:41:38.664Z",
+      "ReturnDateExpected": "2021-05-31T08:41:38.664Z",
+      "ReturnDateActual": null,
+      "Requestor": "Some Requestor",
+      "AssignedTeamIds": [
+        "501d64ec-c80a-f3bd-47e5-54ef414a9fc0"
+      ]
+    },
+    {
+      "Id": 63,
+      "Title": "SP Product List Item",
+      "GUID": "9edcb839-3da6-4414-9729-829c8008413e",
+      "AttachmentFiles": [
+        {
+          "Author": {
+            "Name": "Jimmy"
+          },
+          "Id": "dfd8c3e9-c209-4d7c-8cb5-0ca36f37717b",
+          "Updated": "2021-05-22T08:40:09.983Z",
+          "Title": "Attached Document 102"
+        }
+      ],
+      "Description": "Description of product being requested 2",
+      "RequestDate": "2021-05-22T08:40:09.983Z",
+      "ReturnDateExpected": "2021-05-25T08:40:09.983Z",
+      "ReturnDateActual": null,
+      "Requestor": "Some Requestor",
+      "AssignedTeamIds": [
+        "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
+        "501d64ec-f3bd-0495d-c80a-0cfd1d22797b"
+      ]
+    }
+  ]

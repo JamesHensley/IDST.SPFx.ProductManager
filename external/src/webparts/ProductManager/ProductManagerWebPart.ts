@@ -16,10 +16,12 @@ import AppService from '../../services/AppService';
 import { TeamModel } from '../../models/TeamModel';
 import { TeamMemberModel } from '../../models/PeopleModel';
 import { ResolvePlugin } from 'webpack';
+import PnPTelemetry from '@pnp/telemetry-js';
 
 export interface IProductManagerWebPartProps {
   description: string;
   isDebugging: boolean;
+  productListUrl: string;
   teams: Array<TeamModel>;
 }
 
@@ -27,31 +29,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   private mockSettings: IProductManagerWebPartProps;
 
   public render(): void {
-    const element: React.ReactElement<IProductManagerProps> = React.createElement(
-      ProductManager, {}
-    );
-
-    ReactDom.render(element, this.domElement);
-  }
-
-  /*
-  protected renderCompleted(): void {
-    super.renderCompleted();
-  }
-
-  protected get isRenderAsync(): boolean {
-    return true;
-  }
-  */
-
-  protected onDispose(): void {
-    ReactDom.unmountComponentAtNode(this.domElement);
-  }
-
-  protected async onInit(): Promise<void> {
-    AppService.Init(this);
-
-    return new Promise<void>((resolve, reject) => {
+    new Promise<void>((resolve, reject) => {
       fetch('/dist/mockSettings.json')
       .then(data => data.json())
       .then((data: IProductManagerWebPartProps) => {
@@ -65,19 +43,46 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
         });
       })
       .then(() => {
-        //this.renderCompleted();
+        this.renderCompleted();
         resolve();
       })
       .catch(e => {
         console.log(e);
-        //this.renderCompleted();
+        this.renderCompleted();
         reject();
       });
     })
     .catch(e => {
       console.log(e);
-      //this.renderCompleted();
+      this.renderCompleted();
     });
+
+  }
+
+  protected renderCompleted(): void {
+    super.renderCompleted();
+
+    const element: React.ReactElement<IProductManagerProps> = React.createElement(
+      ProductManager, {}
+    );
+
+    ReactDom.render(element, this.domElement);
+  }
+
+  protected get isRenderAsync(): boolean {
+    return true;
+  }
+
+  protected onDispose(): void {
+    ReactDom.unmountComponentAtNode(this.domElement);
+  }
+
+  protected async onInit(): Promise<void> {
+    const telemetry = PnPTelemetry.getInstance();
+    telemetry.optOut();
+    (window as any).disableBeaconLogToConsole = true;
+
+    AppService.Init(this);
   }
 
   protected get dataVersion(): Version {

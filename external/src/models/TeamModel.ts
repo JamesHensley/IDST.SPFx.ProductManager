@@ -5,4 +5,5 @@ export class TeamModel {
     name: string;
     description: string;
     members: Array<TeamMemberModel>;
+    active: boolean;
 }

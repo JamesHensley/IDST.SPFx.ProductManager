@@ -9,6 +9,7 @@ export interface IPeopleModel {
     email: string;
     role: Roles;
     spId: string;
+    active: boolean;
 }
 
 export class TeamMemberModel implements IPeopleModel {
@@ -19,4 +20,5 @@ export class TeamMemberModel implements IPeopleModel {
     public email: string;
     public role: Roles;
     public spId: string;
+    public active: boolean;
 }

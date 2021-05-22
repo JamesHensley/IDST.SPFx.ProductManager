@@ -25,7 +25,7 @@ export default class TeamPanel extends React.Component <ITeamPanelProps, ITeamPa
 
     public render(): React.ReactElement<ITeamPanelProps> {
         return(
-            <div className={styles.TeamPanel}>
+            <div className={styles.teamPanel}>
                 {
                     this.state.teams.map(t => {
                         return(
