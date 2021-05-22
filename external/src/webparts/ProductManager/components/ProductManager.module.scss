@@ -29,6 +29,11 @@ div[class*="pageContent"] {
 .gridCol11 { @include ms-Grid-col; @include ms-lg11; }
 .gridCol12 { @include ms-Grid-col; @include ms-lg12; }
 
+.bordered {
+  border: 1px solid rgba(0,0,0,.25);
+  border-collapse: collapse;
+}
+
 .productManager {
   .teamPanel {
     cursor: pointer;
@@ -47,14 +52,39 @@ div[class*="pageContent"] {
       color: inherit;
     }
   }
-
-  .formStyles {
-    .fieldHead {
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
-    .fieldValue {
-      font-size: 1rem;
-    }
-  }
 }
+
+.formStyles {
+  font-size: 1rem;
+}
+
+.fieldHead {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.fieldValue {
+  font-size: 1rem;
+}
+
+.attachmentManager {
+  font-size: .9rem;
+}
+
+.attachmentItem:hover {
+  background-color: rgba(0, 0, 0, 0.07);
+}
+
+.attachmentItem {
+  cursor: pointer;
+}
+
+.padTop1 { padding-top: 5px; }
+.padTop2 { padding-top: 10px; }
+.padTop3 { padding-top: 15px; }
+.padTop4 { padding-top: 20px; }
+
+.padLeft1 { padding-left: 5px; }
+.padLeft2 { padding-left: 10px; }
+.padLeft3 { padding-left: 15px; }
+.padLeft4 { padding-left: 20px; }

@@ -11,6 +11,8 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 
+import { initializeIcons } from '@fluentui/react/lib/Icons';
+
 import ProductManager, { IProductManagerProps } from './components/ProductManager';
 import AppService from '../../services/AppService';
 import { TeamModel } from '../../models/TeamModel';
@@ -82,6 +84,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     telemetry.optOut();
     (window as any).disableBeaconLogToConsole = true;
 
+    initializeIcons();
     AppService.Init(this);
   }
 
@@ -112,7 +115,6 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   }
 
   public get AppProps(): IProductManagerWebPartProps {
-    console.log('AppProps: ', this.properties.isDebugging, this.properties);
     return this.properties.isDebugging ? this.mockSettings : this.properties;
   }
 

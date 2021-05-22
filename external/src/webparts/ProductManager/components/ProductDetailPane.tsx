@@ -6,6 +6,7 @@ import * as styles from './ProductManager.module.scss';
 import { format } from 'date-fns';
 import { ProductModel } from '../../../models/ProductModel';
 import { RecordService } from '../../../services/RecordService';
+import { AttachmentsMgr } from './AttachmentsMgr';
 
 export interface IProductDetailPaneProps {
     isVisible: boolean;
@@ -32,10 +33,8 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     public render(): React.ReactElement<IProductDetailPaneProps> {
-        const formHeading = `${styles.gridCol3} ${styles.fieldHead}`;
-        const formValue = `${styles.gridCol9} ${styles.fieldValue}`;
-
-        console.log('ProductDetailPane.render: ', this.state.currentProduct);
+        const formHeading = `${styles.gridCol4} ${styles.fieldHead}`;
+        const formValue = `${styles.gridCol8} ${styles.fieldValue}`;
 
         return (
             <Panel
@@ -51,29 +50,32 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 {
                     this.state.currentProduct &&
                     <div className={styles.grid + ' ' + styles.formStyles}>
+                        <ProductDetailField
+                            fieldName={'Body'}
+                            fieldValue={this.state.currentProduct.description}
+                        />
+                        <ProductDetailField
+                            fieldName={'Assigned Teams'}
+                            fieldValue={'// Todo //'}
+                        />
+                        <ProductDetailField
+                            fieldName={'Request Start'}
+                            fieldValue={format(this.state.currentProduct.requestDate, this.dateFormatStr)}
+                        />
+                        <ProductDetailField
+                            fieldName={'Expected Close'}
+                            fieldValue={format(this.state.currentProduct.returnDateExpected, this.dateFormatStr)}
+                        />
+                        <ProductDetailField
+                            fieldName={'Actual Close'}
+                            fieldValue={''}
+                        />
                         <div className={styles.gridRow}>
-                            <div className={formHeading}>Body:</div>
-                            <div className={formValue}>{this.state.currentProduct.description}</div>
-                        </div>
-                        <div className={styles.gridRow}>
-                            <div className={formHeading}>Assigned Teams:</div>
-                            <div className={formValue}>// Todo //</div>
-                        </div>
-                        <div className={styles.gridRow}>
-                            <div className={formHeading}>Request Start:</div>
-                            <div className={formValue}>{format(this.state.currentProduct.requestDate, this.dateFormatStr)}</div>
-                        </div>
-                        <div className={styles.gridRow}>
-                            <div className={formHeading}>Expected Close:</div>
-                            <div className={formValue}>{format(this.state.currentProduct.returnDateExpected, this.dateFormatStr)}</div>
-                        </div>
-                        <div className={styles.gridRow}>
-                            <div className={formHeading}>Actual Close:</div>
-                            <div className={formValue}>
-                            {
-                                this.state.currentProduct.returnDateActual ?
-                                    format(this.state.currentProduct.returnDateActual, this.dateFormatStr) : ''
-                            }
+                            <div className={`${styles.gridCol12} ${styles.fieldHead}`}>Attachments</div>
+                            <div className={styles.gridCol12}>
+                                <AttachmentsMgr
+                                    currentAttachments={this.state.currentProduct.attachedDocuments}
+                                />
                             </div>
                         </div>
                     </div>
@@ -104,5 +106,25 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
     private togglePanelState(): void {
         this.props.paneCloseCallBack();
+    }
+}
+
+export interface IProductDetailFieldProps {
+    fieldName: string;
+    fieldValue: string;
+}
+
+export class ProductDetailField extends React.Component<IProductDetailFieldProps, {}> {
+    render(): React.ReactElement<IProductDetailFieldProps> {
+        return(
+            <div className={`${styles.gridRow} ${styles.padTop2}`}>
+                <div className={`${styles.gridCol12} ${styles.fieldHead}`}>
+                    {this.props.fieldName}
+                </div>
+                <div className={`${styles.gridCol11} ${styles.fieldValue} ${styles.padLeft4}`}>
+                    {this.props.fieldValue}
+                </div>
+            </div>
+        );
     }
 }

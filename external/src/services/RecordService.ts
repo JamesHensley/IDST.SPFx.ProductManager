@@ -6,6 +6,7 @@ import { MapperService } from './MapperService';
 import { MockSPService } from './MockSPService';
 import { SPService } from './SPService';
 import { Faker } from './FakerService';
+import { AttachmentModel } from '../models/AttachmentModel';
 
 export class RecordService {
     private static _prodService = new SPService();
@@ -23,5 +24,10 @@ export class RecordService {
     public static async GetProductByGUID(guid: string): Promise<ProductModel> {
         const spItem: SpListItem = await this.spService.GetListItemByGuid(AppService.AppSettings.productListUrl, guid);
         return MapperService.MapItemToProduct(spItem);
+    }
+
+    public static async GetAttachmentsForItem(guid: string): Promise<Array<AttachmentModel>> {
+        const spItem: SpListItem = await this.spService.GetListItemByGuid(AppService.AppSettings.productListUrl, guid);
+        return MapperService.MapItemToAttachments(spItem);
     }
 }

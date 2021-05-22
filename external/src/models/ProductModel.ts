@@ -1,4 +1,4 @@
-import { SpListAttachment } from './SpListItem';
+import { AttachmentModel } from './AttachmentModel';
 import { TaskModel } from './TaskModel';
 
 export class ProductModel {
@@ -10,5 +10,5 @@ export class ProductModel {
     public returnDateExpected: Date;
     public tasks?: Array<TaskModel>;
     public attachedDocumentUrls?: Array<string>;
-    public attachedDocuments: Array<SpListAttachment>;
+    public attachedDocuments: Array<AttachmentModel>;
 }

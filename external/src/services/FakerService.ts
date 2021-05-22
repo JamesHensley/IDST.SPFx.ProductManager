@@ -56,8 +56,6 @@ export class Faker {
             Requestor: 'Some Requestor',
             AssignedTeamData: JSON.stringify(tasks)
         };
-
-        console.log('FakerService.CreateFakeItem: ', item);
         return item;
     }
 }
