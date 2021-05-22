@@ -35,6 +35,8 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         const formHeading = `${styles.gridCol3} ${styles.fieldHead}`;
         const formValue = `${styles.gridCol9} ${styles.fieldValue}`;
 
+        console.log('ProductDetailPane.render: ', this.state.currentProduct);
+
         return (
             <Panel
                 className={styles.productDetailPane}
@@ -81,7 +83,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     public componentWillReceiveProps(newProps: IProductDetailPaneProps): void {
-        if(newProps.isVisible) {
+        if (newProps.isVisible) {
             RecordService.GetProductByGUID(newProps.currentProductId)
             .then(d => {
                 const stateObj: IProductDetailPaneState = {

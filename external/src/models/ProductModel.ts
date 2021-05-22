@@ -1,4 +1,5 @@
-import { TeamModel } from './TeamModel';
+import { SpListAttachment } from './SpListItem';
+import { TaskModel } from './TaskModel';
 
 export class ProductModel {
     public id: string;
@@ -7,6 +8,7 @@ export class ProductModel {
     public requestDate: Date;
     public returnDateActual?: Date;
     public returnDateExpected: Date;
-    public assignedTeams?: Array<TeamModel>;
+    public tasks?: Array<TaskModel>;
     public attachedDocumentUrls?: Array<string>;
+    public attachedDocuments: Array<SpListAttachment>;
 }

@@ -1,13 +1,15 @@
 import { ProductModel } from '../models/ProductModel';
 import { SpListItem } from '../models/SpListItem';
+import { TaskModel } from '../models/TaskModel';
 import { TeamModel } from '../models/TeamModel';
 import AppService from './AppService';
 
 export class MapperService {
     public static MapItemToProduct(item: SpListItem): ProductModel {
-        const teams = item.AssignedTeamIds
-            .map(d => this.mapTeam(d))
-            .filter(f => f);
+        console.log('Mapper.MapItemToProduct:  ', item);
+
+        const teamTasks: Array<TaskModel> = JSON.parse(item.AssignedTeamData);
+        const allDocs = teamTasks.reduce((t: Array<string>, n: TaskModel) => [].concat.apply(t, n.taskFiles), []);
 
         const pModel: ProductModel = {
             id: item.GUID,
@@ -16,8 +18,9 @@ export class MapperService {
             requestDate: new Date(item.RequestDate),
             returnDateExpected: new Date(item.ReturnDateExpected),
             returnDateActual: new Date(item.ReturnDateActual),
-            assignedTeams: teams,
-            attachedDocumentUrls: []
+            tasks: teamTasks,
+            attachedDocumentUrls: allDocs,
+            attachedDocuments: item.AttachmentFiles
         };
         return pModel;
     }

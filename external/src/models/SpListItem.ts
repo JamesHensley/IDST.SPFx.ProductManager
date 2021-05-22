@@ -1,3 +1,4 @@
+
 export class SPAuthor {
     Name: string;
 }
@@ -7,6 +8,11 @@ export class SpListAttachment {
     Title: string;
     Updated: Date;
     Author: SPAuthor;
+    Url: string;
+}
+
+export class CustomSpFieldTeamTask {
+    public TeamId: string;
 }
 
 export class SpListItem {
@@ -19,5 +25,5 @@ export class SpListItem {
     public ReturnDateActual: string;
     public Requestor: string;
     public AttachmentFiles: Array<SpListAttachment>;
-    public AssignedTeamIds: Array<string>;
+    public AssignedTeamData: string;
 }
