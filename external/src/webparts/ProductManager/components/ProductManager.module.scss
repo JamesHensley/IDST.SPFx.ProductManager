@@ -79,6 +79,13 @@ div[class*="pageContent"] {
   cursor: pointer;
 }
 
+.appIcon {
+  i {
+    color:#6a7373;
+    font-size: .8rem;
+  }
+}
+
 .padTop1 { padding-top: 5px; }
 .padTop2 { padding-top: 10px; }
 .padTop3 { padding-top: 15px; }

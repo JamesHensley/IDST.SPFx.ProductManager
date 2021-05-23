@@ -1,5 +1,151 @@
 [
   {
+    "Id": 74,
+    "Title": "SP Product List Item",
+    "GUID": "1834386c-4f32-4a2e-a8d6-9e6526e25471",
+    "AttachmentFiles": [
+      {
+        "Author": {
+          "Name": "Fat Tony"
+        },
+        "Id": "dee52311-aeb4-42fd-a673-33c8bcdc3c03",
+        "Updated": "2021-05-23T15:02:05.654Z",
+        "Title": "Attached Document 199",
+        "Url": "File3.txt"
+      },
+      {
+        "Author": {
+          "Name": "Jimmy"
+        },
+        "Id": "75212092-f86d-43db-856a-7394c2bc2dc9",
+        "Updated": "2021-05-23T15:02:05.654Z",
+        "Title": "Attached Document 224",
+        "Url": "File1.txt"
+      },
+      {
+        "Author": {
+          "Name": "Johnny \"Two Fingers\""
+        },
+        "Id": "32c09854-21b7-486a-b3f0-abd3b9bb9bb5",
+        "Updated": "2021-05-23T15:02:05.654Z",
+        "Title": "Attached Document 279",
+        "Url": "File5.txt"
+      }
+    ],
+    "Description": "Description of product being requested",
+    "RequestDate": "2021-05-23T15:02:05.655Z",
+    "ReturnDateExpected": "2021-05-26T09:07:58.862Z",
+    "ReturnDateActual": null,
+    "Requestor": "Some Requestor",
+    "AssignedTeamData": "[{\"taskedTeamId\":\"f3bd47e5-54ef-414a-9fc0-501d64ecc80a\",\"taskDescription\":\"Fake Tasking Desription\",\"taskFiles\":[\"File3.txt\"]},{\"taskedTeamId\":\"501d64ec-c80a-f3bd-47e5-54ef414a9fc0\",\"taskDescription\":\"Fake Tasking Desription\",\"taskState\":1,\"taskFiles\":[\"File1.txt\"]},{\"taskedTeamId\":\"501d64ec-f3bd-0495d-c80a-0cfd1d22797b\",\"taskDescription\":\"Fake Tasking Desription\",\"taskState\":1,\"taskFiles\":[\"File5.txt\"]}]"
+  },
+  {
+    "Id": 29,
+    "Title": "SP Product List Item",
+    "GUID": "6898512c-9b80-4b0a-a361-bcf1d81d1cee",
+    "AttachmentFiles": [
+      {
+        "Author": {
+          "Name": "Fat Tony"
+        },
+        "Id": "29f97078-5a61-4aa6-96a0-66bb471b9a53",
+        "Updated": "2021-05-23T14:42:34.516Z",
+        "Title": "Attached Document 138",
+        "Url": "File3.txt"
+      }
+    ],
+    "Description": "Description of product being requested",
+    "RequestDate": "2021-05-23T14:42:34.516Z",
+    "ReturnDateExpected": "2021-05-28T03:20:11.717Z",
+    "ReturnDateActual": null,
+    "Requestor": "Some Requestor",
+    "AssignedTeamData": "[{\"taskedTeamId\":\"501d64ec-f3bd-0495d-c80a-0cfd1d22797b\",\"taskDescription\":\"Fake Tasking Desription\",\"taskState\":1,\"taskFiles\":[\"File3.txt\"]}]"
+  },
+  {
+    "Id": 208,
+    "Title": "SP Product List Item",
+    "GUID": "a1908af4-3d57-4921-adf9-6a334480e99a",
+    "AttachmentFiles": [
+      {
+        "Author": {
+          "Name": "Johnny \"Two Fingers\""
+        },
+        "Id": "a2599507-80b3-4fbb-b7e7-0ed38bbad46b",
+        "Updated": "2021-05-23T13:14:55.809Z",
+        "Title": "Attached Document 91",
+        "Url": "File2.txt"
+      },
+      {
+        "Author": {
+          "Name": "Johnny \"Two Fingers\""
+        },
+        "Id": "9dd38d03-2f8c-4ca1-92d0-86a2f9c8617a",
+        "Updated": "2021-05-23T13:14:55.809Z",
+        "Title": "Attached Document 288",
+        "Url": "File4.txt"
+      }
+    ],
+    "Description": "Description of product being requested",
+    "RequestDate": "2021-05-23T13:14:55.809Z",
+    "ReturnDateExpected": "2021-05-29T15:45:10.960Z",
+    "ReturnDateActual": null,
+    "Requestor": "Some Requestor",
+    "AssignedTeamData": "[{\"taskedTeamId\":\"501d64ec-c80a-f3bd-47e5-54ef414a9fc0\",\"taskDescription\":\"Fake Tasking Desription\",\"taskState\":1,\"taskFiles\":[\"File2.txt\"]},{\"taskedTeamId\":\"501d64ec-f3bd-0495d-c80a-0cfd1d22797b\",\"taskDescription\":\"Fake Tasking Desription\",\"taskState\":1,\"taskFiles\":[\"File4.txt\"]}]"
+  },
+  {
+    "Id": 198,
+    "Title": "SP Product List Item",
+    "GUID": "d7ff7f96-7daf-40f1-81dd-62b680abdcbb",
+    "AttachmentFiles": [
+      {
+        "Author": {
+          "Name": "Fat Tony"
+        },
+        "Id": "4e482866-e5c0-41bd-b4a6-aa05884aab02",
+        "Updated": "2021-05-23T12:15:19.179Z",
+        "Title": "Attached Document 223",
+        "Url": "File4.txt"
+      },
+      {
+        "Author": {
+          "Name": "Jimmy"
+        },
+        "Id": "11565e50-9319-4aa7-b2e0-429878a5263f",
+        "Updated": "2021-05-23T12:15:19.180Z",
+        "Title": "Attached Document 20",
+        "Url": "File5.txt"
+      }
+    ],
+    "Description": "Description of product being requested",
+    "RequestDate": "2021-05-23T12:15:19.180Z",
+    "ReturnDateExpected": "2021-05-28T06:50:09.975Z",
+    "ReturnDateActual": null,
+    "Requestor": "Some Requestor",
+    "AssignedTeamData": "[{\"taskedTeamId\":\"f3bd47e5-54ef-414a-9fc0-501d64ecc80a\",\"taskDescription\":\"Fake Tasking Desription\",\"taskState\":1,\"taskFiles\":[\"File4.txt\"]},{\"taskedTeamId\":\"501d64ec-f3bd-0495d-c80a-0cfd1d22797b\",\"taskDescription\":\"Fake Tasking Desription\",\"taskFiles\":[\"File5.txt\"]}]"
+  },
+  {
+    "Id": 202,
+    "Title": "SP Product List Item",
+    "GUID": "b3c3f422-6902-463a-84cf-46cf09dbffba",
+    "AttachmentFiles": [
+      {
+        "Author": {
+          "Name": "Bob"
+        },
+        "Id": "3f2dd145-2463-4069-8e0f-b930477c7963",
+        "Updated": "2021-05-23T11:57:34.385Z",
+        "Title": "Attached Document 145",
+        "Url": "File3.txt"
+      }
+    ],
+    "Description": "Description of product being requested",
+    "RequestDate": "2021-05-23T11:57:34.386Z",
+    "ReturnDateExpected": "2021-05-28T17:05:02.561Z",
+    "ReturnDateActual": null,
+    "Requestor": "Some Requestor",
+    "AssignedTeamData": "[{\"taskedTeamId\":\"f3bd47e5-54ef-414a-9fc0-501d64ecc80a\",\"taskDescription\":\"Fake Tasking Desription\",\"taskState\":1,\"taskFiles\":[\"File3.txt\"]}]"
+  },
+  {
     "Id": 144,
     "Title": "SP Product List Item",
     "GUID": "df07f4bf-4703-4420-b83e-53833604dd28",
