@@ -24,20 +24,23 @@ export default class ProductManager extends React.Component <IProductManagerProp
   }
 
   public render(): React.ReactElement<{}> {
+    console.log('ProductManager.render');
     return(
       <div className={styles.productManager}>
-        <ProductDetailPane
-          paneCloseCallBack={this.eventPaneClose.bind(this)}
-          currentProductId={this.state.currentProductId}
-          isVisible={this.state.panelOpen}
-        ></ProductDetailPane>
+        {
+          this.state.panelOpen &&
+          <ProductDetailPane
+            paneCloseCallBack={this.eventPaneClose.bind(this)}
+            currentProductId={this.state.currentProductId}
+            isVisible={this.state.panelOpen}
+          />
+        }
         <div className={styles.grid}>
           <div className={styles.gridRow}>
             <div className={styles.gridCol9}>
               <ProductList
                 productClicked={this.productClicked.bind(this)}
-              >
-              </ProductList>
+              />
             </div>
             <div className={styles.gridCol3}>
               <TeamPanel teams={AppService.AppSettings.teams}>

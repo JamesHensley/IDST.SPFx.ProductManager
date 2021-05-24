@@ -1,3 +1,4 @@
+import { SplitChunksPlugin } from 'webpack';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { ProductModel } from '../models/ProductModel';
 import { SpListItem } from '../models/SpListItem';
@@ -6,6 +7,10 @@ import { TeamModel } from '../models/TeamModel';
 import AppService from './AppService';
 
 export class MapperService {
+    public static MapProductToItem(prod: ProductModel): SpListItem {
+        return null;
+    }
+
     public static MapItemToProduct(item: SpListItem): ProductModel {
         const teamTasks: Array<TaskModel> = JSON.parse(item.AssignedTeamData);
         const allDocs = teamTasks.reduce((t: Array<string>, n: TaskModel) => [].concat.apply(t, n.taskFiles), []);
@@ -15,9 +20,9 @@ export class MapperService {
             id: item.GUID,
             description: item.Description,
             requestor: item.Requestor,
-            requestDate: new Date(item.RequestDate),
-            returnDateExpected: new Date(item.ReturnDateExpected),
-            returnDateActual: new Date(item.ReturnDateActual),
+            requestDate: item.RequestDate,
+            returnDateExpected: item.ReturnDateExpected,
+            returnDateActual: item.ReturnDateActual,
             tasks: teamTasks,
             attachedDocumentUrls: allDocs,
             attachedDocuments: attachments

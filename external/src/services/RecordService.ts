@@ -30,4 +30,10 @@ export class RecordService {
         const spItem: SpListItem = await this.spService.GetListItemByGuid(AppService.AppSettings.productListUrl, guid);
         return MapperService.MapItemToAttachments(spItem);
     }
+
+    public static async UpdateProductBuGuid(guid: string, newProduct: ProductModel): Promise<ProductModel> {
+        const newItem = MapperService.MapProductToItem(newProduct);
+        const spItem = await this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem);
+        return MapperService.MapItemToProduct(spItem);
+    }
 }
