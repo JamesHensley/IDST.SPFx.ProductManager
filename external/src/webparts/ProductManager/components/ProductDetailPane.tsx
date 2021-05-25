@@ -124,8 +124,13 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
     private saveRFI(): void {
         // Do work here to save the model being edited
-        console.log('Saving draft data: ', this.committedProduct, this.state.draftProduct)
-        this.toggleEditMode();
+        console.log('Saving draft data: ', this.committedProduct, this.state.draftProduct);
+        RecordService.UpdateProductByGuid(this.props.currentProductId, this.state.draftProduct)
+        .then(data => {
+            console.log('Updated: ', data);
+            this.toggleEditMode();
+        })
+        .catch(e => console.log('Update failed for: ', this.state.draftProduct))
     }
 
     private cancelRFIChanges(): void {

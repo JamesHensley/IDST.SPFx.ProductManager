@@ -31,9 +31,13 @@ export class RecordService {
         return MapperService.MapItemToAttachments(spItem);
     }
 
-    public static async UpdateProductBuGuid(guid: string, newProduct: ProductModel): Promise<ProductModel> {
+    public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<void> {
         const newItem = MapperService.MapProductToItem(newProduct);
-        const spItem = await this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem);
-        return MapperService.MapItemToProduct(spItem);
+        const spItem = await this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
+        .then(newItem => {
+            this.spService.GetListItems(AppService.AppSettings.productListUrl)
+            .then(items => MapperService.MapItemsToProducts(items))
+            .then(prods => AppService.ProductChanged(prods))
+        });
     }
 }

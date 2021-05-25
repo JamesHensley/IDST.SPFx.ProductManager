@@ -17,8 +17,10 @@ import ProductManager, { IProductManagerProps } from './components/ProductManage
 import AppService from '../../services/AppService';
 import { TeamModel } from '../../models/TeamModel';
 import { TeamMemberModel } from '../../models/PeopleModel';
-import { ResolvePlugin } from 'webpack';
+
 import PnPTelemetry from '@pnp/telemetry-js';
+import { ProductModel } from '../../models/ProductModel';
+import { RecordService } from '../../services/RecordService';
 
 export interface IProductManagerWebPartProps {
   description: string;
@@ -27,45 +29,55 @@ export interface IProductManagerWebPartProps {
   teams: Array<TeamModel>;
 }
 
+export interface IProductManagerWebPartCallbacks {
+  productsUpdated: (newProducts: Array<ProductModel>) => void;
+}
+
 export default class ProductManagerWebPart extends BaseClientSideWebPart<IProductManagerWebPartProps> {
   private mockSettings: IProductManagerWebPartProps;
+  private allProducts: Array<ProductModel>;
 
   public render(): void {
-    new Promise<void>((resolve, reject) => {
-      fetch('/dist/mockSettings.json')
-      .then(data => data.json())
-      .then((data: IProductManagerWebPartProps) => {
-        this.mockSettings = data;
-        this.mockSettings.teams = data.teams.map((m1: TeamModel, i1: number) => {
-          m1.members = m1.members.map((m2: TeamMemberModel, i2: number) => {
-            m2.memberNum = `${i1}-${i2}`;
-            return m2;
+    //if(this.AppProps.isDebugging) {
+      new Promise<void>((resolve, reject) => {
+        fetch('/dist/mockSettings.json')
+        .then(data => data.json())
+        .then((data: IProductManagerWebPartProps) => {
+          this.mockSettings = data;
+          this.mockSettings.teams = data.teams.map((m1: TeamModel, i1: number) => {
+            m1.members = m1.members.map((m2: TeamMemberModel, i2: number) => {
+              m2.memberNum = `${i1}-${i2}`;
+              return m2;
+            });
+            return m1;
           });
-          return m1;
+        })
+        .then(() => {
+          //Add call to "getProductList" HERE
+          this.renderCompleted();
+          resolve();
+        })
+        .catch(e => {
+          console.log(e);
+          this.renderCompleted();
+          reject();
         });
-      })
-      .then(() => {
-        this.renderCompleted();
-        resolve();
       })
       .catch(e => {
         console.log(e);
         this.renderCompleted();
-        reject();
       });
-    })
-    .catch(e => {
-      console.log(e);
-      this.renderCompleted();
-    });
-
+    //}
+    //else {
+    //  this.renderCompleted();
+    //}
   }
 
   protected renderCompleted(): void {
     super.renderCompleted();
 
     const element: React.ReactElement<IProductManagerProps> = React.createElement(
-      ProductManager, {}
+      ProductManager, { allProducts: this.allProducts }
     );
 
     ReactDom.render(element, this.domElement);
@@ -85,7 +97,10 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     (window as any).disableBeaconLogToConsole = true;
 
     initializeIcons();
-    AppService.Init(this);
+    const callBacks: IProductManagerWebPartCallbacks = {
+      productsUpdated: this.updateProducts.bind(this)
+    };
+    AppService.Init(this, callBacks);
   }
 
   protected get dataVersion(): Version {
@@ -120,5 +135,18 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
 
   public get AppContext(): WebPartContext {
     return this.context;
+  }
+
+  private updateProducts(newProducts: Array<ProductManager>): void {
+    this.getProductList();
+  }
+
+  private getProductList(): void {
+    RecordService.GetProducts()
+    .then(allProducts => {
+      this.allProducts = allProducts;
+      console.log('Got new products: ', allProducts);
+      this.render();
+    });
   }
 }

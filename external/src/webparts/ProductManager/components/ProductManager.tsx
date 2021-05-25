@@ -5,8 +5,11 @@ import TeamPanel from './TeamPanel';
 import AppService from '../../../services/AppService';
 import ProductList from './ProductList';
 import ProductDetailPane from './ProductDetailPane';
+import { ProductModel } from '../../../models/ProductModel';
 
-export interface IProductManagerProps { }
+export interface IProductManagerProps {
+  allProducts: Array<ProductModel>
+}
 
 export interface IProductManagerState {
   panelOpen: boolean;
@@ -39,6 +42,7 @@ export default class ProductManager extends React.Component <IProductManagerProp
           <div className={styles.gridRow}>
             <div className={styles.gridCol9}>
               <ProductList
+                allProducts={this.props.allProducts}
                 productClicked={this.productClicked.bind(this)}
               />
             </div>
