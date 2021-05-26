@@ -43,19 +43,25 @@ export class Faker {
             .reduce((t: Array<string>, n: TaskModel) => [].concat.apply(t, n.taskFiles), [])
             .map(d => this.CreateFakeAttachment(d));
 
-        const returnDateExpected = addMilliseconds(new Date(), Math.round(Math.random() * 10 * 24 * 60 * 60 * 1000)).toJSON();
+        const reqDate = new Date().getTime() + (((Math.round(Math.random() == 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24);
+        const endDate = new Date().getTime() + ((Math.round(Math.random() * 14) + 1) * 1000 * 60 * 60 * 24);
+
         const item: SpListItem = {
             Id: Math.floor(Math.random() * 300),
             Title: (title ? title : 'SP Product List Item'),
             GUID: uuidv4(),
             AttachmentFiles: allAttachments,
             Description: 'Description of product being requested',
-            RequestDate: new Date().toJSON(),
-            ReturnDateExpected: returnDateExpected,
+            RequestDate: new Date(reqDate).toJSON(),
+            ReturnDateExpected: new Date(endDate).toJSON(),
             ReturnDateActual: null,
             Requestor: 'Some Requestor',
-            AssignedTeamData: JSON.stringify(tasks)
+            AssignedTeamData: JSON.stringify(tasks),
+            ProductStatus: ['open', 'closed', 'canceled'][Math.round(Math.random() * 2)],
+            ProductType: ['ProdType 1', 'ProdType 2', 'ProdType 3'][Math.round(Math.random() * 2)]
         };
+        item.ProductStatus == 'Closed' ? new Date(new Date(item.RequestDate).getTime() + (3 * 24 * 60 * 60 * 1000)).toJSON() : null;
+
         return item;
     }
 }

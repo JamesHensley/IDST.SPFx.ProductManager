@@ -17,7 +17,7 @@ export class RecordService {
     }
 
     public static async GetProducts(): Promise<Array<ProductModel>> {
-        const spItems: Array<SpListItem> = await this.spService.GetListItems(AppService.AppSettings.productListUrl);
+        let spItems: Array<SpListItem> = await this.spService.GetListItems(AppService.AppSettings.productListUrl);
         return MapperService.MapItemsToProducts(spItems);
     }
 
@@ -33,11 +33,12 @@ export class RecordService {
 
     public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<void> {
         const newItem = MapperService.MapProductToItem(newProduct);
-        const spItem = await this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
-        .then(newItem => {
-            this.spService.GetListItems(AppService.AppSettings.productListUrl)
-            .then(items => MapperService.MapItemsToProducts(items))
-            .then(prods => AppService.ProductChanged(prods))
-        });
+        await this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
+        .then(newItem => AppService.ProductChanged());
     }
+
+    public static CopyAndSortArray<T>(items: T[], columnKey: string, isSortedDescending?: boolean): T[] {
+        const key = columnKey as keyof T;
+        return items.slice(0).sort((a: T, b: T) => ((isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1));
+    }    
 }

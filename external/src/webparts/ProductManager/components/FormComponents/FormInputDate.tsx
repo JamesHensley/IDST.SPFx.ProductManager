@@ -7,6 +7,7 @@ import { CalendarButton } from './CalendarButton';
 import { format } from 'date-fns';
 
 import { IFormInputProps } from './IFormInputProps';
+import AppService from '../../../../services/AppService';
 
 export interface IFormInputDateState {
     calendarVisible: boolean;
@@ -15,16 +16,11 @@ export interface IFormInputDateState {
 
 export class FormInputDate extends React.Component<IFormInputProps, IFormInputDateState> {
     private buttonRef: any;
-    private dateFormatStr = `dd-LLL-yyyy`;
 
     constructor(props: IFormInputProps) {
         super(props);
         this.buttonRef = React.createRef();
         this.state = { calendarVisible: false, draftValue: this.props.fieldValue }
-    }
-
-    private formatDate(dateStr: string): string {
-        return format(new Date(dateStr), this.dateFormatStr);
     }
     
     render(): React.ReactElement<IFormInputProps> {
@@ -42,10 +38,10 @@ export class FormInputDate extends React.Component<IFormInputProps, IFormInputDa
                             />}
                     </Stack>
                     {!this.props.editing && (
-                        <Text>{this.formatDate(this.props.fieldValue)}</Text>
+                        <Text>{format(new Date(this.props.fieldValue), AppService.DateFormatView)}</Text>
                     )}
                     {this.props.editing && (
-                        <TextField value={this.formatDate(this.props.fieldValue)}/>
+                        <TextField value={format(new Date(this.props.fieldValue), AppService.DateFormatView)}/>
                     )}
                 </div>
             </div>

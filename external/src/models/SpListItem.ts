@@ -26,4 +26,6 @@ export class SpListItem {
     public Requestor: string;
     public AttachmentFiles: Array<SpListAttachment>;
     public AssignedTeamData: string;
+    public ProductStatus: string;
+    public ProductType: string;
 }

@@ -1,8 +1,11 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 
-
 div[class*='homePageContent'] {
   max-width: none!important;
+}
+
+div[class*="Canvas"] {
+  max-width: none;
 }
 
 div[class*="CanvasZone"] {

@@ -19,7 +19,15 @@ export default class AppService {
         return this._webpart.context;
     }
 
-    public static ProductChanged(newProducts: Array<ProductModel>): void {
-        this.callbacks.productsUpdated(newProducts);
+    public static ProductChanged(): void {
+        this.callbacks.productsUpdated();
+    }
+
+    public static get DateFormatView(): string  {
+        return `dd-LLL-yyyy`;
+    }
+
+    public static get DateFormatValue(): string  {
+        return `yyyyMMdd`;
     }
 }

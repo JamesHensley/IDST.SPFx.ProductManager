@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
-import { escape } from '@microsoft/sp-lodash-subset';
+
 import TeamPanel from './TeamPanel';
 import AppService from '../../../services/AppService';
 import ProductList from './ProductList';

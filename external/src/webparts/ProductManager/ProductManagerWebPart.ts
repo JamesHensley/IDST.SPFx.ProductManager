@@ -30,7 +30,8 @@ export interface IProductManagerWebPartProps {
 }
 
 export interface IProductManagerWebPartCallbacks {
-  productsUpdated: (newProducts: Array<ProductModel>) => void;
+  /** Global method to notify the WebPart that the product list may have changed */
+  productsUpdated: () => void;
 }
 
 export default class ProductManagerWebPart extends BaseClientSideWebPart<IProductManagerWebPartProps> {
@@ -38,39 +39,8 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   private allProducts: Array<ProductModel>;
 
   public render(): void {
-    //if(this.AppProps.isDebugging) {
-      new Promise<void>((resolve, reject) => {
-        fetch('/dist/mockSettings.json')
-        .then(data => data.json())
-        .then((data: IProductManagerWebPartProps) => {
-          this.mockSettings = data;
-          this.mockSettings.teams = data.teams.map((m1: TeamModel, i1: number) => {
-            m1.members = m1.members.map((m2: TeamMemberModel, i2: number) => {
-              m2.memberNum = `${i1}-${i2}`;
-              return m2;
-            });
-            return m1;
-          });
-        })
-        .then(() => {
-          //Add call to "getProductList" HERE
-          this.renderCompleted();
-          resolve();
-        })
-        .catch(e => {
-          console.log(e);
-          this.renderCompleted();
-          reject();
-        });
-      })
-      .catch(e => {
-        console.log(e);
-        this.renderCompleted();
-      });
-    //}
-    //else {
-    //  this.renderCompleted();
-    //}
+    console.log('ProductManagerWebPart.render:  ');
+    this.getProductList().then(() => this.renderCompleted()).catch(e => Promise.reject(e));
   }
 
   protected renderCompleted(): void {
@@ -83,9 +53,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     ReactDom.render(element, this.domElement);
   }
 
-  protected get isRenderAsync(): boolean {
-    return true;
-  }
+  protected get isRenderAsync(): boolean { return true; }
 
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
@@ -97,10 +65,11 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     (window as any).disableBeaconLogToConsole = true;
 
     initializeIcons();
-    const callBacks: IProductManagerWebPartCallbacks = {
+    AppService.Init(this, {
       productsUpdated: this.updateProducts.bind(this)
-    };
-    AppService.Init(this, callBacks);
+    });
+
+    await this.getMockAppSettings();
   }
 
   protected get dataVersion(): Version {
@@ -137,16 +106,49 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     return this.context;
   }
 
-  private updateProducts(newProducts: Array<ProductManager>): void {
+  private updateProducts(): void {
     this.getProductList();
   }
 
-  private getProductList(): void {
-    RecordService.GetProducts()
-    .then(allProducts => {
-      this.allProducts = allProducts;
-      console.log('Got new products: ', allProducts);
-      this.render();
+  private getProductList(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      RecordService.GetProducts()
+      .then(allProducts => {
+        this.allProducts = allProducts;
+        resolve();
+      })
+      .catch(e => reject(e));
     });
+  }
+
+  private getMockAppSettings(): Promise<void> {
+    if (window.location.host.toLowerCase().indexOf('localhost') === 0) {
+      return new Promise<void>((resolve, reject) => {
+        fetch('/dist/mockSettings.json')
+        .then(data => data.json())
+        .then((data: IProductManagerWebPartProps) => {
+          this.mockSettings = data;
+          this.mockSettings.teams = data.teams.map((m1: TeamModel, i1: number) => {
+            m1.members = m1.members.map((m2: TeamMemberModel, i2: number) => {
+              m2.memberNum = `${i1}-${i2}`;
+              return m2;
+            });
+            return m1;
+          });
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch(e => {
+          console.log(e);
+          reject();
+        });
+      })
+      .catch(e => {
+        console.log(e);
+      });
+    } else {
+      return Promise.resolve();
+    }
   }
 }

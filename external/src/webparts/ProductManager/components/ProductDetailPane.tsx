@@ -59,7 +59,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 className={styles.productDetailPane}
                 isLightDismiss
                 isHiddenOnDismiss={false}
-                headerText={this.state.draftProduct ? this.state.draftProduct.id : ''}
+                headerText={this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
                 isOpen={this.state.isVisible}
                 onDismiss={this.togglePanelVisibility.bind(this)}
                 closeButtonAriaLabel='Close'

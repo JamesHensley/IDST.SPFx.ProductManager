@@ -18,12 +18,15 @@ export class MockSPService implements ISPService {
             fetch(listUrl)
             .then(data => data.json())
             .then((data: Array<SpListItem>) => {
-                this._mockedProductItems.push(Faker.CreateFakeItem());
                 this._mockedProductItems = [].concat.apply(this._mockedProductItems, data)
                 .filter((f, i, e) => e.map(m => m.GUID).indexOf(f.GUID) === i);
 
-                // console.log('Faked SPListItem: ', JSON.stringify(this._mockedProductItems, null, '  '));
-
+                if(this._mockedProductItems.length == 0) {
+                    for(let x = 0; x<25; x++) {
+                        this._mockedProductItems.push(Faker.CreateFakeItem(`Fake Product Request - ${x}`))
+                    }
+                    console.log(JSON.stringify(this._mockedProductItems, null, '    '));
+                }
                 resolve(this._mockedProductItems);
             })
             .catch(e => reject(e));
