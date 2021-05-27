@@ -28,6 +28,6 @@ export default class AppService {
     }
 
     public static get DateFormatValue(): string  {
-        return `yyyyMMdd`;
+        return `yyyy-MM-dd`;
     }
 }

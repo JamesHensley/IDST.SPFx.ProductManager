@@ -27,7 +27,13 @@ export default class ProductManager extends React.Component <IProductManagerProp
   }
 
   public render(): React.ReactElement<{}> {
-    console.log('ProductManager.render');
+    console.log('ProductManager.render: ', this.state);
+    /*
+            <div className={styles.gridCol3}>
+              <TeamPanel teams={AppService.AppSettings.teams}>
+              </TeamPanel>
+            </div>
+    */
     return(
       <div className={styles.productManager}>
         {
@@ -46,10 +52,6 @@ export default class ProductManager extends React.Component <IProductManagerProp
                 productClicked={this.productClicked.bind(this)}
               />
             </div>
-            <div className={styles.gridCol3}>
-              <TeamPanel teams={AppService.AppSettings.teams}>
-              </TeamPanel>
-            </div>
           </div>
         </div>
       </div>
@@ -57,12 +59,11 @@ export default class ProductManager extends React.Component <IProductManagerProp
   }
 
   private productClicked(prodId: string): void {
-    const stateObj: IProductManagerState = {
+    console.log('ProductManager.productClicked: ', prodId);
+    this.setState({
       panelOpen: true,
       currentProductId: prodId
-    };
-
-    this.setState(stateObj);
+    });
   }
 
   private eventPaneClose(): void {

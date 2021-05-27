@@ -23,7 +23,7 @@ export class MockSPService implements ISPService {
 
                 if(this._mockedProductItems.length == 0) {
                     for(let x = 0; x<25; x++) {
-                        this._mockedProductItems.push(Faker.CreateFakeItem(`Fake Product Request - ${x}`))
+                        this._mockedProductItems.push(Faker.CreateFakeItem())
                     }
                     console.log(JSON.stringify(this._mockedProductItems, null, '    '));
                 }

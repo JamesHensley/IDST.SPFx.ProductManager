@@ -56,9 +56,8 @@ export class MapperService {
     }
 
     public static MapItemsToProducts(items: Array<SpListItem>): Array<ProductModel> {
-        const xx = items.map(d => this.MapItemToProduct(d));
-        console.log(JSON.stringify(xx, null, '    '));
-        return xx;
+        console.log(JSON.stringify(items, null, '    '));
+        return items.map(d => this.MapItemToProduct(d));
     }
 
     public static MapItemToAttachments(item: SpListItem): Array<AttachmentModel> {

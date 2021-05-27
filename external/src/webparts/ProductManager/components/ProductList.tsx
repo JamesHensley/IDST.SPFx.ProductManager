@@ -1,10 +1,53 @@
 import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ProductModel, ProductStatus } from '../../../models/ProductModel';
-import { DetailsList, DetailsListLayoutMode, IColumn, SelectionMode, TooltipHost } from '@fluentui/react';
+import { DetailsList, DetailsListLayoutMode, IColumn, mergeStyleSets, SelectionMode, TextField, TooltipHost } from '@fluentui/react';
 import { format } from 'date-fns';
 import AppService from '../../../services/AppService';
 import { RecordService } from '../../../services/RecordService';
+
+const classNames = mergeStyleSets({
+  fileIconHeaderIcon: {
+    padding: 0,
+    fontSize: '16px',
+  },
+  fileIconCell: {
+    textAlign: 'center',
+    selectors: {
+      '&:before': {
+        content: '.',
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        height: '100%',
+        width: '0px',
+        visibility: 'hidden',
+      },
+    },
+  },
+  fileIconImg: {
+    verticalAlign: 'middle',
+    maxHeight: '16px',
+    maxWidth: '16px',
+  },
+  controlWrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  exampleToggle: {
+    display: 'inline-block',
+    marginBottom: '10px',
+    marginRight: '30px',
+  },
+  selectionDetails: {
+    marginBottom: '20px',
+  },
+});
+const controlStyles = {
+  root: {
+    margin: '0 30px 20px 0',
+    maxWidth: '300px',
+  },
+};
 
 export interface IDocument {
   key: string;
@@ -33,6 +76,8 @@ export interface IProductListState {
 }
 
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
+  private allItems: Array<IDocument>;
+
   constructor(props: IProductListProps) {
     super(props);
     const columns = [{
@@ -58,8 +103,8 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     {
       key: 'column3',
       name: 'Status',
-      fieldName: 'status',
-      minWidth: 100, maxWidth: 200,
+      fieldName: 'productStatus',
+      minWidth: 100, maxWidth: 150,
       isRowHeader: true,
       isResizable: true,
       isSorted: true,
@@ -148,8 +193,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
       isPadded: true,
     }];
 
-    const items = (this.props.allProducts || []).map(d => {
-      console.log(items);
+    this.allItems = (this.props.allProducts || []).map(d => {
       const iDoc: IDocument = {
         key: d.guid,
         title: d.title,
@@ -157,38 +201,45 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         value: d.guid,
         teamIcon: '',
         productType: d.productType,
-        productStatus: ProductStatus[d.status],
-        openDate: format(new Date(d.requestDate), AppService.DateFormatView),
-        expectedReturnDate: format(new Date(d.returnDateExpected), AppService.DateFormatView),
+        productStatus: d.status,
+        openDate: format(new Date(d.requestDate), AppService.DateFormatValue),
+        expectedReturnDate: format(new Date(d.returnDateExpected), AppService.DateFormatValue),
         closeDate: d.returnDateActual || ''
       };
+      console.log('d:  ', d, d.status);
       return iDoc;
     });
 
-    this.state = { columns: columns, items: items };
+    this.state = {
+      columns: columns,
+      items: this.allItems
+    };
   }
 
   public render(): React.ReactElement<IProductListProps> {
+    console.log('ProductList.render: ', this.props, this.state);
+    //<div className={classNames.selectionDetails}>{this.state.selectionDetails}</div>
     return (
       <div className={styles.productList}>
+        <TextField label="Filter by name:" onChange={this.onChangeFilter} styles={controlStyles} />
         <DetailsList
-          items={this.state.items}
-          columns={this.state.columns}
-          compact={false}
-          getKey={this.getItemKey.bind(this)}
-          setKey="none"
-          layoutMode={DetailsListLayoutMode.justified}
-          isHeaderVisible={true}
-          selectionMode={SelectionMode.none}
-          onColumnHeaderClick={this.onColumnClick.bind(this)}
-        />
+            items={this.state.items}
+            columns={this.state.columns}
+            compact={false}
+            getKey={this.getItemKey.bind(this)}
+            setKey="none"
+            layoutMode={DetailsListLayoutMode.justified}
+            isHeaderVisible={true}
+            selectionMode={SelectionMode.none}
+            onColumnHeaderClick={this.onColumnClick.bind(this)}
+            // selection={this.selection}
+            onItemInvoked={this.itemInvoked.bind(this)}
+          />
       </div>
     );
   }
 
-  private getItemKey(item: any, index?: number): string {
-    return item.key;
-  }
+  private getItemKey(item: any, index?: number): string { return item.key; }
 
   private onColumnClick = (ev: React.MouseEvent<HTMLElement>, column: IColumn): void => {
     const { columns, items } = this.state;
@@ -198,26 +249,28 @@ export default class ProductList extends React.Component<IProductListProps, IPro
       if (newCol === currColumn) {
         currColumn.isSortedDescending = !currColumn.isSortedDescending;
         currColumn.isSorted = true;
-        //this.setState({
-        //  announcedMessage: `${currColumn.name} is sorted ${
-        //    currColumn.isSortedDescending ? 'descending' : 'ascending'
-        //  }`,
-        //});
       } else {
         newCol.isSorted = false;
         newCol.isSortedDescending = true;
       }
     });
     const newItems = RecordService.CopyAndSortArray(items, currColumn.fieldName!, currColumn.isSortedDescending);
+
     this.setState({
       columns: newColumns,
       items: newItems,
     });
   };
   
+  private onChangeFilter = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string): void => {
+    this.setState({
+      items: text ? this.allItems.filter(i => {
+        return ((`${i.title} ${i.description} ${i.productType}`).toLowerCase().indexOf(text) > -1)
+      }) : this.allItems,
+    });
+  };
 
-
-  private productClicked(prodId: string): void {
-    this.props.productClicked(prodId);
-  }
+  private itemInvoked(item?: any, index?: number, elem?: React.FocusEvent<HTMLElement>): void {
+    this.props.productClicked(item.key);
+  };
 }
