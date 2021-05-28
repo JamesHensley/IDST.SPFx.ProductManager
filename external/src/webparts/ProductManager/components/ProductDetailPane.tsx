@@ -1,8 +1,6 @@
 import * as React from 'react';
-import { Panel, PanelType, Separator, FocusTrapZone, Stack, DirectionalHint, IconButton, DefaultButton } from '@fluentui/react';
-import { Text, Label, TextField } from '@fluentui/react';
-import { Calendar, Callout } from '@fluentui/react';
-import { useBoolean } from '@fluentui/react-hooks';
+import { Panel, PanelType, Separator, FocusTrapZone, Stack, DirectionalHint, IconButton, DefaultButton, ICommandBarItemProps } from '@fluentui/react';
+import { Label } from '@fluentui/react';
 
 import * as styles from './ProductManager.module.scss';
 
@@ -10,9 +8,9 @@ import { format } from 'date-fns';
 import { ProductModel } from '../../../models/ProductModel';
 import { RecordService } from '../../../services/RecordService';
 import { AttachmentsMgr } from './AttachmentsMgr';
-import { fieldValue } from './ProductManager.module.scss';
 import { FormInputDate } from './FormComponents/FormInputDate';
 import { FormInputText } from './FormComponents/FormInputText';
+import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
 
 
 export interface IProductDetailPaneProps {
@@ -30,6 +28,7 @@ export interface IProductDetailPaneState {
 // This needs a lot of work... especially the editing portion
 export default class ProductDetailPane extends React.Component<IProductDetailPaneProps, IProductDetailPaneState> {
     private committedProduct: ProductModel;
+    private receiver: any;
 
     constructor(props: IProductDetailPaneProps) {
         super(props);
@@ -40,21 +39,27 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         };
         this.state = stateObj;
 
-        RecordService.GetProductByGUID(this.props.currentProductId)
-        .then((prod: ProductModel) => {
-            this.committedProduct = prod;
+        this.receiver = this.cmdBarItemClicked.bind(this);
 
-            this.setState({
-                isVisible: this.props.isVisible,
-                isEditing: false,
-                draftProduct: prod
+        if (this.props.currentProductId) {
+            RecordService.GetProductByGUID(this.props.currentProductId)
+            .then((prod: ProductModel) => {
+                this.committedProduct = prod;
+                this.setState({ isEditing: false, isVisible: this.props.isVisible, draftProduct: prod });
             })
-        })
-        .catch(e => console.log('ProductDetailPane.constructor: Could not get product model', this.props));
+            .catch(e => console.log('ProductDetailPane.constructor: Could not get product model', this.props));
+        }
+    }
+
+    public componentDidMount(): void {
+        AppService.RegisterCmdBarListener({ callback: this.receiver, btnKeys: ['newProduct'] } as ICmdBarListenerProps)
+    }
+
+    public componentWillUnmount(): void {
+        AppService.UnRegisterCmdBarListener(this.receiver);
     }
 
     public render(): React.ReactElement<IProductDetailPaneProps> {
-        console.log('ProductDetailPane.render: ', this.props, this.state);
         return (
             <Panel
                 className={styles.productDetailPane}
@@ -76,7 +81,13 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel Changes</DefaultButton>}
                             </Stack>
                             <FormInputText
-                                labelValue={'Body'} editing={this.state.isEditing}
+                                labelValue={'Title'} editing={this.state.isEditing}
+                                fieldValue={this.state.draftProduct.title}
+                                fieldRef={'title'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                            />                            
+                            <FormInputText
+                                labelValue={'Description'} editing={this.state.isEditing}
                                 fieldValue={this.state.draftProduct.description} editLines={4}
                                 fieldRef={'description'}
                                 onUpdated={this.fieldUpdated.bind(this)}
@@ -124,11 +135,9 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private saveRFI(): void {
-        // Do work here to save the model being edited
-        console.log('Saving draft data: ', this.committedProduct, this.state.draftProduct);
-        RecordService.UpdateProductByGuid(this.props.currentProductId, this.state.draftProduct)
-        .then(data => {
-            console.log('Updated: ', data);
+        RecordService.UpdateProductByGuid(this.state.draftProduct.guid, this.state.draftProduct)
+        .then(() => {
+            console.log('Updated: ', this.state.draftProduct.guid);
             this.toggleEditMode();
         })
         .catch(e => console.log('Update failed for: ', this.state.draftProduct))
@@ -142,5 +151,15 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         const temp = JSON.parse(JSON.stringify(this.state.draftProduct));
         temp[fieldRef] = newVal;
         this.setState({ draftProduct: temp});
+    }
+
+    private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
+        console.log(item, this.props, this.state);
+
+        this.setState({
+            isEditing: true,
+            isVisible: true,
+            draftProduct: RecordService.GetNewProductModel()
+        })
     }
 }

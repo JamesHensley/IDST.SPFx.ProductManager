@@ -19,8 +19,6 @@ import { TeamModel } from '../../models/TeamModel';
 import { TeamMemberModel } from '../../models/PeopleModel';
 
 import PnPTelemetry from '@pnp/telemetry-js';
-import { ProductModel } from '../../models/ProductModel';
-import { RecordService } from '../../services/RecordService';
 
 export interface IProductManagerWebPartProps {
   description: string;
@@ -29,31 +27,17 @@ export interface IProductManagerWebPartProps {
   teams: Array<TeamModel>;
 }
 
-export interface IProductManagerWebPartCallbacks {
-  /** Global method to notify the WebPart that the product list may have changed */
-  productsUpdated: () => void;
-}
 
 export default class ProductManagerWebPart extends BaseClientSideWebPart<IProductManagerWebPartProps> {
   private mockSettings: IProductManagerWebPartProps;
-  private allProducts: Array<ProductModel>;
 
   public render(): void {
-    console.log('ProductManagerWebPart.render:  ');
-    this.getProductList().then(() => this.renderCompleted()).catch(e => Promise.reject(e));
-  }
-
-  protected renderCompleted(): void {
-    super.renderCompleted();
-
     const element: React.ReactElement<IProductManagerProps> = React.createElement(
-      ProductManager, { allProducts: this.allProducts }
+      ProductManager, { }
     );
 
     ReactDom.render(element, this.domElement);
   }
-
-  protected get isRenderAsync(): boolean { return true; }
 
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
@@ -65,11 +49,11 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     (window as any).disableBeaconLogToConsole = true;
 
     initializeIcons();
-    AppService.Init(this, {
-      productsUpdated: this.updateProducts.bind(this)
-    });
+    AppService.Init(this);
 
     await this.getMockAppSettings();
+
+    return Promise.resolve();
   }
 
   protected get dataVersion(): Version {
@@ -104,21 +88,6 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
 
   public get AppContext(): WebPartContext {
     return this.context;
-  }
-
-  private updateProducts(): void {
-    this.getProductList();
-  }
-
-  private getProductList(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      RecordService.GetProducts()
-      .then(allProducts => {
-        this.allProducts = allProducts;
-        resolve();
-      })
-      .catch(e => reject(e));
-    });
   }
 
   private getMockAppSettings(): Promise<void> {

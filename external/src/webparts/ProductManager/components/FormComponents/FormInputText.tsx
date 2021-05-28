@@ -18,7 +18,7 @@ export class FormInputText extends React.Component<IFormInputProps, {}> {
                     )}
                     {this.props.editing && (
                         <TextField
-                            defaultValue={this.props.fieldValue}
+                            value={this.props.fieldValue}
                             multiline={this.props.editLines ? true : false}
                             rows={this.props.editLines ? this.props.editLines : 1}
                             onChange={this.fieldUpdated.bind(this)}
@@ -29,7 +29,7 @@ export class FormInputText extends React.Component<IFormInputProps, {}> {
         );
     }
 
-    private fieldUpdated(newVal: any): void {
+    private fieldUpdated(e: any, newVal: any): void {
         this.props.onUpdated(newVal, this.props.fieldRef);
     }
 }

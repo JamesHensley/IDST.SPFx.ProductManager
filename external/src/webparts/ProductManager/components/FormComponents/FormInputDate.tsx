@@ -41,7 +41,7 @@ export class FormInputDate extends React.Component<IFormInputProps, IFormInputDa
                         <Text>{format(new Date(this.props.fieldValue), AppService.DateFormatView)}</Text>
                     )}
                     {this.props.editing && (
-                        <TextField value={format(new Date(this.props.fieldValue), AppService.DateFormatView)}/>
+                        <TextField value={format(new Date(this.props.fieldValue), AppService.DateFormatView)} readOnly />
                     )}
                 </div>
             </div>

@@ -22,6 +22,10 @@ interface CssExports {
   'gridCol8': string;
   'gridCol9': string;
   'gridRow': string;
+  'listColumnHeader': string;
+  'listDataCell': string;
+  'listDataRow': string;
+  'listTable': string;
   'ms-Grid': string;
   'padLeft1': string;
   'padLeft2': string;
@@ -31,10 +35,10 @@ interface CssExports {
   'padTop2': string;
   'padTop3': string;
   'padTop4': string;
-  'product': string;
   'productDetailPane': string;
   'productList': string;
   'productManager': string;
+  'stickyListHeader': string;
   'teamPanel': string;
 }
 declare var cssExports: CssExports;

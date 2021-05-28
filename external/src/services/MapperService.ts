@@ -21,7 +21,7 @@ export class MapperService {
             ReturnDateExpected: prod.returnDateExpected,
             AttachmentFiles: [],
             AssignedTeamData: JSON.stringify(prod.tasks),
-            ProductStatus: prod.status,
+            ProductStatus: prod.status.toLowerCase(),
             ProductType: prod.productType
         };
 
@@ -46,7 +46,8 @@ export class MapperService {
             attachedDocumentUrls: allDocs,
             attachedDocuments: attachments,
             status: ProductStatus[item.ProductStatus],
-            productType: item.ProductType
+            productType: item.ProductType,
+            newProduct: false
         };
         return pModel;
     }
@@ -56,7 +57,6 @@ export class MapperService {
     }
 
     public static MapItemsToProducts(items: Array<SpListItem>): Array<ProductModel> {
-        console.log(JSON.stringify(items, null, '    '));
         return items.map(d => this.MapItemToProduct(d));
     }
 

@@ -2,6 +2,10 @@ import { SpListItem } from '../models/SpListItem';
 import { ISPService } from './ISPService';
 
 export class SPService implements ISPService {
+    AddListItem(listUrl: string, item: SpListItem): Promise<SpListItem> {
+        throw new Error('Method not implemented.');
+    }
+
     UpdateListItemByGuid(listUrl: string, guid: string, item: SpListItem): Promise<SpListItem> {
         throw new Error('Method not implemented.');
     }

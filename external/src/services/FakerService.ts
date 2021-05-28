@@ -63,8 +63,6 @@ export class Faker {
             ProductType: ['ProdType 1', 'ProdType 2', 'ProdType 3'][Math.round(Math.random() * 2)]
         };
         item.ProductStatus == 'Closed' ? new Date(new Date(item.RequestDate).getTime() + (3 * 24 * 60 * 60 * 1000)).toJSON() : null;
-
-        console.log(item);
         return item;
     }
 

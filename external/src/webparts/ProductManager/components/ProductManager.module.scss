@@ -43,12 +43,33 @@ div[class*="pageContent"] {
   }
 
   .productList {
-    .product {
+    .stickyListHeader {
+      position: sticky;
+      top: -10px;
+      z-index: 2000;
+    }
+
+    .listTable {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .listColumnHeader {
+      cursor: pointer;
+    }
+    
+    .listDataRow {
+      border-bottom: 1px solid rgba(0,0,0,0.08);
       cursor: pointer;
     }
 
-    .product:hover {
-      background-color: rgba(0,0,0,0.08);
+    .listDataRow:hover {
+      background-color: rgba(0,0,0,0.05);
+    }
+
+    .listDataCell {
+      padding-top: 5px;
+      padding-bottom: 5px;
     }
 
     .productDetailPane {

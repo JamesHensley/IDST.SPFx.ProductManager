@@ -21,4 +21,5 @@ export class ProductModel {
     public attachedDocumentUrls?: Array<string>;
     public attachedDocuments: Array<AttachmentModel>;
     public productType: string;
+    public newProduct: boolean;
 }

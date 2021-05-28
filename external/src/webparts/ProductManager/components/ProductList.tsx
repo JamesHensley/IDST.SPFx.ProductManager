@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ProductModel, ProductStatus } from '../../../models/ProductModel';
-import { DetailsList, DetailsListLayoutMode, IColumn, mergeStyleSets, SelectionMode, TextField, TooltipHost } from '@fluentui/react';
+import { DetailsList, DetailsListLayoutMode, IColumn, IconButton, mergeStyleSets, SelectionMode, TextField, TooltipHost } from '@fluentui/react';
 import { format } from 'date-fns';
 import AppService from '../../../services/AppService';
 import { RecordService } from '../../../services/RecordService';
@@ -42,12 +42,30 @@ const classNames = mergeStyleSets({
     marginBottom: '20px',
   },
 });
+
 const controlStyles = {
   root: {
     margin: '0 30px 20px 0',
     maxWidth: '300px',
   },
 };
+
+/**
+ * Used to preserve the filter and sorting settings when the component is destroyed & rebuilt
+ */
+class SortFilterSetting {
+  private static filterText: string = "";
+  public static get FilterText() { return this.filterText; };
+  public static set FilterText(val: string) { this.filterText = val; };
+
+  private static sortField: string = "openDate";
+  public static get SortField() { return this.sortField }
+  public static set SortField(val: string) { this.sortField = val }
+
+  private static sortDir: number = 1;
+  public static set SortDir(val: number) { this.sortDir = val }
+  public static get SortDir() { return this.sortDir }
+}
 
 export interface IDocument {
   key: string;
@@ -65,136 +83,15 @@ export interface IDocument {
   //dateModifiedValue: number;
 }
 
-export interface IProductListProps {
-    productClicked: (prodId: string) => void;
-    allProducts: Array<ProductModel>;
-}
-
-export interface IProductListState {
-  columns: Array<IColumn>,
-  items: Array<IDocument>
-}
+export interface IProductListProps { allProducts: Array<ProductModel>, productClicked: (id: string) => void }
+export interface IProductListState { lastUpdate: number }
 
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
-  private allItems: Array<IDocument>;
-
-  constructor(props: IProductListProps) {
-    super(props);
-    const columns = [{
-      key: 'column1',
-      name: 'Team',
-      //className: classNames.fileIconCell,
-      //iconClassName: classNames.fileIconHeaderIcon,
-      ariaLabel: 'Column operations for File type, Press to sort on File type',
-      iconName: 'Page',
-      isIconOnly: true,
-      fieldName: 'title',
-      minWidth: 16,
-      maxWidth: 16,
-      //onColumnClick: this._onColumnClick,
-      /*
-      onRender: (item: IDocument) => (
-        <TooltipHost content={`${item.fileType} file`}>
-          <img src={item.teamIcon} className={classNames.fileIconImg} alt={`${item.fileType} file icon`} />
-        </TooltipHost>
-      ),
-      */
-    },
-    {
-      key: 'column3',
-      name: 'Status',
-      fieldName: 'productStatus',
-      minWidth: 100, maxWidth: 150,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: true,
-      isSortedDescending: false,
-      sortAscendingAriaLabel: 'Sorted A to Z',
-      sortDescendingAriaLabel: 'Sorted Z to A',
-      //onColumnClick: this._onColumnClick,
-      data: 'string',
-      isPadded: true,
-    },
-    {
-      key: 'column4',
-      name: 'Title',
-      fieldName: 'title',
-      minWidth: 200,
-      maxWidth: 300,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: true,
-      isSortedDescending: false,
-      sortAscendingAriaLabel: 'Sorted A to Z',
-      sortDescendingAriaLabel: 'Sorted Z to A',
-      //onColumnClick: this._onColumnClick,
-      data: 'string',
-      isPadded: true,
-    },
-    {
-      key: 'column5',
-      name: 'Description',
-      fieldName: 'description',
-      minWidth: 200,
-      //maxWidth: 350,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: true,
-      isSortedDescending: false,
-      sortAscendingAriaLabel: 'Sorted A to Z',
-      sortDescendingAriaLabel: 'Sorted Z to A',
-      //onColumnClick: this._onColumnClick,
-      data: 'string',
-      isPadded: true,
-    },
-    {
-      key: 'column6',
-      name: 'Open Date',
-      fieldName: 'openDate',
-      minWidth: 100, maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: true,
-      isSortedDescending: false,
-      sortAscendingAriaLabel: 'Sorted A to Z',
-      sortDescendingAriaLabel: 'Sorted Z to A',
-      //onColumnClick: this.onColumnClick,
-      data: 'string',
-      isPadded: true,
-    },
-    {
-      key: 'column7',
-      name: 'Expected Return',
-      fieldName: 'expectedReturnDate',
-      minWidth: 100, maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: true,
-      isSortedDescending: false,
-      sortAscendingAriaLabel: 'Sorted A to Z',
-      sortDescendingAriaLabel: 'Sorted Z to A',
-      //onColumnClick: this._onColumnClick,
-      data: 'string',
-      isPadded: true,
-    },
-    {
-      key: 'column8',
-      name: 'Closed Date',
-      fieldName: 'closeDate',
-      minWidth: 100, maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: true,
-      isSortedDescending: false,
-      sortAscendingAriaLabel: 'Sorted A to Z',
-      sortDescendingAriaLabel: 'Sorted Z to A',
-      //onColumnClick: this._onColumnClick,
-      data: 'string',
-      isPadded: true,
-    }];
-
-    this.allItems = (this.props.allProducts || []).map(d => {
-      const iDoc: IDocument = {
+  private get allItems(): Array<IDocument> {
+    return (this.props.allProducts || [])
+    .filter(i => ((`${i.title} ${i.description} ${i.productType}`).toLowerCase().indexOf(SortFilterSetting.FilterText) >= 0))
+    .map(d => {
+      return {
         key: d.guid,
         title: d.title,
         description: d.description,
@@ -205,72 +102,149 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         openDate: format(new Date(d.requestDate), AppService.DateFormatValue),
         expectedReturnDate: format(new Date(d.returnDateExpected), AppService.DateFormatValue),
         closeDate: d.returnDateActual || ''
-      };
-      console.log('d:  ', d, d.status);
-      return iDoc;
+      } as IDocument;
+    })
+    .sort((a,b) => {
+      return a[SortFilterSetting.SortField] > b[SortFilterSetting.SortField] ? (1 * SortFilterSetting.SortDir) : (a[SortFilterSetting.SortField] < b[SortFilterSetting.SortField] ? -1 * SortFilterSetting.SortDir : 0)
     });
+  };
 
-    this.state = {
-      columns: columns,
-      items: this.allItems
-    };
-  }
+  private get allColumns(): Array<IColumn> {
+    return ([{
+      key: 'column0',
+      name: '',
+      fieldName: 'teamIcon',
+      minWidth: 20, maxWidth: 20,
+      isRowHeader: false,
+      isSorted: false,
+      isSortedDescending: false,
+      data: 'string',
+      isPadded: true,
+    },
+    {
+      key: 'column1',
+      name: 'Status',
+      fieldName: 'productStatus',
+      minWidth: 100, maxWidth: 150,
+      isRowHeader: true,
+      isSorted: false,
+      isSortedDescending: false,
+      data: 'string',
+      isPadded: true,
+    },
+    {
+      key: 'column2',
+      name: 'Title',
+      fieldName: 'title',
+      minWidth: 200, maxWidth: 300,
+      isRowHeader: true,
+      isSorted: false,
+      isSortedDescending: false,
+      data: 'string',
+      isPadded: true,
+    },
+    {
+      key: 'column3',
+      name: 'Description',
+      fieldName: 'description',
+      minWidth: 200, maxWidth: 600,
+      isRowHeader: true,
+      isSorted: false,
+      isSortedDescending: false,
+      data: 'string',
+      isPadded: true,
+    },
+    {
+      key: 'column4',
+      name: 'Open Date',
+      fieldName: 'openDate',
+      minWidth: 100, maxWidth: 200,
+      isRowHeader: true,
+      isSorted: false,
+      isSortedDescending: false,
+      data: 'string',
+      isPadded: true,
+    },
+    {
+      key: 'column5',
+      name: 'Expected Return',
+      fieldName: 'expectedReturnDate',
+      minWidth: 100, maxWidth: 200,
+      isRowHeader: true,
+      isSorted: false,
+      isSortedDescending: false,
+      data: 'string',
+      isPadded: true,
+    }])
+    .map(d => {
+      // Handle the sorting icons
+      d.isSorted = SortFilterSetting.SortField == d.fieldName;
+      d.isSortedDescending = d.isSorted && SortFilterSetting.SortDir == -1;
+      return d;
+    });
+  };
 
   public render(): React.ReactElement<IProductListProps> {
-    console.log('ProductList.render: ', this.props, this.state);
-    //<div className={classNames.selectionDetails}>{this.state.selectionDetails}</div>
     return (
-      <div className={styles.productList}>
-        <TextField label="Filter by name:" onChange={this.onChangeFilter} styles={controlStyles} />
-        <DetailsList
-            items={this.state.items}
-            columns={this.state.columns}
-            compact={false}
-            getKey={this.getItemKey.bind(this)}
-            setKey="none"
-            layoutMode={DetailsListLayoutMode.justified}
-            isHeaderVisible={true}
-            selectionMode={SelectionMode.none}
-            onColumnHeaderClick={this.onColumnClick.bind(this)}
-            // selection={this.selection}
-            onItemInvoked={this.itemInvoked.bind(this)}
-          />
+      <div className={`${styles.productList} ${styles.grid}`}>
+        <div className={styles.gridRow}>
+          <div className={styles.gridCol12}>
+            <TextField label="Filter by name:" onChange={this.onChangeFilter} styles={controlStyles} value={SortFilterSetting.FilterText} />
+          </div>
+        </div>
+        <div className={styles.gridRow}>
+          <div className={styles.gridCol12}>
+            <table className={styles.listTable}>
+              <thead>
+                <tr>
+                  {this.allColumns.map(c => {
+                    const colStyle = (styleItems => Object.assign({}, ...styleItems))([c.minWidth, c.maxWidth, {textAlign: 'left'}]);
+                    return (
+                      <th key={c.fieldName}
+                        className={styles.listColumnHeader}
+                        style={colStyle}
+                        onClick={this.onColumnClick.bind(this, c)}
+                      >
+                        {c.isRowHeader ?  c.name : ''}
+                        {c.isSorted && !c.isSortedDescending && <IconButton iconProps={{ iconName: 'SortUp' }} className={styles.appIcon} title='' ariaLabel='' />}
+                        {c.isSorted && c.isSortedDescending && <IconButton iconProps={{ iconName: 'SortDown' }} className={styles.appIcon} title='' ariaLabel='' />}
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {this.allItems.map(r => {
+                  return (
+                    <tr key={r.key} onClick={this.itemClicked.bind(this, r)} className={styles.listDataRow}>
+                      {this.allColumns.map(c => {
+                        return (
+                          <td key={c.fieldName} className={styles.listDataCell}>{r[c.fieldName]}</td>
+                        )
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     );
   }
 
-  private getItemKey(item: any, index?: number): string { return item.key; }
-
-  private onColumnClick = (ev: React.MouseEvent<HTMLElement>, column: IColumn): void => {
-    const { columns, items } = this.state;
-    const newColumns: IColumn[] = columns.slice();
-    const currColumn: IColumn = newColumns.filter(currCol => column.key === currCol.key)[0];
-    newColumns.forEach((newCol: IColumn) => {
-      if (newCol === currColumn) {
-        currColumn.isSortedDescending = !currColumn.isSortedDescending;
-        currColumn.isSorted = true;
-      } else {
-        newCol.isSorted = false;
-        newCol.isSortedDescending = true;
-      }
-    });
-    const newItems = RecordService.CopyAndSortArray(items, currColumn.fieldName!, currColumn.isSortedDescending);
-
-    this.setState({
-      columns: newColumns,
-      items: newItems,
-    });
+  private onColumnClick = (column: IColumn): void => {
+    SortFilterSetting.SortField = column.fieldName;
+    SortFilterSetting.SortDir = SortFilterSetting.SortDir * -1;
+    this.setState({lastUpdate: new Date().getTime()});
   };
   
   private onChangeFilter = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string): void => {
-    this.setState({
-      items: text ? this.allItems.filter(i => {
-        return ((`${i.title} ${i.description} ${i.productType}`).toLowerCase().indexOf(text) > -1)
-      }) : this.allItems,
-    });
+    SortFilterSetting.FilterText = text;
+    this.setState({lastUpdate: new Date().getTime()})
   };
 
-  private itemInvoked(item?: any, index?: number, elem?: React.FocusEvent<HTMLElement>): void {
+  private itemClicked(item: any) {
     this.props.productClicked(item.key);
-  };
+  }
 }
