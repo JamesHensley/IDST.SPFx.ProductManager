@@ -1,16 +1,16 @@
 import { SplitChunksPlugin } from 'webpack';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { ProductModel, ProductStatus } from '../models/ProductModel';
-import { SpListItem } from '../models/SpListItem';
+import { SpListAttachment, SpProductItem } from '../models/SpListItem';
 import { TaskModel } from '../models/TaskModel';
 import { TeamModel } from '../models/TeamModel';
 import AppService from './AppService';
 
 
 export class MapperService {
-    public static MapProductToItem(prod: ProductModel): SpListItem {
+    public static MapProductToItem(prod: ProductModel): SpProductItem {
         // TODO: Finish this
-        const listItem: SpListItem = {
+        const listItem: SpProductItem = {
             Id: prod.id,
             GUID: prod.guid,
             Title: prod.title,
@@ -19,20 +19,19 @@ export class MapperService {
             RequestDate: prod.requestDate,
             ReturnDateActual: prod.returnDateActual,
             ReturnDateExpected: prod.returnDateExpected,
-            AttachmentFiles: [],
             AssignedTeamData: JSON.stringify(prod.tasks),
             ProductStatus: prod.status.toLowerCase(),
             ProductType: prod.productType
         };
-
         return listItem;
     }
 
-    public static MapItemToProduct(item: SpListItem): ProductModel {
+    public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
         const teamTasks: Array<TaskModel> = JSON.parse(item.AssignedTeamData ||  '[]');
-        const allDocs = teamTasks.reduce((t: Array<string>, n: TaskModel) => [].concat.apply(t, n.taskFiles), []);
-        const attachments: Array<AttachmentModel> = this.MapItemToAttachments(item);
-
+        const attachedDocs = attachments
+            .filter(f => f.LinkedProductGuid == item.GUID)
+            .map(d => this.MapSpAttachmentToAttachment(d));
+        
         const pModel: ProductModel = {
             id: item.Id,
             guid: item.GUID,
@@ -43,8 +42,7 @@ export class MapperService {
             returnDateExpected: item.ReturnDateExpected,
             returnDateActual: item.ReturnDateActual,
             tasks: teamTasks,
-            attachedDocumentUrls: allDocs,
-            attachedDocuments: attachments,
+            attachedDocuments: attachedDocs,
             status: ProductStatus[item.ProductStatus],
             productType: item.ProductType,
             newProduct: false
@@ -56,21 +54,22 @@ export class MapperService {
         return AppService.AppSettings.teams.reduce((t: TeamModel, n: TeamModel) => n.id === teamId ? n : t, null);
     }
 
-    public static MapItemsToProducts(items: Array<SpListItem>): Array<ProductModel> {
-        return items.map(d => this.MapItemToProduct(d));
+    public static MapItemsToProducts(items: Array<SpProductItem>, documents: Array<SpListAttachment>): Array<ProductModel> {
+        //const docs = documents.map(d => this.MapItemToAttachments(d));
+        return items.map(d => this.MapItemToProduct(d, documents));
     }
 
-    public static MapItemToAttachments(item: SpListItem): Array<AttachmentModel> {
-        return item.AttachmentFiles.map(d => {
-            const attachment: AttachmentModel = {
-                Id: d.Id,
-                Title: d.Title,
-                Author: d.Author.Name,
-                Url: d.Url,
-                Updated: d.Updated,
-                Icon: 'NoIcon'
-            };
-            return attachment;
-        });
+    public static MapSpAttachmentToAttachment(item: SpListAttachment) {
+        const attachment: AttachmentModel = {
+            Id: item.Id,
+            Title: item.Title,
+            Author: item.Author.Name,
+            Url: item.Url,
+            Updated: item.Updated,
+            Icon: 'NoIcon',
+            LinkedProductGuid: item.LinkedProductGuid
+        };
+
+        return attachment;
     }
 }

@@ -1,7 +1,11 @@
-import { SpListItem } from '../models/SpListItem';
+import { SpListAttachment, SpProductItem } from '../models/SpListItem';
 export interface ISPService {
-    GetListItems(listUrl: string): Promise<Array<SpListItem>>;
-    GetListItemByGuid(listUrl: string, guid: string): Promise<SpListItem>;
-    UpdateListItemByGuid(listUrl: string, guid: string, item: SpListItem): Promise<SpListItem>;
-    AddListItem(listUrl: string, item: SpListItem): Promise<SpListItem>;
+    GetListItems(listUrl: string): Promise<Array<SpProductItem>>;
+    GetListItemByGuid(listUrl: string, guid: string): Promise<SpProductItem>;
+    UpdateListItemByGuid(listUrl: string, guid: string, item: SpProductItem): Promise<SpProductItem>;
+    AddListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem>;
+
+    AddAttachment(listUrl: string, item: SpListAttachment): Promise<SpListAttachment>;
+    GetAttachmentsForGuid(listUrl: string, guid: string): Promise<Array<SpListAttachment>>;
+    GetAttachmentItems(listUrl: string): Promise<Array<SpListAttachment>>;
 }

@@ -198,7 +198,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
               <thead>
                 <tr>
                   {this.allColumns.map(c => {
-                    const colStyle = (styleItems => Object.assign({}, ...styleItems))([c.minWidth, c.maxWidth, {textAlign: 'left'}]);
+                    const colStyle = (styleItems => Object.assign({}, ...styleItems))([{minWidth: c.minWidth}, {maxWidth: c.maxWidth}, {textAlign: 'left'}]);
                     return (
                       <th key={c.fieldName}
                         className={styles.listColumnHeader}

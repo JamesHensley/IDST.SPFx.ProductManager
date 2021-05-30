@@ -1,4 +1,4 @@
-import { SpListAttachment, SPAuthor, SpListItem } from '../models/SpListItem';
+import { SpListAttachment, SPAuthor, SpProductItem } from '../models/SpListItem';
 import { v4 as uuidv4 } from 'uuid';
 import AppService from './AppService';
 import { TeamModel } from '../models/TeamModel';
@@ -8,14 +8,17 @@ import { addDays, addMilliseconds } from 'date-fns';
 export class Faker {
     private static _sentences: Array<string>;
 
-    private static CreateFakeAttachment(url: string): SpListAttachment {
+    public static CreateFakeAttachment(itemGUID: string): SpListAttachment {
+        const attachmentUrl = [ 'File1.txt', 'File2.txt', 'File3.txt', 'File4.txt', 'File5.txt' ][Math.round(Math.random() * 4)];
         const author: string = ['Jimmy', 'Johnny "Two Fingers"', 'Vince', 'Fat Tony', 'Bob'][Math.round(Math.random() * 4)];
         const attachment: SpListAttachment = {
             Author: { Name: author } as SPAuthor,
             Id: uuidv4(),
             Updated: new Date(),
             Title: `Attached Document ${Math.round(Math.random() * 300)}`,
-            Url: url
+            Url: attachmentUrl,
+            Version: '1',
+            LinkedProductGuid: itemGUID
         };
         return attachment;
     }
@@ -25,14 +28,18 @@ export class Faker {
         const attachmentUrl = [ 'File1.txt', 'File2.txt', 'File3.txt', 'File4.txt', 'File5.txt' ][Math.round(Math.random() * 4)];
         const task: TaskModel = {
             taskedTeamId: teamId,
+            taskTeamName: 'Fake Team',
             taskDescription: 'Fake Tasking Desription',
             taskState: TaskState[state],
-            taskFiles: [attachmentUrl]
+            taskGuid: uuidv4()
+            //taskFiles: [attachmentUrl]
         };
         return task;
     }
 
-    public static CreateFakeItem(title?: string): SpListItem {
+    public static CreateFakeItem(title?: string): SpProductItem {
+        const newItemGuid = uuidv4();
+
         // Randomly assign this to a team(s)
         const teams = AppService.AppSettings.teams
             .reduce((t: Array<TeamModel>, n: TeamModel) => Math.round(Math.random()) === 1 ? t.concat(n) : t, [])
@@ -41,18 +48,13 @@ export class Faker {
         const tasks: Array<TaskModel> = (teams.length > 0 ? teams : [AppService.AppSettings.teams[0].id])
             .map(d => this.CreateFakeTask(d));
 
-        const allAttachments: Array<SpListAttachment> = tasks
-            .reduce((t: Array<string>, n: TaskModel) => [].concat.apply(t, n.taskFiles), [])
-            .map(d => this.CreateFakeAttachment(d));
-
         const reqDate = new Date().getTime() + (((Math.round(Math.random() == 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24);
         const endDate = new Date().getTime() + ((Math.round(Math.random() * 14) + 1) * 1000 * 60 * 60 * 24);
 
-        const item: SpListItem = {
+        const item: SpProductItem = {
             Id: Math.floor(Math.random() * 300),
             Title: (title ? title : this.mockTitles[Math.round(Math.random() * this.mockTitles.length)]),
-            GUID: uuidv4(),
-            AttachmentFiles: allAttachments,
+            GUID: newItemGuid,
             Description: this.mockSentences[Math.round(Math.random() * this.mockSentences.length)],
             RequestDate: new Date(reqDate).toJSON(),
             ReturnDateExpected: new Date(endDate).toJSON(),

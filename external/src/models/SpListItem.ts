@@ -9,13 +9,15 @@ export class SpListAttachment {
     Updated: Date;
     Author: SPAuthor;
     Url: string;
+    Version: string;
+    LinkedProductGuid: string;
 }
 
 export class CustomSpFieldTeamTask {
     public TeamId: string;
 }
 
-export class SpListItem {
+export class SpProductItem {
     public Id: number;
     public Title: string;
     public GUID: string;
@@ -24,7 +26,6 @@ export class SpListItem {
     public ReturnDateExpected: string;
     public ReturnDateActual: string;
     public Requestor: string;
-    public AttachmentFiles: Array<SpListAttachment>;
     public AssignedTeamData: string;
     public ProductStatus: string;
     public ProductType: string;

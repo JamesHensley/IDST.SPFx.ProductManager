@@ -24,6 +24,7 @@ export interface IProductManagerWebPartProps {
   description: string;
   isDebugging: boolean;
   productListUrl: string;
+  documentListUrl: string;
   teams: Array<TeamModel>;
 }
 

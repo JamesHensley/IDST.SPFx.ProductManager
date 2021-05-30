@@ -1,5 +1,5 @@
 import { ProductModel, ProductStatus } from '../models/ProductModel';
-import { SpListItem } from '../models/SpListItem';
+import { SpListAttachment, SpProductItem } from '../models/SpListItem';
 import AppService from './AppService';
 import { ISPService } from './ISPService';
 import { MapperService } from './MapperService';
@@ -18,18 +18,22 @@ export class RecordService {
     }
 
     public static async GetProducts(): Promise<Array<ProductModel>> {
-        let spItems: Array<SpListItem> = await this.spService.GetListItems(AppService.AppSettings.productListUrl);
-        return MapperService.MapItemsToProducts(spItems);
+        // let spAttachments: Array<SpListAttachment> = await this.spService.GetListItems(AppService.AppSettings.documentListUrl);
+        let spItems: Array<SpProductItem> = await this.spService.GetListItems(AppService.AppSettings.productListUrl);
+        let spAttachments: Array<SpListAttachment> = await this.spService.GetAttachmentItems(AppService.AppSettings.documentListUrl);
+        return MapperService.MapItemsToProducts(spItems, spAttachments);
     }
 
     public static async GetProductByGUID(guid: string): Promise<ProductModel> {
-        const spItem: SpListItem = await this.spService.GetListItemByGuid(AppService.AppSettings.productListUrl, guid);
-        return MapperService.MapItemToProduct(spItem);
+        const spItem: SpProductItem = await this.spService.GetListItemByGuid(AppService.AppSettings.productListUrl, guid);
+        const spAttachments = await this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, guid);
+        return MapperService.MapItemToProduct(spItem, spAttachments);
     }
 
     public static async GetAttachmentsForItem(guid: string): Promise<Array<AttachmentModel>> {
-        const spItem: SpListItem = await this.spService.GetListItemByGuid(AppService.AppSettings.productListUrl, guid);
-        return MapperService.MapItemToAttachments(spItem);
+        const spItems = (await this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, guid))
+            .map(d => MapperService.MapSpAttachmentToAttachment(d));
+        return spItems;
     }
 
     public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<void> {
@@ -49,6 +53,9 @@ export class RecordService {
         return items.slice(0).sort((a: T, b: T) => ((isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1));
     }
     
+    /**
+     * Creates a new empty product model
+     */
     public static GetNewProductModel(): ProductModel {
         const prod = new ProductModel();
         prod.guid = uuidv4();

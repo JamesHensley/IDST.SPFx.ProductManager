@@ -5,8 +5,9 @@ export enum TaskState {
 }
 
 export class TaskModel {
+    taskGuid: string;
     taskedTeamId: string;
+    taskTeamName: string;
     taskDescription: string;
-    taskFiles: Array<string>;
     taskState: TaskState;
 }

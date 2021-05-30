@@ -2,6 +2,7 @@
     "description": "Product Manager",
     "isDebugging": true,
     "productListUrl": "/dist/mockProductList.json",
+    "documentListUrl": "/dist/mockDocumentList.json",
     "teams": [
         {
             "id": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",

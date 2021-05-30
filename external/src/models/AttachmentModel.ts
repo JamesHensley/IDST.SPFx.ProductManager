@@ -6,4 +6,5 @@ export class AttachmentModel {
     Author: string;
     Url: string;
     Icon: string;
+    LinkedProductGuid: string;
 }

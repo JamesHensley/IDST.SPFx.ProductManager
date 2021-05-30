@@ -7,10 +7,12 @@ import * as styles from './ProductManager.module.scss';
 import { format } from 'date-fns';
 import { ProductModel } from '../../../models/ProductModel';
 import { RecordService } from '../../../services/RecordService';
-import { AttachmentsMgr } from './AttachmentsMgr';
+
 import { FormInputDate } from './FormComponents/FormInputDate';
 import { FormInputText } from './FormComponents/FormInputText';
 import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
+import { TaskComponent } from './FormComponents/TaskComponent';
+import { AttachmentComponent } from './FormComponents/AttachmentComponent';
 
 
 export interface IProductDetailPaneProps {
@@ -32,12 +34,12 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
     constructor(props: IProductDetailPaneProps) {
         super(props);
-        const stateObj: IProductDetailPaneState = {
+
+        this.state = {
             isVisible: false,
             isEditing: false,
             draftProduct: null
         };
-        this.state = stateObj;
 
         this.receiver = this.cmdBarItemClicked.bind(this);
 
@@ -78,7 +80,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                             <Stack horizontal tokens={{childrenGap: 10}}>
                                 <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
                                 {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
-                                {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel Changes</DefaultButton>}
+                                {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
                             </Stack>
                             <FormInputText
                                 labelValue={'Title'} editing={this.state.isEditing}
@@ -92,12 +94,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 fieldRef={'description'}
                                 onUpdated={this.fieldUpdated.bind(this)}
                             />
-                            <FormInputText
-                                labelValue={'Assigned Teams'} editing={this.state.isEditing}
-                                fieldValue={'// Todo //'}
-                                fieldRef={''}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
+
                             <FormInputDate
                                 labelValue={'Request Start'} editing={this.state.isEditing}
                                 fieldValue={this.state.draftProduct.requestDate}
@@ -110,15 +107,14 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 fieldRef={'returnDateExpected'}
                                 onUpdated={this.fieldUpdated.bind(this)}
                             />
-                            <Separator></Separator>
-                            <div className={styles.gridRow}>
-                                <Label>Attachments</Label>
-                                <div className={styles.gridCol12}>
-                                    <AttachmentsMgr
-                                        currentAttachments={this.state.draftProduct.attachedDocuments}
-                                    />
-                                </div>
-                            </div>
+                            <Separator>
+                                <Label>Tasks and Attachments</Label>
+                            </Separator>
+                            <AttachmentComponent AttachmentItems={this.state.draftProduct.attachedDocuments} />
+                            <TaskComponent
+                                TaskItems={this.state.draftProduct.tasks}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                            />
                         </div>
                     </FocusTrapZone>
                 }
@@ -131,7 +127,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private toggleEditMode(): void {
-        this.setState({ isEditing: !this.state.isEditing });
+        this.setState({ isEditing: !this.state.isEditing, isVisible: (this.props.currentProductId==null ? false : this.state.isVisible) });
     }
 
     private saveRFI(): void {

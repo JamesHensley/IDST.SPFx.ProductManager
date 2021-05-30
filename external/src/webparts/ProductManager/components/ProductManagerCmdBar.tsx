@@ -9,30 +9,49 @@ export interface IProductManagerCmdBarState {}
 
 export default class ProductManagerCmdBar extends React.Component <IProductManagerCmdBarProps, IProductManagerCmdBarState> {
     private get cmdBarItems(): Array<ICommandBarItemProps> {
-        return [{
-            key: 'newItem',
-            text: 'New',
-            cacheKey: 'myCacheKey', // changing this key will invalidate this item's cache
-            iconProps: { iconName: 'Add' },
-            subMenuProps: {
-                items: [
-                    {
-                        key: 'productItem',
-                        text: 'Product',
-                        iconProps: { iconName: 'Questionnaire' },
-                        ['data-automation-id']: 'newProduct',
-                        onClick: this.itemClicked.bind(this)
-                    },
-                    {
-                        key: 'calendarEvent',
-                        text: 'Calendar event',
-                        iconProps: { iconName: 'Calendar' },
-                        ['data-automation-id']: 'newEmailButton',
-                        onClick: this.itemClicked.bind(this)
-                    },
-                ],
-            }
-        }];
+        return [
+            {
+                key: 'newItems',
+                text: 'New',
+                cacheKey: 'myCacheKey', // changing this key will invalidate this item's cache
+                iconProps: { iconName: 'Add' },
+                subMenuProps: {
+                    items: [
+                        {
+                            key: 'productItem',
+                            text: 'Product',
+                            iconProps: { iconName: 'Questionnaire' },
+                            ['data-automation-id']: 'newProduct',
+                            onClick: this.itemClicked.bind(this)
+                        }
+                    ]
+                }
+            },
+            {
+                key: 'views',
+                text: 'Views',
+                cacheKey: 'myCacheKey', // changing this key will invalidate this item's cache
+                //iconProps: { iconName: 'Add' },
+                subMenuProps: {
+                    items: [
+                        {
+                            key: 'list',
+                            text: 'List',
+                            iconProps: { iconName: 'Questionnaire' },
+                            ['data-automation-id']: 'viewList',
+                            onClick: this.itemClicked.bind(this)
+                        },
+                        {
+                            key: 'rollup',
+                            text: 'Rollup',
+                            iconProps: { iconName: 'Questionnaire' },
+                            ['data-automation-id']: 'viewRollup',
+                            onClick: this.itemClicked.bind(this)
+                        }                        
+                    ]
+                }
+            }            
+        ];
       }
 
     public render(): React.ReactElement<IProductManagerCmdBarProps> {
