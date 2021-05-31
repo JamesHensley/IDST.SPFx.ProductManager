@@ -94,23 +94,27 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 fieldRef={'description'}
                                 onUpdated={this.fieldUpdated.bind(this)}
                             />
-
-                            <FormInputDate
-                                labelValue={'Request Start'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.requestDate}
-                                fieldRef={'requestDate'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
-                            <FormInputDate
-                                labelValue={'Expected Close'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.returnDateExpected}
-                                fieldRef={'returnDateExpected'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
-                            <Separator>
-                                <Label>Tasks and Attachments</Label>
-                            </Separator>
+                            <div className={styles.gridRow}>
+                                <div className={styles.gridCol6}>
+                                    <FormInputDate
+                                        labelValue={'Request Start'} editing={this.state.isEditing}
+                                        fieldValue={this.state.draftProduct.requestDate}
+                                        fieldRef={'requestDate'}
+                                        onUpdated={this.fieldUpdated.bind(this)}
+                                    />
+                                </div>
+                                <div className={styles.gridCol6}>
+                                    <FormInputDate
+                                        labelValue={'Expected Close'} editing={this.state.isEditing}
+                                        fieldValue={this.state.draftProduct.returnDateExpected}
+                                        fieldRef={'returnDateExpected'}
+                                        onUpdated={this.fieldUpdated.bind(this)}
+                                    />
+                                </div>
+                            </div>
+                            <Separator />
                             <AttachmentComponent AttachmentItems={this.state.draftProduct.attachedDocuments} />
+                            <Separator />
                             <TaskComponent
                                 TaskItems={this.state.draftProduct.tasks}
                                 onUpdated={this.fieldUpdated.bind(this)}

@@ -5,7 +5,6 @@ import { ISPService } from './ISPService';
 import { MapperService } from './MapperService';
 import { MockSPService } from './MockSPService';
 import { SPService } from './SPService';
-import { Faker } from './FakerService';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -64,6 +63,7 @@ export class RecordService {
         prod.newProduct = true;
         prod.status = ProductStatus.open;
         prod.title = "New Product";
+        prod.tasks = [];
         return prod;
     }
 }

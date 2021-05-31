@@ -22,11 +22,13 @@ export class FormInputDate extends React.Component<IFormInputProps, IFormInputDa
         this.buttonRef = React.createRef();
         this.state = { calendarVisible: false, draftValue: this.props.fieldValue }
     }
-    
+
     render(): React.ReactElement<IFormInputProps> {
+        //<div className={`${styles.gridRow} ${styles.padTop2}`}>
+        //<div className={`${styles.gridCol11} ${styles.fieldValue}`}>
         return(
-            <div className={`${styles.gridRow} ${styles.padTop2}`}>
-                <div className={`${styles.gridCol11} ${styles.fieldValue}`}>
+            <div className={`${styles.padTop2}`}>
+                <div className={`${styles.fieldValue}`}>
                     <Stack horizontal>
                         <Label>
                             {this.props.labelValue}

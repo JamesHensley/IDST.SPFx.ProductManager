@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ContextualMenu, ContextualMenuItemType, IContextualMenuItem } from '@fluentui/react/lib/ContextualMenu';
+import { IconButton } from '@fluentui/react';
 
 export interface IContextMenuProps {
     menuItems: Array<IContextualMenuItem>
@@ -13,9 +14,10 @@ export const ContextMenu: React.FunctionComponent<IContextMenuProps> = (props) =
         setShowContextualMenu(true);
     }, []);
     const onHideContextualMenu = React.useCallback(() => setShowContextualMenu(false), []);
-
+    //<IconButton></IconButton>
     return (
-        <a ref={linkRef} onClick={onShowContextualMenu} href="#">
+        <div>
+            <div ref={linkRef} onClick={onShowContextualMenu}>...</div>
             <ContextualMenu
                 items={props.menuItems}
                 hidden={!showContextualMenu}
@@ -23,6 +25,6 @@ export const ContextMenu: React.FunctionComponent<IContextMenuProps> = (props) =
                 onItemClick={onHideContextualMenu}
                 onDismiss={onHideContextualMenu}
             />
-        </a>
+        </div>
     );
 };

@@ -24,11 +24,12 @@ export class Faker {
     }
 
     private static CreateFakeTask(teamId: string): TaskModel {
-        const state = TaskState[Math.round(Math.random() * 2)];
+        const team = AppService.AppSettings.teams.reduce((t,n) => n.id == teamId ? n : t, null);
+        const state = ['pending', 'working', 'completed'][Math.round(Math.random() * 2)];
         const attachmentUrl = [ 'File1.txt', 'File2.txt', 'File3.txt', 'File4.txt', 'File5.txt' ][Math.round(Math.random() * 4)];
         const task: TaskModel = {
             taskedTeamId: teamId,
-            taskTeamName: 'Fake Team',
+            taskTeamName: team.name || 'No Team Name',
             taskDescription: 'Fake Tasking Desription',
             taskState: TaskState[state],
             taskGuid: uuidv4()
