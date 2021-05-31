@@ -9,14 +9,15 @@ export class Faker {
     private static _sentences: Array<string>;
 
     public static CreateFakeAttachment(itemGUID: string): SpListAttachment {
-        const attachmentUrl = [ 'File1.txt', 'File2.txt', 'File3.txt', 'File4.txt', 'File5.txt' ][Math.round(Math.random() * 4)];
+        const attachmentName = [ 'File1', 'File2', 'File3', 'File4', 'File5' ][Math.round(Math.random() * 4)];
+        const extn = ['docx', 'doc','ppt', 'pptx', 'xls', 'xlsx', 'txt', 'pdf', 'csv', 'json'][Math.round(Math.random() * 7)];
         const author: string = ['Jimmy', 'Johnny "Two Fingers"', 'Vince', 'Fat Tony', 'Bob'][Math.round(Math.random() * 4)];
         const attachment: SpListAttachment = {
             Author: { Name: author } as SPAuthor,
             Id: uuidv4(),
             Updated: new Date(),
             Title: `Attached Document ${Math.round(Math.random() * 300)}`,
-            Url: attachmentUrl,
+            Url: `${attachmentName}.${extn}`,
             Version: '1',
             LinkedProductGuid: itemGUID
         };
@@ -26,14 +27,12 @@ export class Faker {
     private static CreateFakeTask(teamId: string): TaskModel {
         const team = AppService.AppSettings.teams.reduce((t,n) => n.id == teamId ? n : t, null);
         const state = ['pending', 'working', 'completed'][Math.round(Math.random() * 2)];
-        const attachmentUrl = [ 'File1.txt', 'File2.txt', 'File3.txt', 'File4.txt', 'File5.txt' ][Math.round(Math.random() * 4)];
         const task: TaskModel = {
             taskedTeamId: teamId,
             taskTeamName: team.name || 'No Team Name',
             taskDescription: 'Fake Tasking Desription',
             taskState: TaskState[state],
             taskGuid: uuidv4()
-            //taskFiles: [attachmentUrl]
         };
         return task;
     }

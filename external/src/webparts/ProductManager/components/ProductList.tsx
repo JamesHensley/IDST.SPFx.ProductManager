@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ProductModel, ProductStatus } from '../../../models/ProductModel';
-import { DetailsList, DetailsListLayoutMode, IColumn, IconButton, mergeStyleSets, SelectionMode, TextField, TooltipHost } from '@fluentui/react';
+import { DetailsList, DetailsListLayoutMode, IColumn, IconButton, Label, mergeStyleSets, SelectionMode, TextField, TooltipHost } from '@fluentui/react';
 import { format } from 'date-fns';
 import AppService from '../../../services/AppService';
 import { RecordService } from '../../../services/RecordService';
@@ -46,7 +46,7 @@ const classNames = mergeStyleSets({
 const controlStyles = {
   root: {
     margin: '0 30px 20px 0',
-    maxWidth: '300px',
+    maxWidth: '500px',
   },
 };
 
@@ -86,10 +86,20 @@ export interface IDocument {
 export interface IProductListProps { allProducts: Array<ProductModel>, productClicked: (id: string) => void }
 export interface IProductListState { lastUpdate: number }
 
+export interface IListColumn {
+  key: string,
+  name: string,
+  fieldName: string,
+  isRowHeader: boolean,
+  isSorted: boolean,
+  isSortedDescending: boolean,
+  data: string,
+  colCount: number
+}
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
   private get allItems(): Array<IDocument> {
     return (this.props.allProducts || [])
-    .filter(i => ((`${i.title} ${i.description} ${i.productType}`).toLowerCase().indexOf(SortFilterSetting.FilterText) >= 0))
+    .filter(i => ((`${i.title} ${i.description} ${i.productType} ${i.tasks.reduce((t,n) => t + ' ' + n.taskTeamName, '').toLowerCase()}`).toLowerCase().indexOf(SortFilterSetting.FilterText) >= 0))
     .map(d => {
       return {
         key: d.guid,
@@ -109,72 +119,56 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     });
   };
 
-  private get allColumns(): Array<IColumn> {
+  private get allColumns(): Array<IListColumn> {
     return ([{
-      key: 'column0',
-      name: '',
-      fieldName: 'teamIcon',
-      minWidth: 20, maxWidth: 20,
-      isRowHeader: false,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'string',
-      isPadded: true,
-    },
-    {
       key: 'column1',
       name: 'Status',
       fieldName: 'productStatus',
-      minWidth: 100, maxWidth: 150,
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
       data: 'string',
-      isPadded: true,
+      colCount: 1
     },
     {
       key: 'column2',
       name: 'Title',
       fieldName: 'title',
-      minWidth: 200, maxWidth: 300,
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
       data: 'string',
-      isPadded: true,
+      colCount: 2
     },
     {
       key: 'column3',
       name: 'Description',
       fieldName: 'description',
-      minWidth: 200, maxWidth: 600,
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
       data: 'string',
-      isPadded: true,
+      colCount: 5
     },
     {
       key: 'column4',
       name: 'Open Date',
       fieldName: 'openDate',
-      minWidth: 100, maxWidth: 200,
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
       data: 'string',
-      isPadded: true,
+      colCount: 2
     },
     {
       key: 'column5',
       name: 'Expected Return',
       fieldName: 'expectedReturnDate',
-      minWidth: 100, maxWidth: 200,
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
       data: 'string',
-      isPadded: true,
+      colCount: 2
     }])
     .map(d => {
       // Handle the sorting icons
@@ -189,46 +183,38 @@ export default class ProductList extends React.Component<IProductListProps, IPro
       <div className={`${styles.productList} ${styles.grid}`}>
         <div className={styles.gridRow}>
           <div className={styles.gridCol12}>
-            <TextField label="Filter by name:" onChange={this.onChangeFilter} styles={controlStyles} value={SortFilterSetting.FilterText} />
+            <TextField label="Filter by title, description, product type or team name:" onChange={this.onChangeFilter} styles={controlStyles} value={SortFilterSetting.FilterText} />
           </div>
         </div>
-        <div className={styles.gridRow}>
-          <div className={styles.gridCol12}>
-            <table className={styles.listTable}>
-              <thead>
-                <tr>
-                  {this.allColumns.map(c => {
-                    const colStyle = (styleItems => Object.assign({}, ...styleItems))([{minWidth: c.minWidth}, {maxWidth: c.maxWidth}, {textAlign: 'left'}]);
-                    return (
-                      <th key={c.fieldName}
-                        className={styles.listColumnHeader}
-                        style={colStyle}
-                        onClick={this.onColumnClick.bind(this, c)}
-                      >
-                        {c.isRowHeader ?  c.name : ''}
-                        {c.isSorted && !c.isSortedDescending && <IconButton iconProps={{ iconName: 'SortUp' }} className={styles.appIcon} title='' ariaLabel='' />}
-                        {c.isSorted && c.isSortedDescending && <IconButton iconProps={{ iconName: 'SortDown' }} className={styles.appIcon} title='' ariaLabel='' />}
-                      </th>
-                    );
-                  })}
-                </tr>
-              </thead>
-              <tbody>
-                {this.allItems.map(r => {
-                  return (
-                    <tr key={r.key} onClick={this.itemClicked.bind(this, r)} className={styles.listDataRow}>
-                      {this.allColumns.map(c => {
-                        return (
-                          <td key={c.fieldName} className={styles.listDataCell}>{r[c.fieldName]}</td>
-                        )
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+
+        <div className={`${styles.gridRow} ${styles.listColumnHeader} ${styles.listDataRow}`}>
+          {this.allColumns.map(c => {
+            const clsName = `${styles.listDataCell} ${styles['gridCol' + c.colCount]}`;
+            return (
+              <Label key={c.fieldName}
+                className={clsName}
+                onClick={this.onColumnClick.bind(this, c)}
+              >
+                {c.isRowHeader ?  c.name : ''}
+                {c.isSorted && !c.isSortedDescending && <IconButton iconProps={{ iconName: 'SortUp' }} className={styles.appIcon} title='' ariaLabel='' />}
+                {c.isSorted && c.isSortedDescending && <IconButton iconProps={{ iconName: 'SortDown' }} className={styles.appIcon} title='' ariaLabel='' />}
+              </Label>
+            );
+          })}
         </div>
+        
+        {this.allItems.map(r => {
+          return (
+            <div className={`${styles.gridRow} ${styles.listDataRow}`} onClick={this.itemClicked.bind(this, r)}>
+              {this.allColumns.map(c => {
+                const clsName = `${styles.listDataCell} ${styles['gridCol' + c.colCount]}`;
+                return (
+                  <div key={c.fieldName} className={clsName}>{r[c.fieldName]}</div>
+                )
+              })}
+            </div>
+          );
+        })}
       </div>
     );
   }

@@ -25,8 +25,10 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
                     <Label className={styles.gridCol5} style={{fontSize: '.9rem' }}>Author</Label>
                 </div>
                 {(this.props.AttachmentItems || []).map(a => {
-                    const docIcon = getFileTypeIconProps({ extension: 'docx', size: 16, imageFileType: 'png' });
-                    console.log(docIcon);
+                    const docIcon = getFileTypeIconProps({
+                        extension: (a.Url.split('.').reverse()[0]),
+                        size: 16, imageFileType: 'png'
+                    });
                     return (
                         <div key={a.Id} className={this.row} onClick={this.attachmentClicked.bind(this, a)}>
                             <div className={styles.gridCol1}>

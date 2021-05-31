@@ -9,6 +9,7 @@ import { RecordService } from '../../../services/RecordService';
 
 import ProductManagerCmdBar from './ProductManagerCmdBar';
 import { ICommandBarItemProps } from '@fluentui/react';
+import RollupView from './RollupView';
 
 export interface IProductManagerProps { }
 
@@ -16,6 +17,7 @@ export interface IProductManagerState {
   panelOpen: boolean;
   currentProductId: string;
   allProducts: Array<ProductModel>;
+  view: string;
 }
 
 export default class ProductManager extends React.Component <IProductManagerProps, IProductManagerState> {
@@ -30,7 +32,8 @@ export default class ProductManager extends React.Component <IProductManagerProp
     this.state = {
       panelOpen: false,
       currentProductId: null,
-      allProducts: []
+      allProducts: [],
+      view: 'ProductList'
     };
 
     RecordService.GetProducts()
@@ -57,18 +60,17 @@ export default class ProductManager extends React.Component <IProductManagerProp
           </div>
           <div className={styles.gridRow}>
             <div className={styles.gridCol12}>
-              <div className={styles.grid}>
-                <div className={styles.gridRow}>
-                  <div className={styles.gridCol9}>
-                    <ProductList
-                      //Adding a KEY here with the current time lets us force the product list to redraw
-                      key={new Date().getTime()}
-                      allProducts={this.state.allProducts.slice()}
-                      productClicked={this.productClicked.bind(this)}
-                    />
-                  </div>
-                </div>
-              </div>
+              {this.state.view === 'ProductList' &&
+                <ProductList
+                  //Adding a KEY here with the current time lets us force the product list to redraw
+                  key={new Date().getTime()}
+                  allProducts={this.state.allProducts.slice()}
+                  productClicked={this.productClicked.bind(this)}
+                />
+              }
+              {this.state.view === 'RollUp' &&
+                <RollupView></RollupView>
+              }
             </div>
           </div>
         </div>
@@ -118,6 +120,14 @@ export default class ProductManager extends React.Component <IProductManagerProp
 
   private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
     console.log('ProductManager.cmdBarItemClicked: ', item);
+    switch(item['data-automation-id']) {
+      case 'viewRollup':
+        this.setState({ view: 'RollUp'});
+        break;
+      case 'viewList':
+        this.setState({ view: 'ProductList' });
+        break;
+    }
     return Promise.resolve();
   }
   //#endregion

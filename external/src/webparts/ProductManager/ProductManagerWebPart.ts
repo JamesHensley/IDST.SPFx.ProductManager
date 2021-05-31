@@ -12,6 +12,7 @@ import {
 } from '@microsoft/sp-property-pane';
 
 import { initializeIcons } from '@fluentui/react/lib/Icons';
+import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 
 import ProductManager, { IProductManagerProps } from './components/ProductManager';
 import AppService from '../../services/AppService';
@@ -50,6 +51,8 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     (window as any).disableBeaconLogToConsole = true;
 
     initializeIcons();
+    initializeFileTypeIcons();
+
     AppService.Init(this);
 
     await this.getMockAppSettings();

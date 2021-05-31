@@ -1,5 +1,7 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 
+
+
 div[class*='homePageContent'] {
   max-width: none!important;
 }
@@ -38,11 +40,15 @@ div[class*="pageContent"] {
 }
 
 .productManager {
+  width: 100%;
+  
   .teamPanel {
     cursor: pointer;
   }
 
   .productList {
+
+
     .stickyListHeader {
       position: sticky;
       top: -10px;
@@ -56,6 +62,7 @@ div[class*="pageContent"] {
 
     .listColumnHeader {
       cursor: pointer;
+      white-space: nowrap;
     }
     
     .listDataRow {
@@ -70,6 +77,12 @@ div[class*="pageContent"] {
     .listDataCell {
       padding-top: 5px;
       padding-bottom: 5px;
+      text-overflow: ellipsis;
+      overflow-x: hidden;
+      white-space: nowrap;
+      /*
+
+      */
     }
 
     .productDetailPane {
