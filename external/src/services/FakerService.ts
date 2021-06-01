@@ -32,7 +32,8 @@ export class Faker {
             taskTeamName: team.name || 'No Team Name',
             taskDescription: 'Fake Tasking Desription',
             taskState: TaskState[state],
-            taskGuid: uuidv4()
+            taskGuid: uuidv4(),
+            taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 7)).toJSON()
         };
         return task;
     }

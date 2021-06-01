@@ -10,4 +10,5 @@ export class TaskModel {
     taskTeamName: string;
     taskDescription: string;
     taskState: TaskState;
+    taskSuspense: string;
 }

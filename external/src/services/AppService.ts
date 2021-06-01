@@ -30,12 +30,12 @@ export default class AppService {
     //#region Emitters
     public static RegisterProductListener(callback: ()=> Promise<void>): void {
         this._productListeners.push(callback);
-        console.log('RegisterProductListener: ', this._productListeners);
+        // console.log('RegisterProductListener: ', this._productListeners);
     }
 
     public static UnRegisterProductListener(callback: ()=> void): void {
         this._productListeners = this._productListeners.filter(f => f != callback);
-        console.log('UnRegisterProductListener: ', this._productListeners);
+        // console.log('UnRegisterProductListener: ', this._productListeners);
     }
 
     public static ProductChanged(): void {
@@ -44,12 +44,12 @@ export default class AppService {
 
     public static RegisterCmdBarListener(p: ICmdBarListenerProps): void {
         this._cmdBarListeners.push(p);
-        console.log('RegisterCmdBarListener: ', this._cmdBarListeners);
+        // console.log('RegisterCmdBarListener: ', this._cmdBarListeners);
     }
 
     public static UnRegisterCmdBarListener(callback: ()=> Promise<void>): void {
         this._cmdBarListeners = this._cmdBarListeners.filter(f => f.callback!= callback);
-        console.log('UnRegisterCmdBarListener: ', this._cmdBarListeners);
+        // console.log('UnRegisterCmdBarListener: ', this._cmdBarListeners);
     }
 
     public static MenuItemClicked(item: ICommandBarItemProps): void {

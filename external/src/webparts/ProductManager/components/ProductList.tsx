@@ -205,7 +205,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         
         {this.allItems.map(r => {
           return (
-            <div className={`${styles.gridRow} ${styles.listDataRow}`} onClick={this.itemClicked.bind(this, r)}>
+            <div className={`${styles.gridRow} ${styles.listDataRow}`} onClick={this.itemClicked.bind(this, r)} key={r.key}>
               {this.allColumns.map(c => {
                 const clsName = `${styles.listDataCell} ${styles['gridCol' + c.colCount]}`;
                 return (

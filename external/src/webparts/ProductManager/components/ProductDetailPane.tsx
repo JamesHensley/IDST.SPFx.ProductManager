@@ -13,6 +13,7 @@ import { FormInputText } from './FormComponents/FormInputText';
 import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
 import { TaskComponent } from './FormComponents/TaskComponent';
 import { AttachmentComponent } from './FormComponents/AttachmentComponent';
+import { TaskModel } from '../../../models/TaskModel';
 
 
 export interface IProductDetailPaneProps {
@@ -62,6 +63,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     public render(): React.ReactElement<IProductDetailPaneProps> {
+        console.log('ProductDetailPane.render: ', this.props, this.state);
         return (
             <Panel
                 className={styles.productDetailPane}
@@ -117,7 +119,9 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                             <Separator />
                             <TaskComponent
                                 TaskItems={this.state.draftProduct.tasks}
+                                onTaskAdded={this.taskAdded.bind(this)}
                                 onUpdated={this.fieldUpdated.bind(this)}
+                                isEditing={this.state.isEditing}
                             />
                         </div>
                     </FocusTrapZone>
@@ -151,6 +155,12 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         const temp = JSON.parse(JSON.stringify(this.state.draftProduct));
         temp[fieldRef] = newVal;
         this.setState({ draftProduct: temp});
+    }
+
+    private taskAdded(newTask: TaskModel): void {
+        const newDraft: ProductModel = JSON.parse(JSON.stringify(this.state.draftProduct));
+        newDraft.tasks = [].concat.apply(this.state.draftProduct.tasks, [newTask]);
+        this.setState({ draftProduct: newDraft});
     }
 
     private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {

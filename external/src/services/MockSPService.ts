@@ -11,7 +11,7 @@ export class MockSPService implements ISPService {
             for(let x = 0; x<125; x++) {
                 this._mockedProductItems.push(Faker.CreateFakeItem())
             }
-            //console.log(JSON.stringify(this._mockedProductItems, null, '    '));
+            // console.log(JSON.stringify(this._mockedProductItems, null, '    '));
         }
         return this._mockedProductItems;
     };
@@ -25,7 +25,7 @@ export class MockSPService implements ISPService {
                     this._mockedAttachmentItems.push(Faker.CreateFakeAttachment(mP.GUID));
                 }
             });
-            console.log(JSON.stringify(this._mockedAttachmentItems, null, '   '));
+            // console.log(JSON.stringify(this._mockedAttachmentItems, null, '   '));
         }
 
         return this._mockedAttachmentItems;
