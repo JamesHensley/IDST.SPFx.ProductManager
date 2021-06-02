@@ -7,6 +7,7 @@ import { MockSPService } from './MockSPService';
 import { SPService } from './SPService';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { v4 as uuidv4 } from 'uuid';
+import { NotificationType } from './NotificationService';
 
 export class RecordService {
     private static _prodService = new SPService();
@@ -35,15 +36,23 @@ export class RecordService {
         return spItems;
     }
 
-    public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<void> {
+    public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<string> {
         const newItem = MapperService.MapProductToItem(newProduct);
         if (newProduct.newProduct) {
-            await this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem)
-            .then(newItem => AppService.ProductChanged());
+            return await this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem)
+            .then(newItem => {
+                AppService.ProductChanged(NotificationType.Create, newProduct.title);
+                return Promise.resolve('Created');
+            })
+            .catch(e => Promise.reject(e));
         }
         else {
-            await this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
-            .then(newItem => AppService.ProductChanged());
+            return await this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
+            .then(newItem => {
+                AppService.ProductChanged(NotificationType.Update, newProduct.title);
+                return Promise.resolve('Updated')
+            })
+            .catch(e => Promise.reject(e));
         }
     }
 

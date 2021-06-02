@@ -14,6 +14,7 @@ import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
 import { TaskComponent } from './FormComponents/TaskComponent';
 import { AttachmentComponent } from './FormComponents/AttachmentComponent';
 import { TaskModel } from '../../../models/TaskModel';
+import { MailService } from '../../../services/MailService';
 
 
 export interface IProductDetailPaneProps {
@@ -67,7 +68,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         return (
             <Panel
                 className={styles.productDetailPane}
-                isLightDismiss
+                isLightDismiss={!this.state.isEditing}
                 isHiddenOnDismiss={false}
                 headerText={this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
                 isOpen={this.state.isVisible}
@@ -77,54 +78,52 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             >
                 {
                     this.state.isVisible && this.state.draftProduct &&
-                    <FocusTrapZone disabled={!this.state.isEditing}>
-                        <div className={styles.grid + ' ' + styles.formStyles}>
-                            <Stack horizontal tokens={{childrenGap: 10}}>
-                                <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
-                                {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
-                                {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
-                            </Stack>
-                            <FormInputText
-                                labelValue={'Title'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.title}
-                                fieldRef={'title'}
+                    <div className={styles.grid + ' ' + styles.formStyles}>
+                    <Stack horizontal tokens={{childrenGap: 10}}>
+                        <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
+                        {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
+                        {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
+                    </Stack>
+                    <FormInputText
+                        labelValue={'Title'} editing={this.state.isEditing}
+                        fieldValue={this.state.draftProduct.title}
+                        fieldRef={'title'}
+                        onUpdated={this.fieldUpdated.bind(this)}
+                    />                            
+                    <FormInputText
+                        labelValue={'Description'} editing={this.state.isEditing}
+                        fieldValue={this.state.draftProduct.description} editLines={4}
+                        fieldRef={'description'}
+                        onUpdated={this.fieldUpdated.bind(this)}
+                    />
+                    <div className={styles.gridRow}>
+                        <div className={styles.gridCol6}>
+                            <FormInputDate
+                                labelValue={'Start Date'} editing={this.state.isEditing}
+                                fieldValue={this.state.draftProduct.requestDate}
+                                fieldRef={'requestDate'}
                                 onUpdated={this.fieldUpdated.bind(this)}
-                            />                            
-                            <FormInputText
-                                labelValue={'Description'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.description} editLines={4}
-                                fieldRef={'description'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
-                            <div className={styles.gridRow}>
-                                <div className={styles.gridCol6}>
-                                    <FormInputDate
-                                        labelValue={'Request Start'} editing={this.state.isEditing}
-                                        fieldValue={this.state.draftProduct.requestDate}
-                                        fieldRef={'requestDate'}
-                                        onUpdated={this.fieldUpdated.bind(this)}
-                                    />
-                                </div>
-                                <div className={styles.gridCol6}>
-                                    <FormInputDate
-                                        labelValue={'Expected Close'} editing={this.state.isEditing}
-                                        fieldValue={this.state.draftProduct.returnDateExpected}
-                                        fieldRef={'returnDateExpected'}
-                                        onUpdated={this.fieldUpdated.bind(this)}
-                                    />
-                                </div>
-                            </div>
-                            <Separator />
-                            <AttachmentComponent AttachmentItems={this.state.draftProduct.attachedDocuments} />
-                            <Separator />
-                            <TaskComponent
-                                TaskItems={this.state.draftProduct.tasks}
-                                onTaskAdded={this.taskAdded.bind(this)}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                                isEditing={this.state.isEditing}
                             />
                         </div>
-                    </FocusTrapZone>
+                        <div className={styles.gridCol6}>
+                            <FormInputDate
+                                labelValue={'Suspense Date'} editing={this.state.isEditing}
+                                fieldValue={this.state.draftProduct.returnDateExpected}
+                                fieldRef={'returnDateExpected'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                            />
+                        </div>
+                    </div>
+                    <Separator />
+                    <AttachmentComponent AttachmentItems={this.state.draftProduct.attachedDocuments} />
+                    <Separator />
+                    <TaskComponent
+                        TaskItems={this.state.draftProduct.tasks}
+                        onTaskAdded={this.taskAdded.bind(this)}
+                        onUpdated={this.fieldUpdated.bind(this)}
+                        isEditing={this.state.isEditing}
+                    />
+                </div>
                 }
             </Panel>
         );
@@ -140,9 +139,12 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
     private saveRFI(): void {
         RecordService.UpdateProductByGuid(this.state.draftProduct.guid, this.state.draftProduct)
-        .then(() => {
-            console.log('Updated: ', this.state.draftProduct.guid);
+        .then(result => {
             this.toggleEditMode();
+
+            const teamIds = (this.state.draftProduct.tasks || []).map(d => d.taskedTeamId);
+            const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
+            MailService.SendEmail('Update', teamEmails, 'A product has been ' + result);
         })
         .catch(e => console.log('Update failed for: ', this.state.draftProduct))
     }

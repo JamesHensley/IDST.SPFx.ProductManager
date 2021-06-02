@@ -1,6 +1,9 @@
 import { SpListAttachment, SpProductItem } from '../models/SpListItem';
 import { ISPService } from './ISPService';
 
+import { SPHttpClient, SPHttpClientConfiguration } from '@microsoft/sp-http';
+import { IODataList, IODataListItem, IODataWeb } from '@microsoft/sp-odata-types';
+
 export class SPService implements ISPService {
     GetAttachmentItems(listUrl: string): Promise<SpListAttachment[]> {
         throw new Error('Method not implemented.');

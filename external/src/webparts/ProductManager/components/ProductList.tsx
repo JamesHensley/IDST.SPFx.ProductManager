@@ -1,10 +1,12 @@
 import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ProductModel, ProductStatus } from '../../../models/ProductModel';
-import { DetailsList, DetailsListLayoutMode, IColumn, IconButton, Label, mergeStyleSets, SelectionMode, TextField, TooltipHost } from '@fluentui/react';
+import { DetailsList, DetailsListLayoutMode, Facepile, IColumn, IconButton, IFacepilePersona, Label, mergeStyleSets, SelectionMode, Stack, TextField, TooltipHost } from '@fluentui/react';
 import { format } from 'date-fns';
 import AppService from '../../../services/AppService';
 import { RecordService } from '../../../services/RecordService';
+import { TaskModel } from '../../../models/TaskModel';
+import { TeamModel } from '../../../models/TeamModel';
 
 const classNames = mergeStyleSets({
   fileIconHeaderIcon: {
@@ -78,6 +80,7 @@ export interface IDocument {
   openDate: string;
   expectedReturnDate: string;
   closeDate: string;
+  tasks: Array<TaskModel>;
   //modifiedBy: string;
   //dateModified: string;
   //dateModifiedValue: number;
@@ -111,7 +114,8 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         productStatus: d.status,
         openDate: format(new Date(d.requestDate), AppService.DateFormatValue),
         expectedReturnDate: format(new Date(d.returnDateExpected), AppService.DateFormatValue),
-        closeDate: d.returnDateActual || ''
+        closeDate: d.returnDateActual || '',
+        tasks: d.tasks || []
       } as IDocument;
     })
     .sort((a,b) => {
@@ -120,56 +124,68 @@ export default class ProductList extends React.Component<IProductListProps, IPro
   };
 
   private get allColumns(): Array<IListColumn> {
-    return ([{
-      key: 'column1',
-      name: 'Status',
-      fieldName: 'productStatus',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'string',
-      colCount: 1
-    },
-    {
-      key: 'column2',
-      name: 'Title',
-      fieldName: 'title',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'string',
-      colCount: 2
-    },
-    {
-      key: 'column3',
-      name: 'Description',
-      fieldName: 'description',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'string',
-      colCount: 5
-    },
-    {
-      key: 'column4',
-      name: 'Open Date',
-      fieldName: 'openDate',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'string',
-      colCount: 2
-    },
-    {
-      key: 'column5',
-      name: 'Expected Return',
-      fieldName: 'expectedReturnDate',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'string',
-      colCount: 2
-    }])
+    return ([
+      {
+        key: 'column1',
+        name: 'Status',
+        fieldName: 'productStatus',
+        isRowHeader: true,
+        isSorted: false,
+        isSortedDescending: false,
+        data: 'string',
+        colCount: 1
+      },
+      {
+        key: 'column2',
+        name: 'Title',
+        fieldName: 'title',
+        isRowHeader: true,
+        isSorted: false,
+        isSortedDescending: false,
+        data: 'string',
+        colCount: 2
+      },
+      {
+        key: 'column3',
+        name: 'Description',
+        fieldName: 'description',
+        isRowHeader: true,
+        isSorted: false,
+        isSortedDescending: false,
+        data: 'string',
+        colCount: 4
+      },
+      {
+        key: 'column4',
+        name: 'Open Date',
+        fieldName: 'openDate',
+        isRowHeader: true,
+        isSorted: false,
+        isSortedDescending: false,
+        data: 'string',
+        colCount: 2
+      },
+      {
+        key: 'column5',
+        name: 'Expected Return',
+        fieldName: 'expectedReturnDate',
+        isRowHeader: true,
+        isSorted: false,
+        isSortedDescending: false,
+        data: 'string',
+        colCount: 2
+      },
+      {
+        key: 'column6',
+        name: 'Tasked Teams',
+        fieldName: 'tasks',
+        isRowHeader: true,
+        isSorted: false,
+        isSortedDescending: false,
+        data: 'object',
+        colCount: 1
+      }
+    ])
     .map(d => {
       // Handle the sorting icons
       d.isSorted = SortFilterSetting.SortField == d.fieldName;
@@ -208,9 +224,32 @@ export default class ProductList extends React.Component<IProductListProps, IPro
             <div className={`${styles.gridRow} ${styles.listDataRow}`} onClick={this.itemClicked.bind(this, r)} key={r.key}>
               {this.allColumns.map(c => {
                 const clsName = `${styles.listDataCell} ${styles['gridCol' + c.colCount]}`;
-                return (
-                  <div key={c.fieldName} className={clsName}>{r[c.fieldName]}</div>
-                )
+                if(c.data == 'string') {
+                  return (
+                    <div key={c.fieldName} className={clsName}>{r[c.fieldName]}</div>
+                  );
+                }
+                else {
+                  if(c.fieldName == 'tasks') {
+                    const tasks: Array<string> = (r[c.fieldName] as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
+                    return (
+                    <div key={c.fieldName} className={clsName}>
+                      <Stack horizontal>
+                      {
+                        AppService.AppSettings.teams.reduce((t,n) => tasks.indexOf(n.id) >= 0 ? t.concat(n) : t, [])
+                        .map(d => {
+                          return (
+                            <div className={styles.personaCoin} style={{display: 'flex', backgroundColor: 'rgb(142, 86, 256)' }}>
+                              <span className={styles.personaText}>{d.shortName}</span>
+                            </div>
+                          );
+                        })
+                      }
+                      </Stack>
+                    </div>
+                    );
+                  }
+                }
               })}
             </div>
           );

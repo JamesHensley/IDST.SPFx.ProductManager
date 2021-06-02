@@ -7,6 +7,7 @@ import * as styles from '../ProductManager.module.scss';
 
 import { TaskModel, TaskState } from '../../../../models/TaskModel';
 import { FormInputDate } from './FormInputDate';
+import { FormInputText } from './FormInputText';
 
 export interface ITeamTaskComponentPaneProps {
     committedTask: TaskModel;
@@ -49,6 +50,14 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
                                 {this.props.isEditing && <DefaultButton onClick={this.updateRecord.bind(this)} disabled={!this.props.isEditing}>Save</DefaultButton>}
                                 {this.props.isEditing && <DefaultButton onClick={this.cancelUpdate.bind(this)} disabled={!this.props.isEditing}>Cancel</DefaultButton>}
                             </Stack>
+
+                            <FormInputText
+                                labelValue={'Task Description'}
+                                fieldValue={this.state.draftTask.taskDescription}
+                                fieldRef={'taskDescription'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                                editing={this.props.isEditing}
+                            />
                             <FormInputDate
                                 labelValue={'Suspense Date'}
                                 fieldValue={this.state.draftTask.taskSuspense}

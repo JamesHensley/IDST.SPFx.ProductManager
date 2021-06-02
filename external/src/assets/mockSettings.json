@@ -1,5 +1,6 @@
 {
     "description": "Product Manager",
+    "emailSenderName": "JISE Product Manager Tool",
     "isDebugging": true,
     "productListUrl": "/dist/mockProductList.json",
     "documentListUrl": "/dist/mockDocumentList.json",
@@ -12,7 +13,9 @@
                 { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": 3 },
                 { "spId": "47dc2f4da49d", "name": "Person 2", "email": "person2@email.com", "role": 3 },
                 { "spId": "8f68befdbf8c", "name": "Person 3", "email": "person3@email.com", "role": 3 }
-            ]
+            ],
+            "active": true,
+            "shortName": "T1"
         },
         {
             "id": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
@@ -22,7 +25,9 @@
                 { "spId": "0cfd1d22797b", "name": "Person 4", "email": "person4@email.com", "role": 3 },
                 { "spId": "970f0495d8b6", "name": "Person 5", "email": "person5@email.com", "role": 3 },
                 { "spId": "9face56f210c", "name": "Person 6", "email": "person6@email.com", "role": 3 }
-            ]
+            ],
+            "active": true,
+            "shortName": "T2"
         },
         {
             "id": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
@@ -32,7 +37,9 @@
                 { "spId": "b4dacb1080c7", "name": "Person 7", "email": "person7@email.com", "role": 3 },
                 { "spId": "f9ee1234acbd", "name": "Person 8", "email": "person8@email.com", "role": 3 },
                 { "spId": "90073312311f", "name": "Person 9", "email": "person9@email.com", "role": 3 }
-            ]
+            ],
+            "active": true,
+            "shortName": "T3"
         }
     ]
 }

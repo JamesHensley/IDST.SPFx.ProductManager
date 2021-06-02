@@ -2,6 +2,7 @@ import { ICommandBarItemProps } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { ProductModel } from '../models/ProductModel';
 import ProductManagerWebPart, { IProductManagerWebPartProps } from '../webparts/ProductManager/ProductManagerWebPart';
+import { NotificationService, NotificationType } from './NotificationService';
 
 export interface ICmdBarListenerProps {
     callback: ()=>Promise<void>,
@@ -38,8 +39,9 @@ export default class AppService {
         // console.log('UnRegisterProductListener: ', this._productListeners);
     }
 
-    public static ProductChanged(): void {
+    public static ProductChanged(type: NotificationType, msg: string): void {
         this._productListeners.forEach(l => l.call(l));
+        NotificationService.Notify(type, msg);
     }
 
     public static RegisterCmdBarListener(p: ICmdBarListenerProps): void {

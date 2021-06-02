@@ -6,4 +6,5 @@ export class TeamModel {
     description: string;
     members: Array<TeamMemberModel>;
     active: boolean;
+    shortName: string;
 }

@@ -14,12 +14,13 @@ import {
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 
-import ProductManager, { IProductManagerProps } from './components/ProductManager';
+import PageComponent, { IPageComponentProps } from './components/PageComponent';
 import AppService from '../../services/AppService';
 import { TeamModel } from '../../models/TeamModel';
 import { TeamMemberModel } from '../../models/PeopleModel';
 
 import PnPTelemetry from '@pnp/telemetry-js';
+import { ProductManager } from './components/ProductManager';
 
 export interface IProductManagerWebPartProps {
   description: string;
@@ -27,6 +28,7 @@ export interface IProductManagerWebPartProps {
   productListUrl: string;
   documentListUrl: string;
   teams: Array<TeamModel>;
+  emailSenderName: string;
 }
 
 
@@ -34,7 +36,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   private mockSettings: IProductManagerWebPartProps;
 
   public render(): void {
-    const element: React.ReactElement<IProductManagerProps> = React.createElement(
+    const element: React.ReactElement<IPageComponentProps> = React.createElement(
       ProductManager, { }
     );
 

@@ -48,7 +48,6 @@ div[class*="pageContent"] {
 
   .productList {
 
-
     .stickyListHeader {
       position: sticky;
       top: -10px;
@@ -80,9 +79,16 @@ div[class*="pageContent"] {
       text-overflow: ellipsis;
       overflow-x: hidden;
       white-space: nowrap;
-      /*
 
-      */
+      .personaCoin {
+        border-radius: 50%;
+        height: 32px;
+        width: 32px;
+
+        .personaText {
+          font-size: 14px;
+        }
+      }
     }
 
     .productDetailPane {
