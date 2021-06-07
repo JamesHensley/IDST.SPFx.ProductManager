@@ -100,9 +100,11 @@ export interface IListColumn {
   colCount: number
 }
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
+
+
   private get allItems(): Array<IDocument> {
     return (this.props.allProducts || [])
-    .filter(i => ((`${i.title} ${i.description} ${i.productType} ${i.tasks.reduce((t,n) => t + ' ' + n.taskTeamName, '').toLowerCase()}`).toLowerCase().indexOf(SortFilterSetting.FilterText) >= 0))
+    .filter(i => (i.filterString.toLowerCase().indexOf(SortFilterSetting.FilterText) >= 0))
     .map(d => {
       return {
         key: d.guid,
@@ -232,21 +234,10 @@ export default class ProductList extends React.Component<IProductListProps, IPro
                 else {
                   if(c.fieldName == 'tasks') {
                     const tasks: Array<string> = (r[c.fieldName] as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
+                    const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.id) >= 0 ? t.concat(n) : t, [])
+                      .map(d => { return { imageInitials: d.shortName, personaName: d.name } as IFacepilePersona });
                     return (
-                    <div key={c.fieldName} className={clsName}>
-                      <Stack horizontal>
-                      {
-                        AppService.AppSettings.teams.reduce((t,n) => tasks.indexOf(n.id) >= 0 ? t.concat(n) : t, [])
-                        .map(d => {
-                          return (
-                            <div className={styles.personaCoin} style={{display: 'flex', backgroundColor: 'rgb(142, 86, 256)' }}>
-                              <span className={styles.personaText}>{d.shortName}</span>
-                            </div>
-                          );
-                        })
-                      }
-                      </Stack>
-                    </div>
+                      <div key={c.fieldName} className={clsName} data-fieldname={c.fieldName}><Facepile personas={personas} /></div>
                     );
                   }
                 }
@@ -258,7 +249,8 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     );
   }
 
-  private onColumnClick = (column: IColumn): void => {
+  private onColumnClick = (column: IColumn, ev: Event): void => {
+    ev.preventDefault();
     SortFilterSetting.SortField = column.fieldName;
     SortFilterSetting.SortDir = SortFilterSetting.SortDir * -1;
     this.setState({lastUpdate: new Date().getTime()});

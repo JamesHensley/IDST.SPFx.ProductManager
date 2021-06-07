@@ -8,6 +8,9 @@ import { SPService } from './SPService';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { v4 as uuidv4 } from 'uuid';
 import { NotificationType } from './NotificationService';
+import { ProductTypeModel } from '../models/ProductTypeModel';
+import { task } from 'gulp';
+import { TaskModel, TaskState } from '../models/TaskModel';
 
 export class RecordService {
     private static _prodService = new SPService();
@@ -64,7 +67,7 @@ export class RecordService {
     /**
      * Creates a new empty product model
      */
-    public static GetNewProductModel(): ProductModel {
+    public static GetNewProductModel(productType?: string): ProductModel {
         const prod = new ProductModel();
         prod.guid = uuidv4();
         prod.requestDate = new Date().toJSON();
@@ -72,7 +75,28 @@ export class RecordService {
         prod.newProduct = true;
         prod.status = ProductStatus.open;
         prod.title = "New Product";
+        prod.description = "";
         prod.tasks = [];
+        if(productType) {
+            const temp = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productType ? n : t, undefined);
+            if(temp) {
+                prod.tasks = temp.defaultTeamTasks.map(d => {
+                    return {
+                        taskedTeamId: d.teamId,
+                        taskDescription: d.taskDescription,
+                        taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDays)).toJSON(),
+                        taskState: TaskState.pending
+                    } as TaskModel
+                });
+                prod.productType = temp.typeId;
+                prod.title = `NEW ${temp.typeName}`;
+                prod.returnDateExpected = new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * temp.defaultSuspenseDays)).toJSON();
+            }
+        }
+        prod.filterString = `${prod.title} ${prod.description} ${prod.productType}`;
+        const taskedTeams = prod.tasks.map(d => d.taskedTeamId)
+        prod.filterString += AppService.AppSettings.teams.reduce((t,n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
+
         return prod;
     }
 }

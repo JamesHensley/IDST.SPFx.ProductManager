@@ -1,6 +1,9 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 
 
+div[class*='ms-Persona-details'] {
+  display: none;
+}
 
 div[class*='homePageContent'] {
   max-width: none!important;

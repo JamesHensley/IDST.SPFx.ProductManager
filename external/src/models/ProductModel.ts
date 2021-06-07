@@ -22,4 +22,6 @@ export class ProductModel {
     public attachedDocuments: Array<AttachmentModel>;
     public productType: string;
     public newProduct: boolean;
+
+    public filterString: string;
 }

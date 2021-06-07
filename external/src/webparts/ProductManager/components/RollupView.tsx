@@ -8,8 +8,8 @@ export interface IRollupViewProps {}
 export default class RollupView extends React.Component <IRollupViewProps, {}> {
     public render(): React.ReactElement<IRollupViewProps> {
         return (
-            <Stack horizontalAlign="center" verticalAlign="center" >
-                <Label style={{fontSize: '2rem'}}>Rollup view is not yet ready</Label>
+            <Stack horizontalAlign='center' verticalAlign='center' >
+                <Label style={ {fontSize: '2rem'} }>Rollup view is not yet ready</Label>
             </Stack>
         );
     }

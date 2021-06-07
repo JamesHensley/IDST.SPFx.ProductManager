@@ -26,11 +26,10 @@ export class Faker {
 
     private static CreateFakeTask(teamId: string): TaskModel {
         const team = AppService.AppSettings.teams.reduce((t,n) => n.id == teamId ? n : t, null);
-        const state = ['pending', 'working', 'completed'][Math.round(Math.random() * 2)];
+        const state = ['pending', 'working', 'complete'][Math.round(Math.random() * 2)];
         const task: TaskModel = {
             taskedTeamId: teamId,
-            taskTeamName: team.name || 'No Team Name',
-            taskDescription: 'Fake Tasking Desription',
+            taskDescription: 'Fake Tasking Description',
             taskState: TaskState[state],
             taskGuid: uuidv4(),
             taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 7)).toJSON()
@@ -63,7 +62,7 @@ export class Faker {
             Requestor: 'Some Requestor',
             AssignedTeamData: JSON.stringify(tasks),
             ProductStatus: ['open', 'closed', 'canceled'][Math.round(Math.random() * 2)],
-            ProductType: ['ProdType 1', 'ProdType 2', 'ProdType 3'][Math.round(Math.random() * 2)]
+            ProductType: (AppService.AppSettings.productTypes[Math.round(Math.random() * (AppService.AppSettings.productTypes.length - 1))]).typeId
         };
         item.ProductStatus == 'Closed' ? new Date(new Date(item.RequestDate).getTime() + (3 * 24 * 60 * 60 * 1000)).toJSON() : null;
         return item;

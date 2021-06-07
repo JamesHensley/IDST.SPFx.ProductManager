@@ -23,13 +23,13 @@ export default class ToasterComponent extends React.Component<IToasterComponentP
 
     private notificationFired(msg: string): void { toast.info(msg); }
 
-    render() {
+    render(): JSX.Element {
         return <ToastContainer
             position={'top-left'}
             autoClose={7000}
             hideProgressBar={false}
             newestOnTop={false}
-            style={{zIndex: 1000001}}
+            style={ {zIndex: 1000001} }
         />;
     }
 }

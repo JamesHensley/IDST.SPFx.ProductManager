@@ -7,6 +7,7 @@ import * as styles from '../ProductManager.module.scss';
 
 import { TaskModel, TaskState } from '../../../../models/TaskModel';
 import { TeamTaskComponentPane } from './TeamTaskComponentPane';
+import AppService from '../../../../services/AppService';
 
 export interface ITeamTaskComponentProps {
     taskUpdated: (newTask: TaskModel) => void;
@@ -37,7 +38,7 @@ export class TeamTaskComponent extends React.Component<ITeamTaskComponentProps, 
                 }
                 <div className={styles.gridCol1}></div>
                 <div className={styles.gridCol2}>{this.props.task.taskState}</div>
-                <div className={styles.gridCol2}>{this.props.task.taskTeamName}</div>
+                <div className={styles.gridCol2}>{AppService.AppSettings.teams.reduce((t,n) => n.id == this.props.task.taskedTeamId ? n.name : t, '')}</div>
                 <div className={styles.gridCol7}>{this.props.task.taskDescription}</div>
             </div>
         );

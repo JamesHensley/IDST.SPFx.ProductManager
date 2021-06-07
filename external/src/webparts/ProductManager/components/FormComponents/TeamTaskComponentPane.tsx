@@ -8,6 +8,9 @@ import * as styles from '../ProductManager.module.scss';
 import { TaskModel, TaskState } from '../../../../models/TaskModel';
 import { FormInputDate } from './FormInputDate';
 import { FormInputText } from './FormInputText';
+import { FormInputDropDown } from './FormInputDropDown';
+import AppService from '../../../../services/AppService';
+import { kvp } from './IFormInputProps';
 
 export interface ITeamTaskComponentPaneProps {
     committedTask: TaskModel;
@@ -37,7 +40,7 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
                 className={styles.productDetailPane}
                 isLightDismiss={!this.props.isEditing}
                 isHiddenOnDismiss={false}
-                headerText={this.state.draftTask ? `${this.state.draftTask.taskTeamName}` : ''}
+                headerText={this.state.draftTask ? `${AppService.AppSettings.teams.reduce((t,n) => n.id == this.state.draftTask.taskedTeamId ? n.name : t, '')}` : ''}
                 isOpen={true}
                 onDismiss={this.togglePanelVisibility.bind(this)}
                 closeButtonAriaLabel='Close'
@@ -49,6 +52,33 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
                             <Stack horizontal tokens={{childrenGap: 10}}>
                                 {this.props.isEditing && <DefaultButton onClick={this.updateRecord.bind(this)} disabled={!this.props.isEditing}>Save</DefaultButton>}
                                 {this.props.isEditing && <DefaultButton onClick={this.cancelUpdate.bind(this)} disabled={!this.props.isEditing}>Cancel</DefaultButton>}
+                            </Stack>
+
+                            <Stack horizontal tokens={{childrenGap: 10}}>
+                                <Stack.Item grow={1}>
+                                    <FormInputDropDown
+                                        labelValue={'Tasked Team'}
+                                        fieldValue={this.state.draftTask.taskedTeamId}
+                                        fieldRef={'taskedTeamId'}
+                                        onUpdated={this.fieldUpdated.bind(this)}
+                                        editing={this.props.isEditing}
+                                        options={AppService.AppSettings.teams.map(d => { return { key: d.id, value: d.name } as kvp })}
+                                    />
+                                </Stack.Item>
+                                <Stack.Item grow={1}>
+                                    <FormInputDropDown
+                                        labelValue={'Task Status'}
+                                        fieldValue={this.state.draftTask.taskState}
+                                        fieldRef={'taskState'}
+                                        onUpdated={this.fieldUpdated.bind(this)}
+                                        editing={this.props.isEditing}
+                                        options={ [
+                                            { key: TaskState.pending, value: 'Pending'} as kvp,
+                                            { key: TaskState.working, value: 'Working'} as kvp,
+                                            { key: TaskState.complete, value: 'Complete'} as kvp
+                                        ] }
+                                    />
+                                </Stack.Item>
                             </Stack>
 
                             <FormInputText
@@ -82,6 +112,7 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
         console.log('TeamTaskComponentPane.updateRecord');
         this.props.updateCallback(this.state.draftTask);
     }
+    
     private cancelUpdate(): void {
         console.log('TeamTaskComponentPane.cancelUpdate');
         this.props.cancelCallBack(this.state.draftTask.taskGuid);

@@ -1,7 +1,7 @@
 {
+    "isDebugging": true,
     "description": "Product Manager",
     "emailSenderName": "JISE Product Manager Tool",
-    "isDebugging": true,
     "productListUrl": "/dist/mockProductList.json",
     "documentListUrl": "/dist/mockDocumentList.json",
     "teams": [
@@ -40,6 +40,51 @@
             ],
             "active": true,
             "shortName": "T3"
+        }
+    ],
+    "productTypes": [
+        {
+            "typeId": "ca0a3b95-0770-4dfb-b358-f1beb2e5290e",
+            "typeName": "ProductType 1",
+            "defaultSuspenseDays": 7,
+            "defaultTemplateDocs": [
+                { "docUrl": "/", "docIcon": "/", "docName": "docType1.txt" }
+            ],
+            "defaultTeamTasks": [
+                {
+                    "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
+                    "taskDescription": "Templated task description for this team",
+                    "taskSuspenseDays": 2
+                }
+            ]
+        },
+        {
+            "typeId": "a3bca095-b358-fb4d-0770-eb2e5f1be029",
+            "typeName": "ProductType 2",
+            "defaultSuspenseDays": 7,
+            "defaultTemplateDocs": [
+                { "docUrl": "/", "docIcon": "/", "docName": "docType1.txt" },
+                { "docUrl": "/", "docIcon": "/", "docName": "docType2.txt" }
+            ],
+            "defaultTeamTasks": [
+                {
+                    "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
+                    "taskDescription": "Templated task description for this team",
+                    "taskSuspenseDays": 2
+                },
+                {
+                    "teamId": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
+                    "taskDescription": "Templated task description for this team",
+                    "taskSuspenseDays": 5
+                }
+            ]
+        },
+        {
+            "typeId": "3b95ca0a-0770-4dfb-b358-e5290ef1beb2",
+            "typeName": "ProductType 3",
+            "defaultSuspenseDays": 14,
+            "defaultTemplateDocs": [],
+            "defaultTeamTasks": []
         }
     ]
 }

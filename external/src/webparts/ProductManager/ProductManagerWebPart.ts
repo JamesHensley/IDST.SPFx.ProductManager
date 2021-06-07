@@ -21,6 +21,7 @@ import { TeamMemberModel } from '../../models/PeopleModel';
 
 import PnPTelemetry from '@pnp/telemetry-js';
 import { ProductManager } from './components/ProductManager';
+import { ProductTypeModel } from '../../models/ProductTypeModel';
 
 export interface IProductManagerWebPartProps {
   description: string;
@@ -29,6 +30,7 @@ export interface IProductManagerWebPartProps {
   documentListUrl: string;
   teams: Array<TeamModel>;
   emailSenderName: string;
+  productTypes: Array<ProductTypeModel>;
 }
 
 

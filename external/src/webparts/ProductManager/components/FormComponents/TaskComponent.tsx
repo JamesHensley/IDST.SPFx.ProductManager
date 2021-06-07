@@ -74,13 +74,10 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
         const newTask = new TaskModel();
         newTask.taskDescription = "New Task";
         newTask.taskGuid = uuidv4();
-        newTask.taskTeamName = AppService.AppSettings.teams[0].name;
         newTask.taskedTeamId = AppService.AppSettings.teams[0].id;
         newTask.taskState = TaskState.pending;
         newTask.taskSuspense = new Date(new Date().getTime() + (1000 * 60 * 60 * 7)).toJSON()
 
-        //const newTasks = [].concat.apply(this.props.TaskItems, [newTask]);
-        //this.props.onUpdated(newTasks, 'tasks');
         const newTaskPanes = this.state.taskPanes
             .map(d => { return { isPaneVisible: false, taskId: d.taskId } as ITaskPaneState})
             .concat([{ isPaneVisible: true, taskId: newTask.taskGuid } as ITaskPaneState])

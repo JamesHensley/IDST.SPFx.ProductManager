@@ -11,7 +11,7 @@ export class FormInputText extends React.Component<IFormInputProps, {}> {
     render(): React.ReactElement<IFormInputProps> {
         return(
             <div className={`${styles.gridRow} ${styles.padTop2}`}>
-                <div className={`${styles.gridCol11} ${styles.fieldValue}`}>
+                <div className={`${styles.gridCol12} ${styles.fieldValue}`}>
                     <Label>{this.props.labelValue}</Label>
                     {!this.props.editing && (
                         <Text>{this.props.fieldValue}</Text>

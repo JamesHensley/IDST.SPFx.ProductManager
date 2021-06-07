@@ -45,8 +45,12 @@ export class MapperService {
             attachedDocuments: attachedDocs,
             status: ProductStatus[item.ProductStatus],
             productType: item.ProductType,
-            newProduct: false
+            newProduct: false,
+            filterString: `${item.Title} ${item.Description} ${item.ProductType}`
         };
+        const taskedTeams = (teamTasks || []).map(d => d.taskedTeamId)
+        pModel.filterString += AppService.AppSettings.teams.reduce((t,n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
+
         return pModel;
     }
 
