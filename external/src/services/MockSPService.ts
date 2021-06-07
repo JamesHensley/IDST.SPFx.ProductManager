@@ -7,7 +7,7 @@ export class MockSPService implements ISPService {
     private _mockedProductItems: Array<SpProductItem> = [];
     private _mockedAttachmentItems: Array<SpListAttachment> = [];
     private get mockedProductItems(): Array<SpProductItem> {
-        if(this._mockedProductItems.length == 0) {
+        if(this._mockedProductItems.length === 0) {
             for(let x = 0; x<125; x++) {
                 this._mockedProductItems.push(Faker.CreateFakeItem())
             }
@@ -19,7 +19,7 @@ export class MockSPService implements ISPService {
         this._mockedProductItems = val;
     }
     private get mockedAttachmentItems(): Array<SpListAttachment> {
-        if(this._mockedAttachmentItems.length == 0) {
+        if(this._mockedAttachmentItems.length === 0) {
             this._mockedProductItems.forEach(mP => {
                 for(let x = 0; x < Math.round(Math.random() * 3); x++) {
                     this._mockedAttachmentItems.push(Faker.CreateFakeAttachment(mP.GUID));
@@ -35,7 +35,7 @@ export class MockSPService implements ISPService {
     };
 
     GetAttachmentsForGuid(listUrl: string, guid: string): Promise<Array<SpListAttachment>> {
-        return Promise.resolve(this.mockedAttachmentItems.filter(f => f.LinkedProductGuid == guid));
+        return Promise.resolve(this.mockedAttachmentItems.filter(f => f.LinkedProductGuid === guid));
     }
 
     AddListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {

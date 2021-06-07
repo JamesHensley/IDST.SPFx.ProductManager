@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as styles from '../ProductManager.module.scss';
 
 import { TaskModel, TaskState } from '../../../../models/TaskModel';
-import { ContextMenu, IContextMenuProps } from './ContextMenu';
+// import { ContextMenu, IContextMenuProps } from './ContextMenu';
 import AppService from '../../../../services/AppService';
 import { TeamTaskComponent } from './TeamTaskComponent';
 
@@ -52,7 +52,7 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
                     <Label className={styles.gridCol7} style={{fontSize: '.9rem' }}>Task Description</Label>
                 </div>
                 {(this.props.TaskItems || []).map(a => {
-                    const paneState: ITaskPaneState = this.state.taskPanes.reduce((t,n) => n.taskId == a.taskGuid ? n : t, null);
+                    const paneState: ITaskPaneState = this.state.taskPanes.reduce((t,n) => n.taskId === a.taskGuid ? n : t, null);
                     return (
                         <TeamTaskComponent
                             task={a}
@@ -100,7 +100,7 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
     }
 
     private taskClicked(taskId: string): void {
-        const newPanes = this.state.taskPanes.map(d => { return { taskId: d.taskId, isPaneVisible: (d.taskId == taskId) } as ITaskPaneState });
+        const newPanes = this.state.taskPanes.map(d => { return { taskId: d.taskId, isPaneVisible: (d.taskId === taskId) } as ITaskPaneState });
         this.setState({ taskPanes: newPanes });
     }
 };

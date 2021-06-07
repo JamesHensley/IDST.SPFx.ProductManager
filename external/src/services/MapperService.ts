@@ -29,7 +29,7 @@ export class MapperService {
     public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
         const teamTasks: Array<TaskModel> = JSON.parse(item.AssignedTeamData ||  '[]');
         const attachedDocs = attachments
-            .filter(f => f.LinkedProductGuid == item.GUID)
+            .filter(f => f.LinkedProductGuid === item.GUID)
             .map(d => this.MapSpAttachmentToAttachment(d));
 
         const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === item.ProductType ? n.typeName : t, '');

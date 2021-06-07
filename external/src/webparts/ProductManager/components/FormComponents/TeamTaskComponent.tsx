@@ -24,7 +24,6 @@ export class TeamTaskComponent extends React.Component<ITeamTaskComponentProps, 
 
     render(): React.ReactElement<ITeamTaskComponentProps> {
         console.log('TeamTaskComponent.render: ', this.props, this.state);
-        //console.log('Pane should be rendered: ', (this.state.isPaneVisible ? 'True' : 'False'))
         return(
             <div key={this.props.task.taskGuid} className={this.row} onClick={this.taskClicked.bind(this, this.props.task)}>
                 {
@@ -38,7 +37,7 @@ export class TeamTaskComponent extends React.Component<ITeamTaskComponentProps, 
                 }
                 <div className={styles.gridCol1}></div>
                 <div className={styles.gridCol2}>{this.props.task.taskState}</div>
-                <div className={styles.gridCol2}>{AppService.AppSettings.teams.reduce((t,n) => n.id == this.props.task.taskedTeamId ? n.name : t, '')}</div>
+                <div className={styles.gridCol2}>{AppService.AppSettings.teams.reduce((t,n) => n.id === this.props.task.taskedTeamId ? n.name : t, '')}</div>
                 <div className={styles.gridCol7}>{this.props.task.taskDescription}</div>
             </div>
         );

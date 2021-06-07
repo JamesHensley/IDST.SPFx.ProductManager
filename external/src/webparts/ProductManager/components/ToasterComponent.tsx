@@ -29,7 +29,7 @@ export default class ToasterComponent extends React.Component<IToasterComponentP
             autoClose={7000}
             hideProgressBar={false}
             newestOnTop={false}
-            style={ {zIndex: 1000001} }
+            style={{ zIndex: 1000001 }}
         />;
     }
 }

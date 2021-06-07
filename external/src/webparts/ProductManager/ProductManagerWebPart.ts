@@ -33,7 +33,6 @@ export interface IProductManagerWebPartProps {
   productTypes: Array<ProductTypeModel>;
 }
 
-
 export default class ProductManagerWebPart extends BaseClientSideWebPart<IProductManagerWebPartProps> {
   private mockSettings: IProductManagerWebPartProps;
 

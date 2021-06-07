@@ -40,7 +40,7 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
                 className={styles.productDetailPane}
                 isLightDismiss={!this.props.isEditing}
                 isHiddenOnDismiss={false}
-                headerText={this.state.draftTask ? `${AppService.AppSettings.teams.reduce((t,n) => n.id == this.state.draftTask.taskedTeamId ? n.name : t, '')}` : ''}
+                headerText={this.state.draftTask ? `${AppService.AppSettings.teams.reduce((t,n) => n.id === this.state.draftTask.taskedTeamId ? n.name : t, '')}` : ''}
                 isOpen={true}
                 onDismiss={this.togglePanelVisibility.bind(this)}
                 closeButtonAriaLabel='Close'

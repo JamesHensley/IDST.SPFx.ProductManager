@@ -17,7 +17,7 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
                 ['data-automation-id']: 'newProduct',
                 onClick: this.itemClicked.bind(this),
                 data: { id: d.typeId, name: d.typeName }
-            } as IContextualMenuItem
+            } as IContextualMenuItem;
         });
         return [
             {
