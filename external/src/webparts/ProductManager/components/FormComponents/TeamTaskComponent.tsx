@@ -44,24 +44,24 @@ export class TeamTaskComponent extends React.Component<ITeamTaskComponentProps, 
     }
 
     private taskClicked(task: TaskModel): void {
-        console.log('TeamTaskComponent.taskClicked: ', task);
+        // console.log('TeamTaskComponent.taskClicked: ', task);
         this.props.taskClicked(task.taskGuid);
     }
 
     private taskPaneUpdate(newTask: TaskModel): void {
-        console.log('TeamTaskComponent.taskPaneUpdate: ', newTask);
+        // console.log('TeamTaskComponent.taskPaneUpdate: ', newTask);
         this.props.taskUpdated(newTask);
     }
 
     private taskPaneCancel(newTask: TaskModel): void {
-        console.log('TeamTaskComponent.taskPaneCancel: ', newTask);
+        // console.log('TeamTaskComponent.taskPaneCancel: ', newTask);
         this.props.taskUpdateCancel(newTask.taskGuid);
     }
 
     public componentDidMount() {
-        console.log('TeamTaskComponentPane.componentDidMount: ', this.props, this.state);
+        // console.log('TeamTaskComponentPane.componentDidMount: ', this.props, this.state);
     }
     public componentWillUnmount() {
-        console.log('TeamTaskComponentPane.componentWillUnmount: ', this.props, this.state);
+        // console.log('TeamTaskComponentPane.componentWillUnmount: ', this.props, this.state);
     }
 }

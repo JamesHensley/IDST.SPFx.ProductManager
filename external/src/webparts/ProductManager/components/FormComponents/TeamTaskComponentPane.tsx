@@ -34,7 +34,7 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
     }
 
     public render(): React.ReactElement<ITeamTaskComponentPaneProps> {
-        console.log('TeamTaskComponentPane.render: ', this.props, this.state);
+        // console.log('TeamTaskComponentPane.render: ', this.props, this.state);
         return (
             <Panel
                 className={styles.productDetailPane}
@@ -110,17 +110,17 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
     }
 
     private updateRecord(): void {
-        console.log('TeamTaskComponentPane.updateRecord');
+        // console.log('TeamTaskComponentPane.updateRecord', this.state.draftTask);
         this.props.updateCallback(this.state.draftTask);
     }
     
     private cancelUpdate(): void {
-        console.log('TeamTaskComponentPane.cancelUpdate');
+        // console.log('TeamTaskComponentPane.cancelUpdate', this.state.draftTask);
         this.props.cancelCallBack(this.state.draftTask.taskGuid);
     }
 
     private togglePanelVisibility(): void {
-        console.log('TeamTaskComponentPane.togglePanelVisibility');
+        // console.log('TeamTaskComponentPane.togglePanelVisibility', this.state.draftTask);
         this.props.cancelCallBack(this.props.committedTask.taskGuid);
     }
 

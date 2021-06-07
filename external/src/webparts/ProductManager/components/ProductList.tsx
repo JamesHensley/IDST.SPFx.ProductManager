@@ -1,7 +1,11 @@
 import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ProductModel, ProductStatus } from '../../../models/ProductModel';
-import { DetailsList, DetailsListLayoutMode, Dropdown, Facepile, IColumn, Icon, IconButton, IDropdownOption, IDropdownProps, IFacepilePersona, IRenderFunction, ISelectableDroppableTextProps, Label, mergeStyleSets, SelectionMode, Stack, TextField, TooltipHost } from '@fluentui/react';
+import { DetailsList, DetailsListLayoutMode, DetailsRow, Dropdown, Facepile, IColumn, Icon, IconButton,
+  IDetailsRowProps,
+  IDropdownOption, IDropdownProps, IFacepilePersona, IRenderFunction, ISelectableDroppableTextProps,
+  Label, mergeStyleSets, SelectionMode, Stack, TextField, TooltipHost } from '@fluentui/react';
+
 import { format } from 'date-fns';
 import AppService from '../../../services/AppService';
 import { RecordService } from '../../../services/RecordService';
@@ -69,83 +73,76 @@ class SortFilterSetting {
   public static set SortDir(val: number) { this.sortDir = val; }
   public static get SortDir() { return this.sortDir; }
 
-  private static displayedFields: Array<IListColumn> = ([
+  private static displayedFields: Array<IColumn> = ([
     {
       key: 'column0',
       name: 'Type',
+      minWidth: 100, maxWidth: 150,
       fieldName: 'productType',
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
-      data: 'object',
-      colCount: 2,
-      displayed: true
+      data: { type: 'object', colCount: 2, displayed: true }
     },
     {
       key: 'column1',
       name: 'Status',
+      minWidth: 50, maxWidth: 80,
       fieldName: 'productStatus',
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
-      data: 'string',
-      colCount: 1,
-      displayed: true
+      data: { type: 'string', colCount: 1, displayed: true }
     },
     {
       key: 'column2',
       name: 'Title',
+      minWidth: 100, maxWidth: 200,
       fieldName: 'title',
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
-      data: 'string',
-      colCount: 2,
-      displayed: true
+      data: { type: 'string', colCount: 2, displayed: true }
     },
     {
       key: 'column3',
       name: 'Description',
+      minWidth: 100,
       fieldName: 'description',
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
-      data: 'string',
-      colCount: 4,
-      displayed: true
+      data: { type: 'string', colCount: 4, displayed: true }
     },
     {
       key: 'column4',
       name: 'Open Date',
+      minWidth: 100,
       fieldName: 'openDate',
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
-      data: 'string',
-      colCount: 1,
-      displayed: true
+      data: { type: 'string', colCount: 1, displayed: true }
     },
     {
       key: 'column5',
       name: 'Expected Return',
+      minWidth: 130,
       fieldName: 'expectedReturnDate',
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
-      data: 'string',
-      colCount: 1,
-      displayed: true
+      data: { type: 'string', colCount: 1, displayed: true }
     },
     {
       key: 'column6',
       name: 'Tasked Teams',
+      minWidth: 120,
       fieldName: 'tasks',
       isRowHeader: true,
       isSorted: false,
       isSortedDescending: false,
-      data: 'object',
-      colCount: 1,
-      displayed: true
+      data: { type: 'object', colCount: 1, displayed: true }
     }
   ])
   .map(d => {
@@ -154,10 +151,13 @@ class SortFilterSetting {
     d.isSortedDescending = d.isSorted && SortFilterSetting.SortDir === -1;
     return d;
   });
-  public static set DisplayedFields(val: Array<IListColumn>) {
-    this.displayedFields = this.displayedFields.map(d => { d.displayed = (val.map(d => d.fieldName)).indexOf(d.fieldName) >= 0; return d; });
+
+  public static set DisplayedFields(val: Array<IColumn>) {
+    this.displayedFields = this.displayedFields
+      .map(d => { d.data.displayed = (val.map(d => d.fieldName)).indexOf(d.fieldName) >= 0; return d; });
   }
-  public static get DisplayedFields() { return this.displayedFields.filter(f => f.displayed); }
+
+  public static get DisplayedFields() { return this.displayedFields.filter(f => f.data.displayed); }
 }
 
 export interface IDocument {
@@ -177,22 +177,11 @@ export interface IDocument {
 export interface IProductListProps { allProducts: Array<ProductModel>, productClicked: (id: string) => void }
 export interface IProductListState { lastUpdate: number, showingColumnMenu: boolean }
 
-export interface IListColumn {
-  key: string;
-  name: string;
-  fieldName: string;
-  isRowHeader: boolean;
-  isSorted: boolean;
-  isSortedDescending: boolean;
-  data: string;
-  colCount: number;
-  displayed: boolean;
-}
-
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
   private get allItems(): Array<IDocument> {
+    console.log('ProductList.allItems: ', this.props.allProducts);
     return (this.props.allProducts || [])
-    .filter(i => (i.filterString.toLowerCase().indexOf(SortFilterSetting.FilterText) >= 0))
+    .filter(i => (i.filterString.toLowerCase().indexOf(SortFilterSetting.FilterText.toLowerCase()) >= 0))
     .map(d => {
       return {
         key: d.guid,
@@ -213,78 +202,66 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     });
   };
 
-  private get allColumns(): Array<IListColumn> {
-    return SortFilterSetting.DisplayedFields;
+  private get allColumns(): Array<IColumn> {
+    return SortFilterSetting.DisplayedFields.map(d => {
+      d.onColumnClick=this.onColumnClick.bind(this, d);
+      d.onRender=((i: IDocument, idx, col) => {
+        switch (col.fieldName) {
+          case 'productType':
+            return <div>{AppService.AppSettings.productTypes.reduce((t,n) => n.typeId == i[col.fieldName] ? n.typeName : t, '')}</div>;
+          case 'tasks':
+            const tasks: Array<string> = (i.tasks as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
+            const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.id) >= 0 ? t.concat(n) : t, [])
+              .map(d => { return { imageInitials: d.shortName, personaName: d.name } as IFacepilePersona });
+            return <Facepile personas={personas} />
+          default:
+            return <div>{i[col.fieldName]}</div>
+        }
+      });
+      return d;
+    });
   };
 
+  constructor(props: IProductListProps) {
+    super(props);
+    this.state = { lastUpdate: new Date().getTime(), showingColumnMenu: false }
+  }
+
   public render(): React.ReactElement<IProductListProps> {
-    /*
-        <IconButton iconProps={{ iconName: 'CollapseMenu' }} className={styles.appIcon} title='' ariaLabel='' onClick={this.onShowColumnsMenu.bind(this)} />
-        {
-          ((this.state && this.state.showingColumnMenu) || false) &&
-          <ColumnSelector
-            hideMenuCallBack={(xxx) => console.log('SOMETHING IS GOING ON!!!! ', xxx)}
-          />
-        }
-    */
     const dropdownStyles = { dropdown: { width: '10px' } };
+    /*
+      <Dropdown
+        options={this.allColumns.map(d => { return { key: d.fieldName, text: d.name  } as IDropdownOption })}
+        styles={dropdownStyles}
+      />
+    */
     return (
       <div className={`${styles.productList} ${styles.grid}`}>
         <div className={styles.gridRow}>
           <div className={styles.gridCol12}>
             <TextField label='Filter by title, description, product type or team name:' onChange={this.onChangeFilter} styles={controlStyles} value={SortFilterSetting.FilterText} />
-            <Dropdown
-              options={this.allColumns.map(d => { return { key: d.fieldName, text: d.name  } as IDropdownOption })}
-              styles={dropdownStyles}
-            />
+
           </div>
         </div>
-        <div className={`${styles.gridRow} ${styles.listColumnHeader} ${styles.listDataRow}`}>
-          {this.allColumns.map(c => {
-            const clsName = `${styles.listDataCell} ${styles['gridCol' + c.colCount]}`;
-            return (
-              <Label key={c.fieldName}
-                className={clsName}
-                onClick={this.onColumnClick.bind(this, c)}
-              >
-                {c.isRowHeader ?  c.name : ''}
-                {c.isSorted && !c.isSortedDescending && <IconButton iconProps={{ iconName: 'SortUp' }} className={styles.appIcon} title='' ariaLabel='' />}
-                {c.isSorted && c.isSortedDescending && <IconButton iconProps={{ iconName: 'SortDown' }} className={styles.appIcon} title='' ariaLabel='' />}
-              </Label>
-            );
-          })}
-        </div>
-        {this.allItems.map(r => {
-          return (
-            <div className={`${styles.gridRow} ${styles.listDataRow}`} onClick={this.itemClicked.bind(this, r)} key={r.key}>
-              {this.allColumns.map(c => {
-                const clsName = `${styles.listDataCell} ${styles['gridCol' + c.colCount]}`;
-                if(c.data === 'string') {
-                  return (
-                    <div key={c.fieldName} className={clsName}>{r[c.fieldName]}</div>
-                  );
-                }
-                else {
-                  if(c.fieldName === 'productType') {
-                    return (
-                      <div key={c.fieldName} className={clsName}>{AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === r[c.fieldName] ? n.typeName : t, '')}</div>
-                    );
-                  }
-                  if(c.fieldName === 'tasks') {
-                    const tasks: Array<string> = (r[c.fieldName] as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
-                    const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.id) >= 0 ? t.concat(n) : t, [])
-                      .map(d => { return { imageInitials: d.shortName, personaName: d.name } as IFacepilePersona });
-                    return (
-                      <div key={c.fieldName} className={clsName} data-fieldname={c.fieldName}><Facepile personas={personas} /></div>
-                    );
-                  }
-                }
-              })}
-            </div>
-          );
-        })}
+
+        <DetailsList
+          key={this.state.lastUpdate}
+          items={this.allItems}
+          columns={this.allColumns}
+          selectionMode={SelectionMode.none}
+          compact={true}
+          onRenderRow={(props: IDetailsRowProps) => {
+            return (<div onClick={this.onRowClick.bind(this, props)}>
+              <DetailsRow {...props} styles={{root: { cursor: 'pointer' }}} />
+            </div>);
+          }}
+        />
       </div>
     );
+  }
+
+  private onRowClick(i?: IDetailsRowProps, ev?: React.FocusEvent<HTMLElement>): void {
+    this.props.productClicked(i.item.key);
   }
 
   private onColumnClick = (column: IColumn, ev: Event): void => {
@@ -304,11 +281,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     this.setState({ lastUpdate: new Date().getTime() });
   }
 
-  private itemClicked(item: any): void {
-    this.props.productClicked(item.key);
-  }
-
-  private onHideShowCols(items: Array<IListColumn>): void {
+  private onHideShowCols(items: Array<IColumn>): void {
 
   }
 }

@@ -87,7 +87,8 @@ export class RecordService {
                         taskedTeamId: d.teamId,
                         taskDescription: d.taskDescription,
                         taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDays)).toJSON(),
-                        taskState: TaskState.pending
+                        taskState: TaskState.pending,
+                        taskGuid: uuidv4()
                     } as TaskModel
                 });
                 prod.productType = temp.typeId;
