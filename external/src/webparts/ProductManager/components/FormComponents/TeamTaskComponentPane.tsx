@@ -48,7 +48,7 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
             >
                 <div className={styles.grid}>
                     <div className={styles.gridRow}>
-                        <div className={styles.gridCol6}>
+                        <div className={styles.gridCol12}>
                             <Stack horizontal tokens={{childrenGap: 10}}>
                                 {this.props.isEditing && <DefaultButton onClick={this.updateRecord.bind(this)} disabled={!this.props.isEditing}>Save</DefaultButton>}
                                 {this.props.isEditing && <DefaultButton onClick={this.cancelUpdate.bind(this)} disabled={!this.props.isEditing}>Cancel</DefaultButton>}
@@ -87,6 +87,7 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
                                 fieldRef={'taskDescription'}
                                 onUpdated={this.fieldUpdated.bind(this)}
                                 editing={this.props.isEditing}
+                                editLines={12}
                             />
                             <FormInputDate
                                 labelValue={'Suspense Date'}

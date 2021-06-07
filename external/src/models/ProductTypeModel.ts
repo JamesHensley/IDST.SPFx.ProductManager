@@ -15,6 +15,7 @@ export class TaskTemplate {
 export class ProductTypeModel {
     public typeId: string;
     public typeName: string;
+    public typeDescription: string;
     public defaultSuspenseDays: number;
     public defaultTemplateDocs: Array<DocTemplate>;
     public defaultTeamTasks: Array<TaskTemplate>;

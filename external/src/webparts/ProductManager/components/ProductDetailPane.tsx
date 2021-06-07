@@ -126,7 +126,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         <div className={styles.gridCol12}>
                             <FormInputText
                                 labelValue={'Description'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.description} editLines={4}
+                                fieldValue={this.state.draftProduct.description} editLines={8}
                                 fieldRef={'description'}
                                 onUpdated={this.fieldUpdated.bind(this)}
                             />

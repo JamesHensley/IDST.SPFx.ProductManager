@@ -101,7 +101,6 @@ export interface IListColumn {
 }
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
 
-
   private get allItems(): Array<IDocument> {
     return (this.props.allProducts || [])
     .filter(i => (i.filterString.toLowerCase().indexOf(SortFilterSetting.FilterText) >= 0))
@@ -127,6 +126,16 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 
   private get allColumns(): Array<IListColumn> {
     return ([
+      {
+        key: 'column0',
+        name: 'Type',
+        fieldName: 'productType',
+        isRowHeader: true,
+        isSorted: false,
+        isSortedDescending: false,
+        data: 'object',
+        colCount: 2
+      },
       {
         key: 'column1',
         name: 'Status',
@@ -165,7 +174,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         isSorted: false,
         isSortedDescending: false,
         data: 'string',
-        colCount: 2
+        colCount: 1
       },
       {
         key: 'column5',
@@ -175,7 +184,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         isSorted: false,
         isSortedDescending: false,
         data: 'string',
-        colCount: 2
+        colCount: 1
       },
       {
         key: 'column6',
@@ -232,6 +241,11 @@ export default class ProductList extends React.Component<IProductListProps, IPro
                   );
                 }
                 else {
+                  if(c.fieldName == 'productType') {
+                    return (
+                      <div key={c.fieldName} className={clsName}>{AppService.AppSettings.productTypes.reduce((t,n) => n.typeId == r[c.fieldName] ? n.typeName : t, '')}</div>
+                    );
+                  }
                   if(c.fieldName == 'tasks') {
                     const tasks: Array<string> = (r[c.fieldName] as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
                     const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.id) >= 0 ? t.concat(n) : t, [])

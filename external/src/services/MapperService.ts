@@ -31,7 +31,8 @@ export class MapperService {
         const attachedDocs = attachments
             .filter(f => f.LinkedProductGuid == item.GUID)
             .map(d => this.MapSpAttachmentToAttachment(d));
-        
+
+        const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === item.ProductType ? n.typeName : t, '');
         const pModel: ProductModel = {
             id: item.Id,
             guid: item.GUID,
@@ -46,7 +47,7 @@ export class MapperService {
             status: ProductStatus[item.ProductStatus],
             productType: item.ProductType,
             newProduct: false,
-            filterString: `${item.Title} ${item.Description} ${item.ProductType}`
+            filterString: `${item.Title} ${item.Description} ${prodTypeTitle}`
         };
         const taskedTeams = (teamTasks || []).map(d => d.taskedTeamId)
         pModel.filterString += AppService.AppSettings.teams.reduce((t,n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');

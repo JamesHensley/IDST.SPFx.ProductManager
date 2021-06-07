@@ -69,6 +69,8 @@ export class RecordService {
      */
     public static GetNewProductModel(productType?: string): ProductModel {
         const prod = new ProductModel();
+        const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === (productType || '') ? n.typeName : t, '');
+
         prod.guid = uuidv4();
         prod.requestDate = new Date().toJSON();
         prod.returnDateExpected = new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON();
@@ -91,9 +93,10 @@ export class RecordService {
                 prod.productType = temp.typeId;
                 prod.title = `NEW ${temp.typeName}`;
                 prod.returnDateExpected = new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * temp.defaultSuspenseDays)).toJSON();
+                prod.description = temp.typeDescription;
             }
         }
-        prod.filterString = `${prod.title} ${prod.description} ${prod.productType}`;
+        prod.filterString = `${prod.title} ${prod.description} ${prodTypeTitle}`;
         const taskedTeams = prod.tasks.map(d => d.taskedTeamId)
         prod.filterString += AppService.AppSettings.teams.reduce((t,n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
 
