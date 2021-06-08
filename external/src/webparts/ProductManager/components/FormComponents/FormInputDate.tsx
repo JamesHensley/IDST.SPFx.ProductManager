@@ -20,12 +20,10 @@ export class FormInputDate extends React.Component<IFormInputProps, IFormInputDa
     constructor(props: IFormInputProps) {
         super(props);
         this.buttonRef = React.createRef();
-        this.state = { calendarVisible: false, draftValue: this.props.fieldValue }
+        this.state = { calendarVisible: false, draftValue: this.props.fieldValue };
     }
 
     render(): React.ReactElement<IFormInputProps> {
-        //<div className={`${styles.gridRow} ${styles.padTop2}`}>
-        //<div className={`${styles.gridCol11} ${styles.fieldValue}`}>
         return(
             <div className={`${styles.padTop2}`}>
                 <div className={`${styles.fieldValue}`}>
@@ -39,12 +37,12 @@ export class FormInputDate extends React.Component<IFormInputProps, IFormInputDa
                                 dateChangeCallback={this.updateValueFromCalendar.bind(this)}
                             />}
                     </Stack>
-                    {!this.props.editing && (
+                    {!this.props.editing &&
                         <Text>{format(new Date(this.props.fieldValue), AppService.DateFormatView)}</Text>
-                    )}
-                    {this.props.editing && (
+                    }
+                    {this.props.editing &&
                         <TextField value={format(new Date(this.props.fieldValue), AppService.DateFormatView)} readOnly />
-                    )}
+                    }
                 </div>
             </div>
         );

@@ -39,7 +39,8 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     RecordService.GetProducts()
     .then(allProducts => {
       this.setState({ allProducts: allProducts });
-    });
+    })
+    .catch(e => Promise.reject(e));
   }
 
   public render(): React.ReactElement<{}> {
@@ -60,7 +61,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
             <div className={styles.gridCol12}>
               {this.state.view === 'ProductList' &&
                 <ProductList
-                  //Adding a KEY here with the current time lets us force the product list to redraw
+                  // Adding a KEY here with the current time lets us force the product list to redraw
                   key={new Date().getTime()}
                   allProducts={this.state.allProducts.slice()}
                   productClicked={this.productClicked.bind(this)}
@@ -90,7 +91,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     AppService.UnRegisterCmdBarListener(this.receivers.cmdbarEvents);
   }
 
-
   private productClicked(prodId: string): void {
     this.setState({
       panelOpen: true,
@@ -105,21 +105,21 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     });
   }
 
-
   //#region Emitter receivers
   private async updateProducts(): Promise<void> {
-    RecordService.GetProducts()
+    return RecordService.GetProducts()
     .then(allProducts => {
       this.setState({ allProducts: allProducts });
-    });
-    return Promise.resolve();
+    })
+    .then(() => Promise.resolve())
+    .catch(e => Promise.reject(e));
   }
 
   private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
     console.log('PageComponent.cmdBarItemClicked: ', item);
-    switch(item['data-automation-id']) {
+    switch (item['data-automation-id']) {
       case 'viewRollup':
-        this.setState({ view: 'RollUp'});
+        this.setState({ view: 'RollUp' });
         break;
       case 'viewList':
         this.setState({ view: 'ProductList' });

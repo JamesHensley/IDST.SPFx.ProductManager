@@ -1,7 +1,7 @@
 export enum TaskState {
-    pending = "Pending",
-    working = "Working",
-    complete = "Complete"
+    pending = 'Pending',
+    working = 'Working',
+    complete = 'Complete'
 }
 
 export class TaskModel {

@@ -1,11 +1,9 @@
-import { SplitChunksPlugin } from 'webpack';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { ProductModel, ProductStatus } from '../models/ProductModel';
 import { SpListAttachment, SpProductItem } from '../models/SpListItem';
 import { TaskModel } from '../models/TaskModel';
 import { TeamModel } from '../models/TeamModel';
 import AppService from './AppService';
-
 
 export class MapperService {
     public static MapProductToItem(prod: ProductModel): SpProductItem {
@@ -27,7 +25,7 @@ export class MapperService {
     }
 
     public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
-        const teamTasks: Array<TaskModel> = JSON.parse(item.AssignedTeamData ||  '[]');
+        const teamTasks: Array<TaskModel> = JSON.parse(item.AssignedTeamData || '[]');
         const attachedDocs = attachments
             .filter(f => f.LinkedProductGuid === item.GUID)
             .map(d => this.MapSpAttachmentToAttachment(d));
@@ -49,8 +47,8 @@ export class MapperService {
             newProduct: false,
             filterString: `${item.Title} ${item.Description} ${prodTypeTitle}`
         };
-        const taskedTeams = (teamTasks || []).map(d => d.taskedTeamId)
-        pModel.filterString += AppService.AppSettings.teams.reduce((t,n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
+        const taskedTeams = (teamTasks || []).map(d => d.taskedTeamId);
+        pModel.filterString += AppService.AppSettings.teams.reduce((t, n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
 
         return pModel;
     }
@@ -60,11 +58,11 @@ export class MapperService {
     }
 
     public static MapItemsToProducts(items: Array<SpProductItem>, documents: Array<SpListAttachment>): Array<ProductModel> {
-        //const docs = documents.map(d => this.MapItemToAttachments(d));
+        // const docs = documents.map(d => this.MapItemToAttachments(d));
         return items.map(d => this.MapItemToProduct(d, documents));
     }
 
-    public static MapSpAttachmentToAttachment(item: SpListAttachment) {
+    public static MapSpAttachmentToAttachment(item: SpListAttachment): AttachmentModel {
         const attachment: AttachmentModel = {
             Id: item.Id,
             Title: item.Title,

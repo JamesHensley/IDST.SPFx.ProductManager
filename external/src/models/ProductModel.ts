@@ -2,9 +2,9 @@ import { AttachmentModel } from './AttachmentModel';
 import { TaskModel } from './TaskModel';
 
 export enum ProductStatus {
-    open='Open',
-    closed='Closed',
-    canceled='Canceled'
+    open = 'Open',
+    closed = 'Closed',
+    canceled = 'Canceled'
 }
 
 export class ProductModel {

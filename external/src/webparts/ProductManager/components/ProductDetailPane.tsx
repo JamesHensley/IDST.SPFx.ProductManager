@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Panel, PanelType, Separator, FocusTrapZone, Stack, DirectionalHint, IconButton, DefaultButton, ICommandBarItemProps } from '@fluentui/react';
-import { Label } from '@fluentui/react';
+import { Panel, PanelType, Separator, Stack, DefaultButton, ICommandBarItemProps, Label } from '@fluentui/react';
 
 import * as styles from './ProductManager.module.scss';
 
@@ -16,8 +15,7 @@ import { AttachmentComponent } from './FormComponents/AttachmentComponent';
 import { TaskModel } from '../../../models/TaskModel';
 import { MailService } from '../../../services/MailService';
 import { FormInputDropDown } from './FormComponents/FormInputDropDown';
-import { kvp } from './FormComponents/IFormInputProps';
-
+import { KeyValPair } from './FormComponents/IFormInputProps';
 
 export interface IProductDetailPaneProps {
     isVisible: boolean;
@@ -59,7 +57,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
     public componentDidMount(): void {
         // Register this component to listen for new products
-        AppService.RegisterCmdBarListener({ callback: this.receiver, btnKeys: ['newProduct'] } as ICmdBarListenerProps)
+        AppService.RegisterCmdBarListener({ callback: this.receiver, btnKeys: ['newProduct'] } as ICmdBarListenerProps);
     }
 
     public componentWillUnmount(): void {
@@ -82,7 +80,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 {
                     this.state.isVisible && this.state.draftProduct &&
                     <div className={styles.grid + ' ' + styles.formStyles}>
-                    <Stack horizontal tokens={{childrenGap: 10}}>
+                    <Stack horizontal tokens={{ childrenGap: 10 }}>
                         <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
                         {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
                         {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
@@ -104,7 +102,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 fieldRef={'productType'}
                                 onUpdated={this.fieldUpdated.bind(this)}
                                 editing={this.state.isEditing}
-                                options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as kvp })}
+                                options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
                             />
                         </div>
                         <div className={styles.gridCol3}>
@@ -115,12 +113,12 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 onUpdated={this.fieldUpdated.bind(this)}
                                 editing={this.state.isEditing}
                                 options={[
-                                    { key: ProductStatus.open, value: 'Open'  } as kvp,
-                                    { key: ProductStatus.closed, value: 'Closed'  } as kvp,
-                                    { key: ProductStatus.canceled, value: 'Canceled'  } as kvp
+                                    { key: ProductStatus.open, value: 'Open' } as KeyValPair,
+                                    { key: ProductStatus.closed, value: 'Closed' } as KeyValPair,
+                                    { key: ProductStatus.canceled, value: 'Canceled' } as KeyValPair
                                 ]}
                             />
-                        </div>                        
+                        </div>
                     </div>
                     <div className={styles.gridRow}>
                         <div className={styles.gridCol12}>
@@ -170,7 +168,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private toggleEditMode(): void {
-        this.setState({ isEditing: !this.state.isEditing, isVisible: (this.props.currentProductId==null ? false : this.state.isVisible) });
+        this.setState({ isEditing: !this.state.isEditing, isVisible: (this.props.currentProductId === null ? false : this.state.isVisible) });
     }
 
     private saveRFI(): void {
@@ -180,9 +178,10 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
             const teamIds = (this.state.draftProduct.tasks || []).map(d => d.taskedTeamId);
             const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
-            MailService.SendEmail('Update', teamEmails, 'A product has been ' + result);
+            MailService.SendEmail('Update', teamEmails, 'A product has been ' + result)
+            .catch(e => Promise.reject(e));
         })
-        .catch(e => console.log('Update failed for: ', this.state.draftProduct))
+        .catch(e => console.log('Update failed for: ', this.state.draftProduct));
     }
 
     private cancelRFIChanges(): void {
@@ -192,13 +191,13 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     private fieldUpdated(newVal: any, fieldRef: string): void {
         const temp = JSON.parse(JSON.stringify(this.state.draftProduct));
         temp[fieldRef] = newVal;
-        this.setState({ draftProduct: temp});
+        this.setState({ draftProduct: temp });
     }
 
     private taskAdded(newTask: TaskModel): void {
         const newDraft: ProductModel = JSON.parse(JSON.stringify(this.state.draftProduct));
         newDraft.tasks = [].concat.apply(this.state.draftProduct.tasks, [newTask]);
-        this.setState({ draftProduct: newDraft});
+        this.setState({ draftProduct: newDraft });
     }
 
     private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
@@ -208,6 +207,6 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             isEditing: true,
             isVisible: true,
             draftProduct: RecordService.GetNewProductModel(item.data.id)
-        })
+        });
     }
 }

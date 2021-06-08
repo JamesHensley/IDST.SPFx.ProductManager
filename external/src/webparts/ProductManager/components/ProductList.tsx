@@ -16,7 +16,7 @@ import { ColumnSelector } from './FormComponents/ColumnSelector';
 const classNames = mergeStyleSets({
   fileIconHeaderIcon: {
     padding: 0,
-    fontSize: '16px',
+    fontSize: '16px'
   },
   fileIconCell: {
     textAlign: 'center',
@@ -27,51 +27,51 @@ const classNames = mergeStyleSets({
         verticalAlign: 'middle',
         height: '100%',
         width: '0px',
-        visibility: 'hidden',
-      },
-    },
+        visibility: 'hidden'
+      }
+    }
   },
   fileIconImg: {
     verticalAlign: 'middle',
     maxHeight: '16px',
-    maxWidth: '16px',
+    maxWidth: '16px'
   },
   controlWrapper: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   },
   exampleToggle: {
     display: 'inline-block',
     marginBottom: '10px',
-    marginRight: '30px',
+    marginRight: '30px'
   },
   selectionDetails: {
-    marginBottom: '20px',
-  },
+    marginBottom: '20px'
+  }
 });
 
 const controlStyles = {
   root: {
     margin: '0 30px 20px 0',
-    maxWidth: '500px',
-  },
+    maxWidth: '500px'
+  }
 };
 
 /**
  * Used to preserve the filter and sorting settings when the component is destroyed & rebuilt
  */
 class SortFilterSetting {
-  private static filterText: string = '';
-  public static get FilterText() { return this.filterText; }
+  private static filterText = '';
+  public static get FilterText(): string { return this.filterText; }
   public static set FilterText(val: string) { this.filterText = val; }
 
-  private static sortField: string = 'openDate';
-  public static get SortField() { return this.sortField; }
+  private static sortField = 'openDate';
+  public static get SortField(): string { return this.sortField; }
   public static set SortField(val: string) { this.sortField = val; }
 
-  private static sortDir: number = 1;
+  private static sortDir = 1;
   public static set SortDir(val: number) { this.sortDir = val; }
-  public static get SortDir() { return this.sortDir; }
+  public static get SortDir(): number { return this.sortDir; }
 
   private static displayedFields: Array<IColumn> = ([
     {
@@ -157,7 +157,7 @@ class SortFilterSetting {
       .map(d => { d.data.displayed = (val.map(d => d.fieldName)).indexOf(d.fieldName) >= 0; return d; });
   }
 
-  public static get DisplayedFields() { return this.displayedFields.filter(f => f.data.displayed); }
+  public static get DisplayedFields(): Array<IColumn> { return this.displayedFields.filter(f => f.data.displayed); }
 }
 
 export interface IDocument {
@@ -174,8 +174,8 @@ export interface IDocument {
   tasks: Array<TaskModel>;
 }
 
-export interface IProductListProps { allProducts: Array<ProductModel>, productClicked: (id: string) => void }
-export interface IProductListState { lastUpdate: number, showingColumnMenu: boolean }
+export interface IProductListProps { allProducts: Array<ProductModel>; productClicked: (id: string) => void; }
+export interface IProductListState { lastUpdate: number; showingColumnMenu: boolean; }
 
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
   private get allItems(): Array<IDocument> {
@@ -198,33 +198,33 @@ export default class ProductList extends React.Component<IProductListProps, IPro
       } as IDocument;
     })
     .sort((a,b) => {
-      return a[SortFilterSetting.SortField] > b[SortFilterSetting.SortField] ? (1 * SortFilterSetting.SortDir) : (a[SortFilterSetting.SortField] < b[SortFilterSetting.SortField] ? -1 * SortFilterSetting.SortDir : 0)
+      return a[SortFilterSetting.SortField] > b[SortFilterSetting.SortField] ? (1 * SortFilterSetting.SortDir) : (a[SortFilterSetting.SortField] < b[SortFilterSetting.SortField] ? -1 * SortFilterSetting.SortDir : 0);
     });
-  };
+  }
 
   private get allColumns(): Array<IColumn> {
     return SortFilterSetting.DisplayedFields.map(d => {
-      d.onColumnClick=this.onColumnClick.bind(this, d);
-      d.onRender=((i: IDocument, idx, col) => {
+      d.onColumnClick = this.onColumnClick.bind(this, d);
+      d.onRender = ((i: IDocument, idx, col) => {
         switch (col.fieldName) {
           case 'productType':
-            return <div>{AppService.AppSettings.productTypes.reduce((t,n) => n.typeId == i[col.fieldName] ? n.typeName : t, '')}</div>;
+            return <div>{AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === i[col.fieldName] ? n.typeName : t, '')}</div>;
           case 'tasks':
             const tasks: Array<string> = (i.tasks as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
             const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.id) >= 0 ? t.concat(n) : t, [])
-              .map(d => { return { imageInitials: d.shortName, personaName: d.name } as IFacepilePersona });
-            return <Facepile personas={personas} />
+              .map(d => { return { imageInitials: d.shortName, personaName: d.name } as IFacepilePersona; });
+            return <Facepile personas={personas} />;
           default:
-            return <div>{i[col.fieldName]}</div>
+            return <div>{i[col.fieldName]}</div>;
         }
       });
       return d;
     });
-  };
+  }
 
   constructor(props: IProductListProps) {
     super(props);
-    this.state = { lastUpdate: new Date().getTime(), showingColumnMenu: false }
+    this.state = { lastUpdate: new Date().getTime(), showingColumnMenu: false };
   }
 
   public render(): React.ReactElement<IProductListProps> {
@@ -252,7 +252,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
           compact={true}
           onRenderRow={(props: IDetailsRowProps) => {
             return (<div onClick={this.onRowClick.bind(this, props)}>
-              <DetailsRow {...props} styles={{root: { cursor: 'pointer' }}} />
+              <DetailsRow {...props} styles={{ root: { cursor: 'pointer' } }} />
             </div>);
           }}
         />
@@ -275,13 +275,9 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     console.log('ProductList.onShowColumnsMenu');
     this.setState({ showingColumnMenu: !((this.state && this.state.showingColumnMenu) || false) });
   }
-  
+
   private onChangeFilter = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string): void => {
     SortFilterSetting.FilterText = text;
     this.setState({ lastUpdate: new Date().getTime() });
-  }
-
-  private onHideShowCols(items: Array<IColumn>): void {
-
   }
 }

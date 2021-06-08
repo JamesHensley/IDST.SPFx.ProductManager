@@ -4,13 +4,13 @@ import { Label, Text, Dropdown, IDropdownOption } from '@fluentui/react';
 
 import * as styles from '../ProductManager.module.scss';
 
-import { IFormInputProps, kvp } from './IFormInputProps';
+import { IFormInputProps, KeyValPair } from './IFormInputProps';
 
 export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
 
     render(): React.ReactElement<IFormInputProps> {
         console.log('FormInputDropDown.render: ', this.props);
-        const options = this.props.options.map(d => { return { key: d.key, text: d.value } as IDropdownOption});
+        const options = this.props.options.map(d => { return { key: d.key, text: d.value } as IDropdownOption; });
         const selectedKey = this.props.fieldValue;
         const dropdownStyles = { root: { width: '100%' } };
         return(
@@ -34,7 +34,7 @@ export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
         );
     }
 
-    private fieldUpdated(ev: Event, newVal: kvp): void {
+    private fieldUpdated(ev: Event, newVal: KeyValPair): void {
         this.props.onUpdated(newVal.key, this.props.fieldRef);
     }
 }

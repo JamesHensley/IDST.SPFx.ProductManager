@@ -21,9 +21,8 @@ export class RecordService {
     }
 
     public static async GetProducts(): Promise<Array<ProductModel>> {
-        // let spAttachments: Array<SpListAttachment> = await this.spService.GetListItems(AppService.AppSettings.documentListUrl);
-        let spItems: Array<SpProductItem> = await this.spService.GetListItems(AppService.AppSettings.productListUrl);
-        let spAttachments: Array<SpListAttachment> = await this.spService.GetAttachmentItems(AppService.AppSettings.documentListUrl);
+        const spItems: Array<SpProductItem> = await this.spService.GetListItems(AppService.AppSettings.productListUrl);
+        const spAttachments: Array<SpListAttachment> = await this.spService.GetAttachmentItems(AppService.AppSettings.documentListUrl);
         return MapperService.MapItemsToProducts(spItems, spAttachments);
     }
 
@@ -42,18 +41,17 @@ export class RecordService {
     public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<string> {
         const newItem = MapperService.MapProductToItem(newProduct);
         if (newProduct.newProduct) {
-            return await this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem)
-            .then(newItem => {
+            return this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem)
+            .then((newItem: SpProductItem) => {
                 AppService.ProductChanged(NotificationType.Create, newProduct.title);
                 return Promise.resolve('Created');
             })
             .catch(e => Promise.reject(e));
-        }
-        else {
-            return await this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
-            .then(newItem => {
+        } else {
+            return this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
+            .then((newItem: SpProductItem) => {
                 AppService.ProductChanged(NotificationType.Update, newProduct.title);
-                return Promise.resolve('Updated')
+                return Promise.resolve('Updated');
             })
             .catch(e => Promise.reject(e));
         }
@@ -63,7 +61,7 @@ export class RecordService {
         const key = columnKey as keyof T;
         return items.slice(0).sort((a: T, b: T) => ((isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1));
     }
-    
+
     /**
      * Creates a new empty product model
      */
@@ -76,12 +74,12 @@ export class RecordService {
         prod.returnDateExpected = new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON();
         prod.newProduct = true;
         prod.status = ProductStatus.open;
-        prod.title = "New Product";
-        prod.description = "";
+        prod.title = 'New Product';
+        prod.description = '';
         prod.tasks = [];
-        if(productType) {
+        if (productType) {
             const temp = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productType ? n : t, undefined);
-            if(temp) {
+            if (temp) {
                 prod.tasks = temp.defaultTeamTasks.map(d => {
                     return {
                         taskedTeamId: d.teamId,
@@ -89,7 +87,7 @@ export class RecordService {
                         taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDays)).toJSON(),
                         taskState: TaskState.pending,
                         taskGuid: uuidv4()
-                    } as TaskModel
+                    } as TaskModel;
                 });
                 prod.productType = temp.typeId;
                 prod.title = `NEW ${temp.typeName}`;
@@ -98,7 +96,7 @@ export class RecordService {
             }
         }
         prod.filterString = `${prod.title} ${prod.description} ${prodTypeTitle}`;
-        const taskedTeams = prod.tasks.map(d => d.taskedTeamId)
+        const taskedTeams = prod.tasks.map(d => d.taskedTeamId);
         prod.filterString += AppService.AppSettings.teams.reduce((t,n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
 
         return prod;

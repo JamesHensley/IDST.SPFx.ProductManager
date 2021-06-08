@@ -8,15 +8,15 @@ export class SPService implements ISPService {
     GetAttachmentItems(listUrl: string): Promise<SpListAttachment[]> {
         throw new Error('Method not implemented.');
     }
-    
+
     GetAttachmentsForGuid(listUrl: string, guid: string): Promise<Array<SpListAttachment>> {
         throw new Error('Method not implemented.');
     }
-    
+
     AddAttachment(listUrl: string, item: SpListAttachment): Promise<SpListAttachment> {
         throw new Error('Method not implemented.');
     }
-    
+
     AddListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
         throw new Error('Method not implemented.');
     }
@@ -24,7 +24,7 @@ export class SPService implements ISPService {
     UpdateListItemByGuid(listUrl: string, guid: string, item: SpProductItem): Promise<SpProductItem> {
         throw new Error('Method not implemented.');
     }
-    
+
     GetListItemByGuid(listUrl: string, guid: string): Promise<SpProductItem> {
         throw new Error('Method not implemented.');
     }
@@ -34,5 +34,4 @@ export class SPService implements ISPService {
             resolve([]);
         });
     }
-
 }

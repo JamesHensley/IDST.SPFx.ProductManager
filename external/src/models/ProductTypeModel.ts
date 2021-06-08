@@ -1,5 +1,3 @@
-import { TaskModel } from "./TaskModel";
-
 export class DocTemplate {
     public docUrl: string;
     public docIcon: string;
@@ -19,6 +17,6 @@ export class ProductTypeModel {
     public defaultSuspenseDays: number;
     public defaultTemplateDocs: Array<DocTemplate>;
     public defaultTeamTasks: Array<TaskTemplate>;
-    /** Indicates if this product is still active or has been discontinuted*/
+    /** Indicates if this product is still active or has been discontinuted */
     public active: boolean;
 }

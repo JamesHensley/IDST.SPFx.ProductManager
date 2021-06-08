@@ -1,4 +1,4 @@
-export interface kvp {
+export interface KeyValPair {
     key: string;
     value: any;
     data?: any;
@@ -10,6 +10,6 @@ export interface IFormInputProps {
     fieldRef: string;
     editing: boolean;
     editLines?: number;
-    options?: Array<kvp>;
+    options?: Array<KeyValPair>;
     onUpdated: (newVal: string, fieldRef: string) => void;
 }

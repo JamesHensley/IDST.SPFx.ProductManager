@@ -12,7 +12,6 @@ export interface ICalendarButtonProps {
 }
 
 export const CalendarButton: React.FunctionComponent<ICalendarButtonProps> = (props) => {
-    //const [selectedDate, setSelectedDate] = React.useState<Date>();
     const [showCalendar, { toggle: toggleShowCalendar, setFalse: hideCalendar }] = useBoolean(false);
     const buttonContainerRef = React.useRef<HTMLDivElement>(null);
 

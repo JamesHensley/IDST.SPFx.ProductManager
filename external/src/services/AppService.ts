@@ -1,19 +1,17 @@
 import { ICommandBarItemProps } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { ProductModel } from '../models/ProductModel';
 import ProductManagerWebPart, { IProductManagerWebPartProps } from '../webparts/ProductManager/ProductManagerWebPart';
 import { NotificationService, NotificationType } from './NotificationService';
 
 export interface ICmdBarListenerProps {
-    callback: ()=>Promise<void>,
-    btnKeys?: Array<string>
+    callback: () => Promise<void>;
+    btnKeys?: Array<string>;
 }
 
 export default class AppService {
     private static _webpart: ProductManagerWebPart;
-    private static _productListeners: Array<()=>Promise<void>> = [];
+    private static _productListeners: Array<() => Promise<void>> = [];
     private static _cmdBarListeners: Array<ICmdBarListenerProps> = [];
-
 
     public static Init(webpart: ProductManagerWebPart): void {
         this._webpart = webpart;
@@ -27,15 +25,14 @@ export default class AppService {
         return this._webpart.context;
     }
 
-    
     //#region Emitters
-    public static RegisterProductListener(callback: ()=> Promise<void>): void {
+    public static RegisterProductListener(callback: () => Promise<void>): void {
         this._productListeners.push(callback);
         // console.log('RegisterProductListener: ', this._productListeners);
     }
 
-    public static UnRegisterProductListener(callback: ()=> void): void {
-        this._productListeners = this._productListeners.filter(f => f != callback);
+    public static UnRegisterProductListener(callback: () => void): void {
+        this._productListeners = this._productListeners.filter(f => f !== callback);
         // console.log('UnRegisterProductListener: ', this._productListeners);
     }
 
@@ -49,8 +46,8 @@ export default class AppService {
         // console.log('RegisterCmdBarListener: ', this._cmdBarListeners);
     }
 
-    public static UnRegisterCmdBarListener(callback: ()=> Promise<void>): void {
-        this._cmdBarListeners = this._cmdBarListeners.filter(f => f.callback!= callback);
+    public static UnRegisterCmdBarListener(callback: () => Promise<void>): void {
+        this._cmdBarListeners = this._cmdBarListeners.filter(f => f.callback !== callback);
         // console.log('UnRegisterCmdBarListener: ', this._cmdBarListeners);
     }
 
@@ -60,21 +57,19 @@ export default class AppService {
                 if (l.btnKeys.indexOf(item['data-automation-id']) >= 0) {
                     l.callback.call(l.callback, item);
                 }
-            }
-            else {
+            } else {
                 l.callback.call(l.callback, item);
             }
         });
     }
     //#endregion
 
-
     //#region strings
-    public static get DateFormatView(): string  {
+    public static get DateFormatView(): string {
         return `dd-LLL-yyyy`;
     }
 
-    public static get DateFormatValue(): string  {
+    public static get DateFormatValue(): string {
         return `yyyy-MM-dd`;
     }
     //#endregion

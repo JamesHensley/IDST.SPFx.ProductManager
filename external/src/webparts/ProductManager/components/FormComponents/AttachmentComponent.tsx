@@ -1,14 +1,13 @@
 import * as React from 'react';
-import { Panel, PanelType, Separator, FocusTrapZone, Stack, DirectionalHint, IconButton, DefaultButton, ICommandBarItemProps, Icon } from '@fluentui/react';
-import { Label } from '@fluentui/react';
-import { getFileTypeIconProps, FileIconType } from '@fluentui/react-file-type-icons';
+import { Label, Icon } from '@fluentui/react';
+import { getFileTypeIconProps } from '@fluentui/react-file-type-icons';
 
 import * as styles from '../ProductManager.module.scss';
 
 import { AttachmentModel } from '../../../../models/AttachmentModel';
 
 export interface IAttachmentComponentProps {
-    AttachmentItems: Array<AttachmentModel>
+    AttachmentItems: Array<AttachmentModel>;
 }
 
 export class AttachmentComponent extends React.Component<IAttachmentComponentProps, {}> {
@@ -20,9 +19,9 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
             <div className={`${this.grid} ${styles.padTop3}`}>
                 <Label>Attachments</Label>
                 <div className={styles.gridRow}>
-                    <Label className={styles.gridCol1} style={{fontSize: '.9rem' }}></Label>
-                    <Label className={styles.gridCol6} style={{fontSize: '.9rem' }}>Title</Label>
-                    <Label className={styles.gridCol5} style={{fontSize: '.9rem' }}>Author</Label>
+                    <Label className={styles.gridCol1} style={{ fontSize: '.9rem' }}></Label>
+                    <Label className={styles.gridCol6} style={{ fontSize: '.9rem' }}>Title</Label>
+                    <Label className={styles.gridCol5} style={{ fontSize: '.9rem' }}>Author</Label>
                 </div>
                 {(this.props.AttachmentItems || []).map(a => {
                     const docIcon = getFileTypeIconProps({

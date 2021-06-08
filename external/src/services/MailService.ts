@@ -1,22 +1,22 @@
-import AppService from "./AppService";
+import AppService from './AppService';
 import { SPHttpClient, SPHttpClientConfiguration } from '@microsoft/sp-http';
 
 export class MailService {
     private static get spHttpClient(): SPHttpClient {
         return AppService.AppContext.spHttpClient;
-    };
+    }
 
-    private static get mailUrl() {
+    private static get mailUrl(): string {
         const baseUrl: string = AppService.AppContext.pageContext.web.absoluteUrl;
         return `${baseUrl}/_api/SP.Utilities.Utility.SendEmail`;
     }
 
-    private static get emailHeaders() {
-        const digestVal: string = document.querySelector("#__REQUESTDIGEST") ? (document.querySelector("#__REQUESTDIGEST") as HTMLInputElement).value : 'NoDigestValue';
+    private static get emailHeaders(): any {
+        const digestVal: string = document.querySelector('#__REQUESTDIGEST') ? (document.querySelector('#__REQUESTDIGEST') as HTMLInputElement).value : 'NoDigestValue';
         return {
             method: 'POST',
             headers: {
-                accept: 'application/json;odata=nometadata',
+                'accept': 'application/json;odata=nometadata',
                 'content-type': 'application/json;odata=nometadata',
                 'X-RequestDigest': digestVal
             },
@@ -32,22 +32,22 @@ export class MailService {
             Subject: subject,
             Body: msgBody
         };
-        let headers = this.emailHeaders;
+        const headers = this.emailHeaders;
         headers.body = JSON.stringify(payload);
 
         if (AppService.AppSettings.isDebugging) {
             console.log('EmailService.SendEmail: ', this.mailUrl);
             console.log('EmailService.SendEmail: ', JSON.stringify(headers, null, '  '));
             return Promise.resolve('');
-        }
-        else {
+        } else {
             return new Promise<string>((resolve, reject) => {
-                //this.spHttpClient.post(this.mailUrl, headers, SPHttpClient.configurations.v1)
+                // this.spHttpClient.post(this.mailUrl, headers, SPHttpClient.configurations.v1)
                 fetch(this.mailUrl, headers)
                 .then(response => {
                     response.json()
                     .then((responseJSON: any) => responseJSON.value)
-                    .then((responseJSON: any) => resolve(responseJSON));
+                    .then((responseJSON: any) => resolve(responseJSON))
+                    .catch(e => Promise.reject(e));
                 })
                 .catch(e => {
                     console.log('Error occured in "MailService.SendEmail":', e);

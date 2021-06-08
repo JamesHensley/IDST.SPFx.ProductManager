@@ -3,7 +3,7 @@ import { ContextualMenu, ContextualMenuItemType, IContextualMenuItem } from '@fl
 import { IconButton } from '@fluentui/react';
 
 export interface IContextMenuProps {
-    menuItems: Array<IContextualMenuItem>
+    menuItems: Array<IContextualMenuItem>;
 }
 
 export const ContextMenu: React.FunctionComponent<IContextMenuProps> = (props) => {
@@ -14,7 +14,6 @@ export const ContextMenu: React.FunctionComponent<IContextMenuProps> = (props) =
         setShowContextualMenu(true);
     }, []);
     const onHideContextualMenu = React.useCallback(() => setShowContextualMenu(false), []);
-    //<IconButton></IconButton>
     return (
         <div>
             <div ref={linkRef} onClick={onShowContextualMenu}>...</div>

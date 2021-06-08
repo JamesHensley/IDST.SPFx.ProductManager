@@ -39,7 +39,7 @@ export class ColumnSelector extends React.Component<IColumnSelectorProps, IColum
       canCheck: true,
       isChecked: false,
       onClick: this.onToggleSelect.bind(this)
-    },
+    }
   ];
   private myRef: React.RefObject<any>;
 
@@ -63,7 +63,7 @@ export class ColumnSelector extends React.Component<IColumnSelectorProps, IColum
           items={this.menuItems}
           hidden={false}
           target={this.myRef}
-          //onItemClick={onHideContextualMenu}
+          // onItemClick={onHideContextualMenu}
           onDismiss={this.props.hideMenuCallBack.bind(this, this.state)}
         />
       </div>

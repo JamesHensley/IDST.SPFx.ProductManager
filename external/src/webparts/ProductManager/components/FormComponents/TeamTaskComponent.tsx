@@ -1,11 +1,6 @@
 import * as React from 'react';
-import { Panel, PanelType, Separator, FocusTrapZone, Stack, DirectionalHint, IconButton, DefaultButton, ICommandBarItemProps, IContextualMenuItem } from '@fluentui/react';
-import { Label } from '@fluentui/react';
-import { v4 as uuidv4 } from 'uuid';
-
 import * as styles from '../ProductManager.module.scss';
-
-import { TaskModel, TaskState } from '../../../../models/TaskModel';
+import { TaskModel } from '../../../../models/TaskModel';
 import { TeamTaskComponentPane } from './TeamTaskComponentPane';
 import AppService from '../../../../services/AppService';
 
@@ -58,10 +53,10 @@ export class TeamTaskComponent extends React.Component<ITeamTaskComponentProps, 
         this.props.taskUpdateCancel(newTask.taskGuid);
     }
 
-    public componentDidMount() {
+    public componentDidMount(): void {
         // console.log('TeamTaskComponentPane.componentDidMount: ', this.props, this.state);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         // console.log('TeamTaskComponentPane.componentWillUnmount: ', this.props, this.state);
     }
 }
