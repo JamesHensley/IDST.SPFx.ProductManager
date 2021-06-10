@@ -29,7 +29,8 @@ module.exports = merge({
         /^@microsoft\//,
         'HelloWorldWebPartStrings',
         'MyNewWebPartWebPartStrings',
-        'ControlStrings'
+        'ControlStrings',
+        'PropertyControlStrings'
     ],
     module: {
         rules: [

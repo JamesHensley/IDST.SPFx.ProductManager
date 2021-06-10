@@ -1,15 +1,7 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
-import {
-  BaseClientSideWebPart, WebPartContext
-} from '@microsoft/sp-webpart-base';
-
-import {
-  IPropertyPaneField,
-  IPropertyPaneConfiguration,
-  PropertyPaneTextField
-} from '@microsoft/sp-property-pane';
+import { BaseClientSideWebPart, WebPartContext, IPropertyPaneConfiguration, PropertyPaneTextField } from '@microsoft/sp-webpart-base';
 
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
@@ -78,9 +70,9 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
             {
               groupName: '',
               groupFields: [
-                // PropertyPaneTextField('description', {
-                //   label: this.properties.description
-                // })
+                PropertyPaneTextField('description', {
+                   label: this.properties.description
+                })
               ]
             }
           ]
