@@ -9,6 +9,7 @@ import { RecordService } from '../../../services/RecordService';
 
 import { FormInputDate } from './FormComponents/FormInputDate';
 import { FormInputText } from './FormComponents/FormInputText';
+import { FormInputUrl } from './FormComponents/FormInputUrl';
 import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
 import { TaskComponent } from './FormComponents/TaskComponent';
 import { AttachmentComponent } from './FormComponents/AttachmentComponent';
@@ -112,6 +113,16 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 labelValue={'Description'} editing={this.state.isEditing}
                                 fieldValue={this.state.draftProduct.description} editLines={8}
                                 fieldRef={'description'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.gridRow}>
+                        <div className={styles.gridCol12}>
+                            <FormInputUrl
+                                labelValue={'Request URL'} editing={this.state.isEditing}
+                                fieldValue={this.state.draftProduct.requestUrl}
+                                fieldRef={'requestUrl'}
                                 onUpdated={this.fieldUpdated.bind(this)}
                             />
                         </div>

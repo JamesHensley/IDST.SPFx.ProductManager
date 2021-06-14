@@ -56,7 +56,6 @@ export class RecordService {
                     } as IResult);
                 })
                 .catch(e => Promise.reject(e));
-                //return Promise.resolve('Created');
             })
             .catch(e => Promise.reject(e));
         } else {

@@ -32,4 +32,5 @@ export class SpProductItem {
     public EventType: string;
     public EventDate: string;
     public ClassificationId: string;
+    public RequestUrl: string;
 }

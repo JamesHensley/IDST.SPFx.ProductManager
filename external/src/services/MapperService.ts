@@ -22,7 +22,8 @@ export class MapperService {
             ProductType: prod.productType,
             EventType: prod.eventType,
             EventDate: prod.eventDate,
-            ClassificationId: prod.classificationId
+            ClassificationId: prod.classificationId,
+            RequestUrl: prod.requestUrl
         };
         return listItem;
     }
@@ -51,6 +52,7 @@ export class MapperService {
             eventType: item.EventType,
             eventDate: item.EventDate,
             classificationId: item.ClassificationId,
+            requestUrl: item.RequestUrl,
             newProduct: false,
             filterString: `${item.Title} ${item.Description} ${prodTypeTitle} ${eventTypeTitle}`
         };

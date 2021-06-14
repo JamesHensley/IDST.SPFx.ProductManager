@@ -24,6 +24,7 @@ export class ProductModel {
     public eventType: string;
     public eventDate: string;
     public classificationId: string;
+    public requestUrl: string;
 
     /** Used internally to determine if the loaded product is being created or if it exists in SharePoint already */
     public newProduct: boolean;
