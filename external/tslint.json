@@ -4,6 +4,7 @@
     ],
     "comment-format": [false, "always"],
     "rules": {
+      "deprecation": [false, "always"],
       "semicolon": [
         true,
         "always"
