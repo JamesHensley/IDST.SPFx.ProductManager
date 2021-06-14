@@ -6,8 +6,8 @@ export class MockSPService implements ISPService {
     private _mockedProductItems: Array<SpProductItem> = [];
     private _mockedAttachmentItems: Array<SpListAttachment> = [];
     private get mockedProductItems(): Array<SpProductItem> {
-        if (this._mockedProductItems.length < 125) {
-            for (let x = this._mockedProductItems.length; x < 125; x++) {
+        if (this._mockedProductItems.length === 0) {
+            for (let x = 0; x < 4; x++) {
                 this._mockedProductItems.push(Faker.CreateFakeItem());
             }
         }
@@ -56,17 +56,7 @@ export class MockSPService implements ISPService {
     }
 
     GetListItems(listUrl: string): Promise<Array<SpProductItem>> {
-        return new Promise<Array<SpProductItem>>((resolve, reject) => {
-            fetch(listUrl)
-            .then(data => data.json())
-            .then((data: Array<SpProductItem>) => {
-                this.mockedProductItems = [].concat.apply(this.mockedProductItems, data)
-                .filter((f, i, e) => e.map(m => m.GUID).indexOf(f.GUID) === i);
-
-                resolve(this.mockedProductItems);
-            })
-            .catch(e => reject(e));
-        });
+        return Promise.resolve(this.mockedProductItems);
     }
 
     GetAttachmentItems(listUrl: string): Promise<Array<SpListAttachment>> {

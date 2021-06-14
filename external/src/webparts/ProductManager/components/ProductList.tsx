@@ -81,7 +81,6 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 
   /** Data displayed in the list */
   private get allItems(): Array<IDocument> {
-    console.log('ProductList.allItems: ', this.props.allProducts);
     return (this.props.allProducts || [])
     .filter(i => (i.filterString.toLowerCase().indexOf(SortFilterSetting.FilterText.toLowerCase()) >= 0))
     .map(d => {

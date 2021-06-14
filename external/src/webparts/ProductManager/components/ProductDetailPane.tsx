@@ -21,50 +21,29 @@ import { FormInputComboBox } from './FormComponents/FormInputComboBox';
 
 export interface IProductDetailPaneProps {
     isVisible: boolean;
+    isEditing: boolean;
     currentProductId: string;
-    paneCloseCallBack: () => void;
     currentProduct: ProductModel;
+    /** used to notify the parent that the pane should be destroyed */
+    paneCloseCallBack: () => void;
 }
 
 export interface IProductDetailPaneState {
     isEditing: boolean;
     draftProduct: ProductModel;
+    originalProduct: ProductModel;
 }
 
 // This needs a lot of work... especially the editing portion
 export default class ProductDetailPane extends React.Component<IProductDetailPaneProps, IProductDetailPaneState> {
-    private committedProduct: ProductModel;
-    // private receiver: any;
-
     constructor(props: IProductDetailPaneProps) {
         super(props);
 
         this.state = {
-            isEditing: false,
-            draftProduct: this.props.currentProduct
+            isEditing: this.props.isEditing,
+            draftProduct: this.props.currentProduct,
+            originalProduct: this.props.currentProduct
         };
-
-        // this.receiver = this.cmdBarItemClicked.bind(this);
-
-        /*
-        if (this.props.currentProductId) {
-            RecordService.GetProductByGUID(this.props.currentProductId)
-            .then((prod: ProductModel) => {
-                this.committedProduct = prod;
-                this.setState({ isEditing: false, isVisible: this.props.isVisible, draftProduct: prod });
-            })
-            .catch(e => console.log('ProductDetailPane.constructor: Could not get product model', this.props));
-        }
-        */
-    }
-
-    public componentDidMount(): void {
-        // Register this component to listen for new products
-        // AppService.RegisterCmdBarListener({ callback: this.receiver, btnKeys: ['newProduct'] } as ICmdBarListenerProps);
-    }
-
-    public componentWillUnmount(): void {
-        // AppService.UnRegisterCmdBarListener(this.receiver);
     }
 
     public render(): React.ReactElement<IProductDetailPaneProps> {
@@ -75,8 +54,8 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 isLightDismiss={!this.state.isEditing}
                 isHiddenOnDismiss={false}
                 headerText={this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
-                isOpen={true}
-                onDismiss={this.togglePanelVisibility.bind(this)}
+                isOpen={this.props.isVisible}
+                onDismiss={this.closePane.bind(this)}
                 closeButtonAriaLabel='Close'
                 type={PanelType.medium}
             >
@@ -217,7 +196,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         );
     }
 
-    private togglePanelVisibility(): void {
+    private closePane(): void {
         this.props.paneCloseCallBack();
     }
 
@@ -232,14 +211,17 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
             MailService.SendEmail('Update', teamEmails, 'A product has been ' + result.resultStr)
             .catch(e => Promise.reject(e));
-console.log('saveRFI-', result.productModel);
-            this.setState({ isEditing: false, draftProduct: result.productModel });
+            this.setState({ isEditing: false, draftProduct: result.productModel, originalProduct: result.productModel });
         })
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
     }
 
     private cancelRFIChanges(): void {
-        this.setState({ isEditing: false, draftProduct: this.committedProduct });
+        if(this.state.draftProduct.newProduct) {
+            this.props.paneCloseCallBack();
+        } else {
+            this.setState({ isEditing: false, draftProduct: this.state.originalProduct });
+        }
     }
 
     private fieldUpdated(newVal: any, fieldRef: string): void {
@@ -253,15 +235,4 @@ console.log('saveRFI-', result.productModel);
         newDraft.tasks = [].concat.apply(this.state.draftProduct.tasks, [newTask]);
         this.setState({ draftProduct: newDraft });
     }
-
-    /*
-    private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
-        console.log('ProductDetailPane.cmdBarItemClicked: ', item, this.props, this.state);
-
-        this.setState({
-            isEditing: true,
-            draftProduct: RecordService.GetNewProductModel(item.data.id)
-        });
-    }
-    */
 }

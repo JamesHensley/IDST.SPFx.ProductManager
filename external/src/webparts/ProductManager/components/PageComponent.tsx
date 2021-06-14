@@ -14,8 +14,10 @@ import RollupView from './RollupView';
 export interface IPageComponentProps { }
 
 export interface IPageComponentState {
-    panelOpen: boolean;
+    panelVisible: boolean;
+    panelEditing: boolean;
     currentProductId: string;
+    currentProduct: ProductModel;
     allProducts: Array<ProductModel>;
     view: string;
 }
@@ -30,8 +32,10 @@ export default class PageComponent extends React.Component <IPageComponentProps,
         super(props);
 
         this.state = {
-            panelOpen: false,
+            panelVisible: false,
+            panelEditing: false,
             currentProductId: null,
+            currentProduct: null,
             allProducts: [],
             view: 'ProductList'
         };
@@ -44,18 +48,16 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     public render(): React.ReactElement<{}> {
-        console.log('PageComponent.render');
         return(
             <div className={styles.productManager}>
-                { this.state.panelOpen &&
-                    <ProductDetailPane
-                        key={new Date().getTime()}
-                        paneCloseCallBack={this.eventPaneClose.bind(this)}
-                        currentProductId={this.state.currentProductId}
-                        isVisible={this.state.panelOpen}
-                        currentProduct={this.state.allProducts.reduce((t,n) => n.guid == this.state.currentProductId ? n : t, null)}
-                    />
-                }
+                <ProductDetailPane
+                    key={new Date().getTime()}
+                    paneCloseCallBack={this.eventPaneClose.bind(this)}
+                    currentProductId={this.state.currentProductId}
+                    currentProduct={this.state.currentProduct}
+                    isVisible={this.state.panelVisible}
+                    isEditing={this.state.panelEditing}
+                />
                 <div className={styles.grid}>
                     <div className={styles.gridRow}>
                         <ProductManagerCmdBar />
@@ -96,14 +98,16 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 
     private productClicked(prodId: string): void {
         this.setState({
-            panelOpen: true,
-            currentProductId: prodId
+            panelVisible: true,
+            panelEditing: false,
+            currentProductId: prodId,
+            currentProduct: this.state.allProducts.reduce((t,n) => n.guid == prodId ? n : t, null)
         });
     }
 
     private eventPaneClose(): void {
         this.setState({
-            panelOpen: false,
+            panelVisible: false,
             currentProductId: null
         });
     }
@@ -112,7 +116,11 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     private async updateProducts(): Promise<void> {
         return RecordService.GetProducts()
         .then(allProducts => {
-            this.setState({ allProducts: allProducts });
+            console.log('PageComponent.updateProducts-State:', this.state);
+            this.setState({
+                allProducts: allProducts,
+                currentProduct: allProducts.reduce((t,n) => n.guid == this.state.currentProductId ? n : t, null)
+            });
         })
         .then(() => Promise.resolve())
         .catch(e => Promise.reject(e));
@@ -127,8 +135,14 @@ export default class PageComponent extends React.Component <IPageComponentProps,
             case 'viewList':
                 this.setState({ view: 'ProductList' });
                 break;
-            case 'newItems':
-                console.log(item);
+            case 'newProduct':
+                const newRecord = RecordService.GetNewProductModel(item.data.id);
+                this.setState({
+                    currentProductId: newRecord.guid,
+                    currentProduct: newRecord,
+                    panelVisible: true,
+                    panelEditing: true
+                });
                 break;
         }
         return Promise.resolve();

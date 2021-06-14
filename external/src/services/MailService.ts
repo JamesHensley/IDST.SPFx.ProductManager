@@ -36,8 +36,8 @@ export class MailService {
         headers.body = JSON.stringify(payload);
 
         if (AppService.AppSettings.isDebugging) {
-            console.log('EmailService.SendEmail: ', this.mailUrl);
-            console.log('EmailService.SendEmail: ', JSON.stringify(headers, null, '  '));
+            // console.log('EmailService.SendEmail: ', this.mailUrl);
+            // console.log('EmailService.SendEmail: ', JSON.stringify(headers, null, '  '));
             return Promise.resolve('');
         } else {
             return new Promise<string>((resolve, reject) => {

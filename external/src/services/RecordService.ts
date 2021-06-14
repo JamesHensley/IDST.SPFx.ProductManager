@@ -48,8 +48,6 @@ export class RecordService {
             return this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem)
             .then((newItem: SpProductItem) => {
                 AppService.ProductChanged(NotificationType.Create, newProduct.title);
-                debugger;
-
                 return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
                 .then(attachments => {
                     return Promise.resolve({
