@@ -12,6 +12,10 @@ import { ProductTypeModel } from '../models/ProductTypeModel';
 import { task } from 'gulp';
 import { TaskModel, TaskState } from '../models/TaskModel';
 
+export interface IResult {
+    productModel: ProductModel;
+    resultStr: string;
+}
 export class RecordService {
     private static _prodService = new SPService();
     private static _mockService = new MockSPService();
@@ -38,20 +42,35 @@ export class RecordService {
         return spItems;
     }
 
-    public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<string> {
+    public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<IResult> {
         const newItem = MapperService.MapProductToItem(newProduct);
         if (newProduct.newProduct) {
             return this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem)
             .then((newItem: SpProductItem) => {
                 AppService.ProductChanged(NotificationType.Create, newProduct.title);
-                return Promise.resolve('Created');
+                return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.GUID)
+                .then(attachments => {
+                    return Promise.resolve({
+                        productModel: MapperService.MapItemToProduct(newItem, attachments),
+                        resultStr: 'Created'
+                    } as IResult);
+                })
+                .catch(e => Promise.reject(e));
+                //return Promise.resolve('Created');
             })
             .catch(e => Promise.reject(e));
         } else {
             return this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
             .then((newItem: SpProductItem) => {
                 AppService.ProductChanged(NotificationType.Update, newProduct.title);
-                return Promise.resolve('Updated');
+                return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.GUID)
+                .then(attachments => {
+                    return Promise.resolve({
+                        productModel: MapperService.MapItemToProduct(newItem, attachments),
+                        resultStr: 'Updated'
+                    } as IResult);
+                })
+                .catch(e => Promise.reject(e));
             })
             .catch(e => Promise.reject(e));
         }

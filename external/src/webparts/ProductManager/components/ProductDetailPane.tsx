@@ -204,18 +204,18 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     private saveRFI(): void {
         RecordService.UpdateProductByGuid(this.state.draftProduct.guid, this.state.draftProduct)
         .then(result => {
-            this.toggleEditMode();
-
             const teamIds = (this.state.draftProduct.tasks || []).map(d => d.taskedTeamId);
             const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
-            MailService.SendEmail('Update', teamEmails, 'A product has been ' + result)
+            MailService.SendEmail('Update', teamEmails, 'A product has been ' + result.resultStr)
             .catch(e => Promise.reject(e));
+
+            this.setState({ isEditing: false, isVisible: false, draftProduct: result.productModel });
         })
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
     }
 
     private cancelRFIChanges(): void {
-        this.toggleEditMode();
+        this.setState({ isEditing: false, isVisible: true, draftProduct: this.committedProduct });
     }
 
     private fieldUpdated(newVal: any, fieldRef: string): void {
