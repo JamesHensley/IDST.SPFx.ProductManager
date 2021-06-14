@@ -29,4 +29,6 @@ export class SpProductItem {
     public AssignedTeamData: string;
     public ProductStatus: string;
     public ProductType: string;
+    public EventType: string;
+    public EventDate: string;
 }

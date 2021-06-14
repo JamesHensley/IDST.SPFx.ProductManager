@@ -22,6 +22,9 @@ export class ProductModel {
     public attachedDocuments: Array<AttachmentModel>;
     public productType: string;
     public newProduct: boolean;
+    
+    public eventType: string;
+    public eventDate: string;
 
     public filterString: string;
 }

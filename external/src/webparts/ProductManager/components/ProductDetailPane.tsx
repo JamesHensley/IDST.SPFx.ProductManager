@@ -87,7 +87,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                     </Stack>
 
                     <div className={styles.gridRow}>
-                        <div className={styles.gridCol6}>
+                        <div className={styles.gridCol8}>
                             <FormInputText
                                 labelValue={'Title'} editing={this.state.isEditing}
                                 fieldValue={this.state.draftProduct.title}
@@ -95,17 +95,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 onUpdated={this.fieldUpdated.bind(this)}
                             />
                         </div>
-                        <div className={styles.gridCol3}>
-                            <FormInputDropDown
-                                labelValue={'Product Type'}
-                                fieldValue={this.state.draftProduct.productType}
-                                fieldRef={'productType'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                                editing={this.state.isEditing}
-                                options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
-                            />
-                        </div>
-                        <div className={styles.gridCol3}>
+                        <div className={styles.gridCol4}>
                             <FormInputDropDown
                                 labelValue={'Product Status'}
                                 fieldValue={this.state.draftProduct.status}
@@ -121,6 +111,28 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         </div>
                     </div>
                     <div className={styles.gridRow}>
+                        <div className={styles.gridCol6}>
+                            <FormInputDropDown
+                                labelValue={'Product Type'}
+                                fieldValue={this.state.draftProduct.productType}
+                                fieldRef={'productType'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                                editing={this.state.isEditing}
+                                options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
+                            />
+                        </div>
+                        <div className={styles.gridCol6}>
+                            <FormInputDropDown
+                                labelValue={'Event Type'}
+                                fieldValue={this.state.draftProduct.eventType}
+                                fieldRef={'eventType'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                                editing={this.state.isEditing}
+                                options={AppService.AppSettings.eventTypes.map(d => { return { key: d.eventTypeId, value: d.eventTitle } as KeyValPair; })}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.gridRow}>
                         <div className={styles.gridCol12}>
                             <FormInputText
                                 labelValue={'Description'} editing={this.state.isEditing}
@@ -131,7 +143,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         </div>
                     </div>
                     <div className={styles.gridRow}>
-                        <div className={styles.gridCol6}>
+                        <div className={styles.gridCol4}>
                             <FormInputDate
                                 labelValue={'Start Date'} editing={this.state.isEditing}
                                 fieldValue={this.state.draftProduct.requestDate}
@@ -139,11 +151,19 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 onUpdated={this.fieldUpdated.bind(this)}
                             />
                         </div>
-                        <div className={styles.gridCol6}>
+                        <div className={styles.gridCol4}>
                             <FormInputDate
                                 labelValue={'Suspense Date'} editing={this.state.isEditing}
                                 fieldValue={this.state.draftProduct.returnDateExpected}
                                 fieldRef={'returnDateExpected'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                            />
+                        </div>
+                        <div className={styles.gridCol4}>
+                            <FormInputDate
+                                labelValue={'Event Date'} editing={this.state.isEditing}
+                                fieldValue={this.state.draftProduct.eventDate}
+                                fieldRef={'eventDate'}
                                 onUpdated={this.fieldUpdated.bind(this)}
                             />
                         </div>

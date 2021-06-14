@@ -19,7 +19,9 @@ export class MapperService {
             ReturnDateExpected: prod.returnDateExpected,
             AssignedTeamData: JSON.stringify(prod.tasks),
             ProductStatus: prod.status.toLowerCase(),
-            ProductType: prod.productType
+            ProductType: prod.productType,
+            EventType: prod.eventType,
+            EventDate: prod.eventDate
         };
         return listItem;
     }
@@ -31,6 +33,7 @@ export class MapperService {
             .map(d => this.MapSpAttachmentToAttachment(d));
 
         const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === item.ProductType ? n.typeName : t, '');
+        const eventTypeTitle = AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === item.EventType ? n.eventTitle : t, '');
         const pModel: ProductModel = {
             id: item.Id,
             guid: item.GUID,
@@ -44,8 +47,10 @@ export class MapperService {
             attachedDocuments: attachedDocs,
             status: ProductStatus[item.ProductStatus],
             productType: item.ProductType,
+            eventType: item.EventType,
+            eventDate: item.EventDate,
             newProduct: false,
-            filterString: `${item.Title} ${item.Description} ${prodTypeTitle}`
+            filterString: `${item.Title} ${item.Description} ${prodTypeTitle} ${eventTypeTitle}`
         };
         const taskedTeams = (teamTasks || []).map(d => d.taskedTeamId);
         pModel.filterString += AppService.AppSettings.teams.reduce((t, n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');

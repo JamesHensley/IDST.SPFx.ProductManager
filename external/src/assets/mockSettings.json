@@ -89,5 +89,25 @@
             "defaultTemplateDocs": [],
             "defaultTeamTasks": []
         }
+    ],
+    "eventTypes": [
+        {
+            "eventTypeId": "1",
+            "eventTitle": "Event Type 1",
+            "eventDescription": "This is a really detail description of event-type 1... enjoy it",
+            "defaultEventSuspenseOffset": 5
+        },
+        {
+            "eventTypeId": "2",
+            "eventTitle": "Event Type 2",
+            "eventDescription": "This is a really detail description of event-type 2... enjoy it",
+            "defaultEventSuspenseOffset": 3
+        },
+        {
+            "eventTypeId": "3",
+            "eventTitle": "Event Type 3",
+            "eventDescription": "This is a really detail description of event-type 3... enjoy it",
+            "defaultEventSuspenseOffset": 7
+        }
     ]
 }
