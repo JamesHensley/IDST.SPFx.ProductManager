@@ -144,20 +144,23 @@ class SortFilterSetting {
       isSortedDescending: false,
       data: { type: 'object', colCount: 1, displayed: true }
     }
-  ])
-  .map(d => {
-    // Handle the sorting icons
-    d.isSorted = SortFilterSetting.SortField === d.fieldName;
-    d.isSortedDescending = d.isSorted && SortFilterSetting.SortDir === -1;
-    return d;
-  });
+  ]);
 
   public static set DisplayedFields(val: Array<IColumn>) {
     this.displayedFields = this.displayedFields
-      .map(d => { d.data.displayed = (val.map(d => d.fieldName)).indexOf(d.fieldName) >= 0; return d; });
+    .map(d => { d.data.displayed = (val.map(d => d.fieldName)).indexOf(d.fieldName) >= 0; return d; });
   }
 
-  public static get DisplayedFields(): Array<IColumn> { return this.displayedFields.filter(f => f.data.displayed); }
+  public static get DisplayedFields(): Array<IColumn> {
+    return this.displayedFields
+    .map(d => {
+      // Handle the sorting icons
+      d.isSorted = SortFilterSetting.SortField === d.fieldName;
+      d.isSortedDescending = d.isSorted && SortFilterSetting.SortDir === -1;
+      return d;
+    })
+    .filter(f => f.data.displayed);
+  }
 }
 
 export interface IDocument {
@@ -203,7 +206,10 @@ export default class ProductList extends React.Component<IProductListProps, IPro
   }
 
   private get allColumns(): Array<IColumn> {
-    return SortFilterSetting.DisplayedFields.map(d => {
+    const retVal = SortFilterSetting.DisplayedFields;
+    console.log('Got allColumns: ', retVal);
+    
+    return retVal.map(d => {
       d.onColumnClick = this.onColumnClick.bind(this, d);
       d.onRender = ((i: IDocument, idx, col) => {
         switch (col.fieldName) {
