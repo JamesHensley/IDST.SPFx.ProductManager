@@ -6,6 +6,7 @@ import { TaskModel, TaskState } from '../models/TaskModel';
 
 export class Faker {
     private static _sentences: Array<string>;
+    private static _fakeCustomers = ['Doctor Creep', 'George Washington', 'Daniel Boone'];
 
     public static CreateFakeAttachment(itemGUID: string): SpListAttachment {
         const attachmentName = [ 'File1', 'File2', 'File3', 'File4', 'File5' ][Math.round(Math.random() * 4)];
@@ -53,7 +54,7 @@ export class Faker {
         const item: SpProductItem = {
             Id: Math.floor(Math.random() * 300),
             Title: (title ? title : this.mockTitles[Math.round(Math.random() * this.mockTitles.length)]),
-            GUID: newItemGuid,
+            Guid: newItemGuid,
             Description: this.mockSentences[Math.round(Math.random() * this.mockSentences.length)],
             RequestDate: new Date(reqDate).toJSON(),
             ReturnDateExpected: new Date(endDate).toJSON(),
@@ -65,7 +66,8 @@ export class Faker {
             EventType: (AppService.AppSettings.eventTypes[Math.round(Math.random() * (AppService.AppSettings.eventTypes.length - 1))]).eventTypeId,
             EventDate: new Date (new Date(endDate).getTime() + (1000 * 60 * 60 * 24)).toJSON(),
             ClassificationId: (AppService.AppSettings.classificationModels[Math.round(Math.random() * (AppService.AppSettings.classificationModels.length - 1))]).classificationId,
-            RequestUrl: 'https://www.github.com'
+            RequestUrl: 'https://www.github.com',
+            Customer: this._fakeCustomers[Math.round(Math.random() * (this._fakeCustomers.length - 1))]
         };
         // item.ProductStatus === 'Closed' ? new Date(new Date(item.RequestDate).getTime() + (3 * 24 * 60 * 60 * 1000)).toJSON() : null;
         return item;

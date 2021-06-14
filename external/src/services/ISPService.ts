@@ -8,4 +8,6 @@ export interface ISPService {
     AddAttachment(listUrl: string, item: SpListAttachment): Promise<SpListAttachment>;
     GetAttachmentsForGuid(listUrl: string, guid: string): Promise<Array<SpListAttachment>>;
     GetAttachmentItems(listUrl: string): Promise<Array<SpListAttachment>>;
+
+    GetSingleFieldValues(listUrl: string, fieldName: string): Promise<Array<string>>;
 }

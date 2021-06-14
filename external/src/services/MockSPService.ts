@@ -6,8 +6,8 @@ export class MockSPService implements ISPService {
     private _mockedProductItems: Array<SpProductItem> = [];
     private _mockedAttachmentItems: Array<SpListAttachment> = [];
     private get mockedProductItems(): Array<SpProductItem> {
-        if (this._mockedProductItems.length === 0) {
-            for (let x = 0; x < 125; x++) {
+        if (this._mockedProductItems.length < 125) {
+            for (let x = this._mockedProductItems.length; x < 125; x++) {
                 this._mockedProductItems.push(Faker.CreateFakeItem());
             }
         }
@@ -20,7 +20,7 @@ export class MockSPService implements ISPService {
         if (this._mockedAttachmentItems.length === 0) {
             this._mockedProductItems.forEach(mP => {
                 for (let x = 0; x < Math.round(Math.random() * 3); x++) {
-                    this._mockedAttachmentItems.push(Faker.CreateFakeAttachment(mP.GUID));
+                    this._mockedAttachmentItems.push(Faker.CreateFakeAttachment(mP.Guid));
                 }
             });
         }
@@ -29,6 +29,11 @@ export class MockSPService implements ISPService {
     }
     private set mockedAttachmentItems(val: Array<SpListAttachment>) {
         this._mockedAttachmentItems = val;
+    }
+
+    GetSingleFieldValues(listUrl: string, fieldName: string): Promise<Array<string>> {
+        const retVal = this._mockedProductItems.map(d => d[fieldName]).filter((f, i, e) => e.indexOf(f) === i).sort();
+        return Promise.resolve(retVal);
     }
 
     GetAttachmentsForGuid(listUrl: string, guid: string): Promise<Array<SpListAttachment>> {
@@ -46,7 +51,7 @@ export class MockSPService implements ISPService {
     }
 
     UpdateListItemByGuid(listUrl: string, guid: string, item: SpProductItem): Promise<SpProductItem> {
-        this.mockedProductItems = this.mockedProductItems.reduce((t, n) => n.GUID === guid ? t.concat([item]) : t.concat([n]), []);
+        this.mockedProductItems = this.mockedProductItems.reduce((t, n) => n.Guid === guid ? t.concat([item]) : t.concat([n]), []);
         return Promise.resolve(item);
     }
 
@@ -80,7 +85,7 @@ export class MockSPService implements ISPService {
 
     GetListItemByGuid(listUrl: string, guid: string): Promise<SpProductItem> {
         return new Promise<SpProductItem>((resolve, reject) => {
-            const prod = this.mockedProductItems.reduce((t,n) => n.GUID === guid ? n : t, null);
+            const prod = this.mockedProductItems.reduce((t,n) => n.Guid === guid ? n : t, null);
             resolve(prod);
         });
     }

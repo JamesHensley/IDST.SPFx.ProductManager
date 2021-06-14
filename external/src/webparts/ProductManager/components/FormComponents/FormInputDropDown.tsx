@@ -9,7 +9,6 @@ import { IFormInputProps, KeyValPair } from './IFormInputProps';
 export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
 
     render(): React.ReactElement<IFormInputProps> {
-        console.log('FormInputDropDown.render: ', this.props);
         const options = this.props.options.map(d => { return { key: d.key, text: d.value } as IDropdownOption; });
         const selectedKey = this.props.fieldValue;
         const dropdownStyles = { root: { width: '100%' } };

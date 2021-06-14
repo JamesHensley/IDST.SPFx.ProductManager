@@ -10,7 +10,7 @@ export class MapperService {
         // TODO: Finish this
         const listItem: SpProductItem = {
             Id: prod.id,
-            GUID: prod.guid,
+            Guid: prod.guid,
             Title: prod.title,
             Description: prod.description,
             Requestor: prod.requestor,
@@ -23,41 +23,33 @@ export class MapperService {
             EventType: prod.eventType,
             EventDate: prod.eventDate,
             ClassificationId: prod.classificationId,
-            RequestUrl: prod.requestUrl
+            RequestUrl: prod.requestUrl,
+            Customer: prod.customer
         };
         return listItem;
     }
 
     public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
-        const teamTasks: Array<TaskModel> = JSON.parse(item.AssignedTeamData || '[]');
-        const attachedDocs = attachments
-            .filter(f => f.LinkedProductGuid === item.GUID)
-            .map(d => this.MapSpAttachmentToAttachment(d));
-
-        const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === item.ProductType ? n.typeName : t, '');
-        const eventTypeTitle = AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === item.EventType ? n.eventTitle : t, '');
-        const pModel: ProductModel = {
+        const pModel: ProductModel = new ProductModel({
             id: item.Id,
-            guid: item.GUID,
+            guid: item.Guid,
             title: item.Title,
             description: item.Description,
             requestor: item.Requestor,
             requestDate: item.RequestDate,
             returnDateExpected: item.ReturnDateExpected,
             returnDateActual: item.ReturnDateActual,
-            tasks: teamTasks,
-            attachedDocuments: attachedDocs,
+            tasks: JSON.parse(item.AssignedTeamData || '[]'),
+            attachedDocuments: attachments.filter(f => f.LinkedProductGuid === item.Guid).map(d => this.MapSpAttachmentToAttachment(d)),
             status: ProductStatus[item.ProductStatus],
             productType: item.ProductType,
             eventType: item.EventType,
             eventDate: item.EventDate,
             classificationId: item.ClassificationId,
             requestUrl: item.RequestUrl,
-            newProduct: false,
-            filterString: `${item.Title} ${item.Description} ${prodTypeTitle} ${eventTypeTitle}`
-        };
-        const taskedTeams = (teamTasks || []).map(d => d.taskedTeamId);
-        pModel.filterString += AppService.AppSettings.teams.reduce((t, n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
+            customer: item.Customer,
+            newProduct: false
+        });
 
         return pModel;
     }

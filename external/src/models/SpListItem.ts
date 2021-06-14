@@ -20,7 +20,7 @@ export class CustomSpFieldTeamTask {
 export class SpProductItem {
     public Id: number;
     public Title: string;
-    public GUID: string;
+    public Guid: string;
     public Description: string;
     public RequestDate: string;
     public ReturnDateExpected: string;
@@ -33,4 +33,5 @@ export class SpProductItem {
     public EventDate: string;
     public ClassificationId: string;
     public RequestUrl: string;
+    public Customer: string;
 }

@@ -48,7 +48,9 @@ export class RecordService {
             return this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem)
             .then((newItem: SpProductItem) => {
                 AppService.ProductChanged(NotificationType.Create, newProduct.title);
-                return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.GUID)
+                debugger;
+
+                return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
                 .then(attachments => {
                     return Promise.resolve({
                         productModel: MapperService.MapItemToProduct(newItem, attachments),
@@ -62,7 +64,7 @@ export class RecordService {
             return this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
             .then((newItem: SpProductItem) => {
                 AppService.ProductChanged(NotificationType.Update, newProduct.title);
-                return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.GUID)
+                return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
                 .then(attachments => {
                     return Promise.resolve({
                         productModel: MapperService.MapItemToProduct(newItem, attachments),
@@ -80,22 +82,27 @@ export class RecordService {
         return items.slice(0).sort((a: T, b: T) => ((isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1));
     }
 
+    public static GetUniqueValsForListField(fieldName: string): Promise<Array<string>> {
+        return this.spService.GetSingleFieldValues(AppService.AppSettings.productListUrl, fieldName)
+        .then(results => Promise.resolve(results));
+    }
+
     /**
      * Creates a new empty product model
      */
     public static GetNewProductModel(productType?: string): ProductModel {
-        const prod = new ProductModel();
-        const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === (productType || '') ? n.typeName : t, '');
+        const prod = new ProductModel({
+            guid: uuidv4(),
+            requestDate: new Date().toJSON(),
+            returnDateExpected: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON(),
+            newProduct: true,
+            status: ProductStatus.open,
+            title: 'New Product',
+            description: '',
+            tasks: [],
+            classificationId: AppService.AppSettings.classificationModels[0] ? AppService.AppSettings.classificationModels[0].classificationId : null
+        });
 
-        prod.guid = uuidv4();
-        prod.requestDate = new Date().toJSON();
-        prod.returnDateExpected = new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON();
-        prod.newProduct = true;
-        prod.status = ProductStatus.open;
-        prod.title = 'New Product';
-        prod.description = '';
-        prod.tasks = [];
-        prod.classificationId = AppService.AppSettings.classificationModels[0] ? AppService.AppSettings.classificationModels[0].classificationId : null;
         if (productType) {
             const temp = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productType ? n : t, undefined);
             if (temp) {
@@ -117,9 +124,9 @@ export class RecordService {
         prod.eventType = AppService.AppSettings.eventTypes[0] ? AppService.AppSettings.eventTypes[0].eventTypeId : null;
         prod.eventDate = new Date(new Date(prod.returnDateExpected).getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON();
 
-        prod.filterString = `${prod.title} ${prod.description} ${prodTypeTitle}`;
-        const taskedTeams = prod.tasks.map(d => d.taskedTeamId);
-        prod.filterString += AppService.AppSettings.teams.reduce((t,n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
+        //prod.filterString = `${prod.title} ${prod.description} ${prodTypeTitle}`;
+        //const taskedTeams = prod.tasks.map(d => d.taskedTeamId);
+        //prod.filterString += AppService.AppSettings.teams.reduce((t,n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
 
         return prod;
     }

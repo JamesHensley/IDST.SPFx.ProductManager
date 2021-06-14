@@ -5,6 +5,10 @@ import { SPHttpClient, SPHttpClientConfiguration } from '@microsoft/sp-http';
 import { IODataList, IODataListItem, IODataWeb } from '@microsoft/sp-odata-types';
 
 export class SPService implements ISPService {
+    GetSingleFieldValues(listUrl: string, fieldName: string): Promise<string[]> {
+        throw new Error('Method not implemented.');
+    }
+    
     GetAttachmentItems(listUrl: string): Promise<SpListAttachment[]> {
         throw new Error('Method not implemented.');
     }

@@ -17,15 +17,16 @@ import { TaskModel } from '../../../models/TaskModel';
 import { MailService } from '../../../services/MailService';
 import { FormInputDropDown } from './FormComponents/FormInputDropDown';
 import { KeyValPair } from './FormComponents/IFormInputProps';
+import { FormInputComboBox } from './FormComponents/FormInputComboBox';
 
 export interface IProductDetailPaneProps {
     isVisible: boolean;
     currentProductId: string;
     paneCloseCallBack: () => void;
+    currentProduct: ProductModel;
 }
 
 export interface IProductDetailPaneState {
-    isVisible: boolean;
     isEditing: boolean;
     draftProduct: ProductModel;
 }
@@ -33,19 +34,19 @@ export interface IProductDetailPaneState {
 // This needs a lot of work... especially the editing portion
 export default class ProductDetailPane extends React.Component<IProductDetailPaneProps, IProductDetailPaneState> {
     private committedProduct: ProductModel;
-    private receiver: any;
+    // private receiver: any;
 
     constructor(props: IProductDetailPaneProps) {
         super(props);
 
         this.state = {
-            isVisible: false,
             isEditing: false,
-            draftProduct: null
+            draftProduct: this.props.currentProduct
         };
 
-        this.receiver = this.cmdBarItemClicked.bind(this);
+        // this.receiver = this.cmdBarItemClicked.bind(this);
 
+        /*
         if (this.props.currentProductId) {
             RecordService.GetProductByGUID(this.props.currentProductId)
             .then((prod: ProductModel) => {
@@ -54,15 +55,16 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             })
             .catch(e => console.log('ProductDetailPane.constructor: Could not get product model', this.props));
         }
+        */
     }
 
     public componentDidMount(): void {
         // Register this component to listen for new products
-        AppService.RegisterCmdBarListener({ callback: this.receiver, btnKeys: ['newProduct'] } as ICmdBarListenerProps);
+        // AppService.RegisterCmdBarListener({ callback: this.receiver, btnKeys: ['newProduct'] } as ICmdBarListenerProps);
     }
 
     public componentWillUnmount(): void {
-        AppService.UnRegisterCmdBarListener(this.receiver);
+        // AppService.UnRegisterCmdBarListener(this.receiver);
     }
 
     public render(): React.ReactElement<IProductDetailPaneProps> {
@@ -73,13 +75,13 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 isLightDismiss={!this.state.isEditing}
                 isHiddenOnDismiss={false}
                 headerText={this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
-                isOpen={this.state.isVisible}
+                isOpen={true}
                 onDismiss={this.togglePanelVisibility.bind(this)}
                 closeButtonAriaLabel='Close'
                 type={PanelType.medium}
             >
                 {
-                    this.state.isVisible && this.state.draftProduct &&
+                    this.state.draftProduct &&
                     <div className={styles.grid + ' ' + styles.formStyles}>
                     <Stack horizontal tokens={{ childrenGap: 10 }}>
                         <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
@@ -88,7 +90,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                     </Stack>
 
                     <div className={styles.gridRow}>
-                        <div className={styles.gridCol8}>
+                        <div className={styles.gridCol12}>
                             <FormInputText
                                 labelValue={'Title'} editing={this.state.isEditing}
                                 fieldValue={this.state.draftProduct.title}
@@ -96,7 +98,18 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 onUpdated={this.fieldUpdated.bind(this)}
                             />
                         </div>
-                        <div className={styles.gridCol4}>
+                    </div>
+                    <div className={styles.gridRow}>
+                        <div className={styles.gridCol6}>
+                            <FormInputComboBox
+                                labelValue={'Customer'}
+                                fieldValue={this.state.draftProduct.customer}
+                                fieldRef={'customer'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                                editing={this.state.isEditing}
+                            />
+                        </div>
+                        <div className={styles.gridCol6}>
                             <FormInputDropDown
                                 labelValue={'Classification'}
                                 fieldValue={this.state.draftProduct.classificationId}
@@ -209,7 +222,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private toggleEditMode(): void {
-        this.setState({ isEditing: !this.state.isEditing, isVisible: (this.props.currentProductId === null ? false : this.state.isVisible) });
+        this.setState({ isEditing: !this.state.isEditing });
     }
 
     private saveRFI(): void {
@@ -219,14 +232,14 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
             MailService.SendEmail('Update', teamEmails, 'A product has been ' + result.resultStr)
             .catch(e => Promise.reject(e));
-
-            this.setState({ isEditing: false, isVisible: false, draftProduct: result.productModel });
+console.log('saveRFI-', result.productModel);
+            this.setState({ isEditing: false, draftProduct: result.productModel });
         })
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
     }
 
     private cancelRFIChanges(): void {
-        this.setState({ isEditing: false, isVisible: true, draftProduct: this.committedProduct });
+        this.setState({ isEditing: false, draftProduct: this.committedProduct });
     }
 
     private fieldUpdated(newVal: any, fieldRef: string): void {
@@ -241,13 +254,14 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         this.setState({ draftProduct: newDraft });
     }
 
+    /*
     private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
         console.log('ProductDetailPane.cmdBarItemClicked: ', item, this.props, this.state);
 
         this.setState({
             isEditing: true,
-            isVisible: true,
             draftProduct: RecordService.GetNewProductModel(item.data.id)
         });
     }
+    */
 }
