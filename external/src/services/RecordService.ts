@@ -77,6 +77,7 @@ export class RecordService {
         prod.title = 'New Product';
         prod.description = '';
         prod.tasks = [];
+        prod.classificationId = AppService.AppSettings.classificationModels[0] ? AppService.AppSettings.classificationModels[0].classificationId : null;
         if (productType) {
             const temp = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productType ? n : t, undefined);
             if (temp) {

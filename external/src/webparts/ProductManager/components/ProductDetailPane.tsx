@@ -97,6 +97,38 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         </div>
                         <div className={styles.gridCol4}>
                             <FormInputDropDown
+                                labelValue={'Classification'}
+                                fieldValue={this.state.draftProduct.classificationId}
+                                fieldRef={'classificationId'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                                editing={this.state.isEditing}
+                                options={AppService.AppSettings.classificationModels.map(d => { return { key: d.classificationId, value: d.classificationTitle } as KeyValPair; })}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.gridRow}>
+                        <div className={styles.gridCol12}>
+                            <FormInputText
+                                labelValue={'Description'} editing={this.state.isEditing}
+                                fieldValue={this.state.draftProduct.description} editLines={8}
+                                fieldRef={'description'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.gridRow}>
+                        <div className={styles.gridCol4}>
+                            <FormInputDropDown
+                                labelValue={'Product Type'}
+                                fieldValue={this.state.draftProduct.productType}
+                                fieldRef={'productType'}
+                                onUpdated={this.fieldUpdated.bind(this)}
+                                editing={this.state.isEditing}
+                                options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
+                            />
+                        </div>
+                        <div className={styles.gridCol4}>
+                            <FormInputDropDown
                                 labelValue={'Product Status'}
                                 fieldValue={this.state.draftProduct.status}
                                 fieldRef={'status'}
@@ -109,19 +141,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 ]}
                             />
                         </div>
-                    </div>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol6}>
-                            <FormInputDropDown
-                                labelValue={'Product Type'}
-                                fieldValue={this.state.draftProduct.productType}
-                                fieldRef={'productType'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                                editing={this.state.isEditing}
-                                options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
-                            />
-                        </div>
-                        <div className={styles.gridCol6}>
+                        <div className={styles.gridCol4}>
                             <FormInputDropDown
                                 labelValue={'Event Type'}
                                 fieldValue={this.state.draftProduct.eventType}
@@ -129,16 +149,6 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 onUpdated={this.fieldUpdated.bind(this)}
                                 editing={this.state.isEditing}
                                 options={AppService.AppSettings.eventTypes.map(d => { return { key: d.eventTypeId, value: d.eventTitle } as KeyValPair; })}
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol12}>
-                            <FormInputText
-                                labelValue={'Description'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.description} editLines={8}
-                                fieldRef={'description'}
-                                onUpdated={this.fieldUpdated.bind(this)}
                             />
                         </div>
                     </div>

@@ -31,4 +31,5 @@ export class SpProductItem {
     public ProductType: string;
     public EventType: string;
     public EventDate: string;
+    public ClassificationId: string;
 }

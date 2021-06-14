@@ -15,6 +15,7 @@ import PnPTelemetry from '@pnp/telemetry-js';
 import { ProductManager } from './components/ProductManager';
 import { ProductTypeModel } from '../../models/ProductTypeModel';
 import { EventModel } from '../../models/EventModel';
+import { ClassificationModel } from '../../models/ClassificationModel';
 
 export interface IProductManagerWebPartProps {
   description: string;
@@ -25,6 +26,7 @@ export interface IProductManagerWebPartProps {
   emailSenderName: string;
   productTypes: Array<ProductTypeModel>;
   eventTypes: Array<EventModel>;
+  classificationModels: Array<ClassificationModel>;
 }
 
 export default class ProductManagerWebPart extends BaseClientSideWebPart<IProductManagerWebPartProps> {

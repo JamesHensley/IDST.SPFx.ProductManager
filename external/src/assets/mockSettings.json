@@ -93,21 +93,26 @@
     "eventTypes": [
         {
             "eventTypeId": "1",
-            "eventTitle": "Event Type 1",
+            "eventTitle": "Hot Rod Show",
             "eventDescription": "This is a really detail description of event-type 1... enjoy it",
             "defaultEventSuspenseOffset": 5
         },
         {
             "eventTypeId": "2",
-            "eventTitle": "Event Type 2",
+            "eventTitle": "Camping Trip",
             "eventDescription": "This is a really detail description of event-type 2... enjoy it",
             "defaultEventSuspenseOffset": 3
         },
         {
             "eventTypeId": "3",
-            "eventTitle": "Event Type 3",
+            "eventTitle": "Shooting guns with dad",
             "eventDescription": "This is a really detail description of event-type 3... enjoy it",
             "defaultEventSuspenseOffset": 7
         }
+    ],
+    "classificationModels": [
+        { "classificationId": "1", "classificationTitle": "Not Classy" },
+        { "classificationId": "2", "classificationTitle": "Classy but a little dirty" },
+        { "classificationId": "3", "classificationTitle": "Audrey Hepburn Classy" }
     ]
 }

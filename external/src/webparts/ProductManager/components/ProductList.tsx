@@ -206,10 +206,8 @@ export default class ProductList extends React.Component<IProductListProps, IPro
   }
 
   private get allColumns(): Array<IColumn> {
-    const retVal = SortFilterSetting.DisplayedFields;
-    console.log('Got allColumns: ', retVal);
-    
-    return retVal.map(d => {
+    //const retVal = SortFilterSetting.DisplayedFields;
+    return SortFilterSetting.DisplayedFields.map(d => {
       d.onColumnClick = this.onColumnClick.bind(this, d);
       d.onRender = ((i: IDocument, idx, col) => {
         switch (col.fieldName) {

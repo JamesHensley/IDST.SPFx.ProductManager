@@ -63,7 +63,8 @@ export class Faker {
             ProductStatus: ['open', 'closed', 'canceled'][Math.round(Math.random() * 2)],
             ProductType: (AppService.AppSettings.productTypes[Math.round(Math.random() * (AppService.AppSettings.productTypes.length - 1))]).typeId,
             EventType: (AppService.AppSettings.eventTypes[Math.round(Math.random() * (AppService.AppSettings.eventTypes.length - 1))]).eventTypeId,
-            EventDate: new Date (new Date(endDate).getTime() + (1000 * 60 * 60 * 24)).toJSON()
+            EventDate: new Date (new Date(endDate).getTime() + (1000 * 60 * 60 * 24)).toJSON(),
+            ClassificationId: (AppService.AppSettings.classificationModels[Math.round(Math.random() * (AppService.AppSettings.classificationModels.length - 1))]).classificationId
         };
         // item.ProductStatus === 'Closed' ? new Date(new Date(item.RequestDate).getTime() + (3 * 24 * 60 * 60 * 1000)).toJSON() : null;
         return item;

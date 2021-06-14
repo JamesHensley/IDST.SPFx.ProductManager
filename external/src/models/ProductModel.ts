@@ -21,10 +21,12 @@ export class ProductModel {
     public attachedDocumentUrls?: Array<string>;
     public attachedDocuments: Array<AttachmentModel>;
     public productType: string;
-    public newProduct: boolean;
-    
     public eventType: string;
     public eventDate: string;
+    public classificationId: string;
 
+    /** Used internally to determine if the loaded product is being created or if it exists in SharePoint already */
+    public newProduct: boolean;
+    /** Populated by the mapper and used to filter records based on various fields */
     public filterString: string;
 }

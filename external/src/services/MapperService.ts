@@ -21,7 +21,8 @@ export class MapperService {
             ProductStatus: prod.status.toLowerCase(),
             ProductType: prod.productType,
             EventType: prod.eventType,
-            EventDate: prod.eventDate
+            EventDate: prod.eventDate,
+            ClassificationId: prod.classificationId
         };
         return listItem;
     }
@@ -49,6 +50,7 @@ export class MapperService {
             productType: item.ProductType,
             eventType: item.EventType,
             eventDate: item.EventDate,
+            classificationId: item.ClassificationId,
             newProduct: false,
             filterString: `${item.Title} ${item.Description} ${prodTypeTitle} ${eventTypeTitle}`
         };
