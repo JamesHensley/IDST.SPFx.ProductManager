@@ -1,54 +1,11 @@
 import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
-import { ProductModel, ProductStatus } from '../../../models/ProductModel';
-import { DetailsList, DetailsListLayoutMode, DetailsRow, Dropdown, Facepile, IColumn, Icon, IconButton,
-  IDetailsRowProps,
-  IDropdownOption, IDropdownProps, IFacepilePersona, IRenderFunction, ISelectableDroppableTextProps,
-  Label, mergeStyleSets, SelectionMode, Stack, TextField, TooltipHost } from '@fluentui/react';
-
+import { ProductModel } from '../../../models/ProductModel';
+import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, IDetailsRowProps, IFacepilePersona, SelectionMode, TextField } from '@fluentui/react';
 import { format } from 'date-fns';
 import AppService from '../../../services/AppService';
-import { RecordService } from '../../../services/RecordService';
 import { TaskModel } from '../../../models/TaskModel';
 import { TeamModel } from '../../../models/TeamModel';
-import { ColumnSelector } from './FormComponents/ColumnSelector';
-
-const classNames = mergeStyleSets({
-  fileIconHeaderIcon: {
-    padding: 0,
-    fontSize: '16px'
-  },
-  fileIconCell: {
-    textAlign: 'center',
-    selectors: {
-      '&:before': {
-        content: '.',
-        display: 'inline-block',
-        verticalAlign: 'middle',
-        height: '100%',
-        width: '0px',
-        visibility: 'hidden'
-      }
-    }
-  },
-  fileIconImg: {
-    verticalAlign: 'middle',
-    maxHeight: '16px',
-    maxWidth: '16px'
-  },
-  controlWrapper: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
-  exampleToggle: {
-    display: 'inline-block',
-    marginBottom: '10px',
-    marginRight: '30px'
-  },
-  selectionDetails: {
-    marginBottom: '20px'
-  }
-});
 
 const controlStyles = {
   root: {
@@ -57,9 +14,7 @@ const controlStyles = {
   }
 };
 
-/**
- * Used to preserve the filter and sorting settings when the component is destroyed & rebuilt
- */
+/** Used to preserve the filter and sorting settings when the component is destroyed & rebuilt */
 class SortFilterSetting {
   private static filterText = '';
   public static get FilterText(): string { return this.filterText; }
@@ -73,77 +28,16 @@ class SortFilterSetting {
   public static set SortDir(val: number) { this.sortDir = val; }
   public static get SortDir(): number { return this.sortDir; }
 
+  /** Field definitions for the table */
   private static displayedFields: Array<IColumn> = ([
-    {
-      key: 'column0',
-      name: 'Type',
-      minWidth: 100, maxWidth: 150,
-      fieldName: 'productType',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: { type: 'object', colCount: 2, displayed: true }
-    },
-    {
-      key: 'column1',
-      name: 'Status',
-      minWidth: 50, maxWidth: 80,
-      fieldName: 'productStatus',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: { type: 'string', colCount: 1, displayed: true }
-    },
-    {
-      key: 'column2',
-      name: 'Title',
-      minWidth: 100, maxWidth: 200,
-      fieldName: 'title',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: { type: 'string', colCount: 2, displayed: true }
-    },
-    {
-      key: 'column3',
-      name: 'Description',
-      minWidth: 100,
-      fieldName: 'description',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: { type: 'string', colCount: 4, displayed: true }
-    },
-    {
-      key: 'column4',
-      name: 'Open Date',
-      minWidth: 100,
-      fieldName: 'openDate',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: { type: 'string', colCount: 1, displayed: true }
-    },
-    {
-      key: 'column5',
-      name: 'Expected Return',
-      minWidth: 130,
-      fieldName: 'expectedReturnDate',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: { type: 'string', colCount: 1, displayed: true }
-    },
-    {
-      key: 'column6',
-      name: 'Tasked Teams',
-      minWidth: 120,
-      fieldName: 'tasks',
-      isRowHeader: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: { type: 'object', colCount: 1, displayed: true }
-    }
+    { key: 'productType', name: 'Type', minWidth: 100, maxWidth: 150, fieldName: 'productType', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'object', colCount: 2, displayed: true } },
+    { key: 'productStatus', name: 'Status', minWidth: 50, maxWidth: 80, fieldName: 'productStatus', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'string', colCount: 1, displayed: true } },
+    { key: 'title', name: 'Title', minWidth: 100, maxWidth: 300, fieldName: 'title', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'string', colCount: 2, displayed: true } },
+    { key: 'eventType', name: 'Event Type', minWidth: 100, maxWidth: 200, fieldName: 'eventType', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'object', colCount: 1, displayed: true } },
+    { key: 'openDate', name: 'Open Date', minWidth: 100, maxWidth: 150, fieldName: 'openDate', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'string', colCount: 1, displayed: true } },
+    { key: 'expectedReturnDate', name: 'Expected Return', minWidth: 100, maxWidth: 150, fieldName: 'expectedReturnDate', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'string', colCount: 1, displayed: true } },
+    { key: 'eventDate', name: 'Event Date', minWidth: 100, maxWidth: 150, fieldName: 'eventDate', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'string', colCount: 1, displayed: true } },    
+    { key: 'tasks', name: 'Tasked Teams', minWidth: 100, maxWidth: 300, fieldName: 'tasks', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'object', colCount: 1, displayed: true } }
   ]);
 
   public static set DisplayedFields(val: Array<IColumn>) {
@@ -154,7 +48,7 @@ class SortFilterSetting {
   public static get DisplayedFields(): Array<IColumn> {
     return this.displayedFields
     .map(d => {
-      // Handle the sorting icons
+      // Handle the sorting icons... actual data/list sorting is handled by the onClick handler for the columns
       d.isSorted = SortFilterSetting.SortField === d.fieldName;
       d.isSortedDescending = d.isSorted && SortFilterSetting.SortDir === -1;
       return d;
@@ -175,12 +69,17 @@ export interface IDocument {
   expectedReturnDate: string;
   closeDate: string;
   tasks: Array<TaskModel>;
+  eventType: string;
+  eventDate: string;
+  classification: string;
 }
 
 export interface IProductListProps { allProducts: Array<ProductModel>; productClicked: (id: string) => void; }
 export interface IProductListState { lastUpdate: number; showingColumnMenu: boolean; }
 
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
+
+  /** Data displayed in the list */
   private get allItems(): Array<IDocument> {
     console.log('ProductList.allItems: ', this.props.allProducts);
     return (this.props.allProducts || [])
@@ -192,11 +91,14 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         description: d.description,
         value: d.guid,
         teamIcon: '',
-        productType: d.productType,
+        productType: AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === d.productType ? n.typeName : t, ''),
         productStatus: d.status,
         openDate: format(new Date(d.requestDate), AppService.DateFormatValue),
         expectedReturnDate: format(new Date(d.returnDateExpected), AppService.DateFormatValue),
         closeDate: d.returnDateActual || '',
+        eventType: AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === d.eventType ? n.eventTitle : t, ''),
+        eventDate: format(new Date(d.eventDate), AppService.DateFormatValue),
+        classification: AppService.AppSettings.classificationModels.reduce((t,n) => n.classificationId === d.classificationId ? n.classificationTitle : t, ''),
         tasks: d.tasks || []
       } as IDocument;
     })
@@ -205,15 +107,13 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     });
   }
 
+  /** Column definitions for the list */
   private get allColumns(): Array<IColumn> {
-    //const retVal = SortFilterSetting.DisplayedFields;
     return SortFilterSetting.DisplayedFields.map(d => {
       d.onColumnClick = this.onColumnClick.bind(this, d);
       d.onRender = ((i: IDocument, idx, col) => {
         switch (col.fieldName) {
-          case 'productType':
-            return <div>{AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === i[col.fieldName] ? n.typeName : t, '')}</div>;
-          case 'tasks':
+            case 'tasks':
             const tasks: Array<string> = (i.tasks as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
             const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.id) >= 0 ? t.concat(n) : t, [])
               .map(d => { return { imageInitials: d.shortName, personaName: d.name } as IFacepilePersona; });
@@ -233,18 +133,12 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 
   public render(): React.ReactElement<IProductListProps> {
     const dropdownStyles = { dropdown: { width: '10px' } };
-    /*
-      <Dropdown
-        options={this.allColumns.map(d => { return { key: d.fieldName, text: d.name  } as IDropdownOption })}
-        styles={dropdownStyles}
-      />
-    */
+
     return (
       <div className={`${styles.productList} ${styles.grid}`}>
         <div className={styles.gridRow}>
           <div className={styles.gridCol12}>
-            <TextField label='Filter by title, description, product type or team name:' onChange={this.onChangeFilter} styles={controlStyles} value={SortFilterSetting.FilterText} />
-
+            <TextField label='Filter by title, description, product type, event type, or team name:' onChange={this.onChangeFilter} styles={controlStyles} value={SortFilterSetting.FilterText} />
           </div>
         </div>
 
@@ -254,6 +148,8 @@ export default class ProductList extends React.Component<IProductListProps, IPro
           columns={this.allColumns}
           selectionMode={SelectionMode.none}
           compact={true}
+          layoutMode={DetailsListLayoutMode.justified}
+          skipViewportMeasures={false}
           onRenderRow={(props: IDetailsRowProps) => {
             return (<div onClick={this.onRowClick.bind(this, props)}>
               <DetailsRow {...props} styles={{ root: { cursor: 'pointer' } }} />
@@ -264,10 +160,12 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     );
   }
 
+  /** Handler for when a user clicks a row to view the records details */
   private onRowClick(i?: IDetailsRowProps, ev?: React.FocusEvent<HTMLElement>): void {
     this.props.productClicked(i.item.key);
   }
 
+  /** Handler for when a user clicks a column heading to sort the list */
   private onColumnClick = (column: IColumn, ev: Event): void => {
     ev.preventDefault();
     SortFilterSetting.SortField = column.fieldName;
@@ -275,13 +173,14 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     this.setState({ lastUpdate: new Date().getTime() });
   }
 
-  private onShowColumnsMenu(): void {
-    console.log('ProductList.onShowColumnsMenu');
-    this.setState({ showingColumnMenu: !((this.state && this.state.showingColumnMenu) || false) });
-  }
-
+  /** Handler for when text is changed in the filter control */
   private onChangeFilter = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string): void => {
     SortFilterSetting.FilterText = text;
     this.setState({ lastUpdate: new Date().getTime() });
+  }
+
+  /** Will be used to show/hide columns */
+  private onShowColumnsMenu(): void {
+    // this.setState({ showingColumnMenu: !((this.state && this.state.showingColumnMenu) || false) });
   }
 }
