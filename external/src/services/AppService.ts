@@ -72,5 +72,9 @@ export default class AppService {
     public static get DateFormatValue(): string {
         return `yyyy-MM-dd`;
     }
+
+    public static get CurrentUser(): string {
+        return 'Jimmy';
+    }
     //#endregion
 }

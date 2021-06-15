@@ -72,7 +72,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                     <div className={styles.gridRow}>
                         <div className={styles.gridCol12}>
                             <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                <DefaultButton onClick={this.addComment.bind(this)}>Add Comment</DefaultButton>
+                                <DefaultButton onClick={this.showCommentDialog.bind(this)}>Add Comment</DefaultButton>
                                 <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
                                 {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
                                 {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
@@ -202,15 +202,16 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         isEditing={this.state.isEditing}
                     />
                     <Separator />
-                    <CommentComponent comments={this.state.draftProduct.comments || []}/>
+                    <CommentComponent comments={this.state.draftProduct.comments || []} />
                 </div>
                 }
                 { this.state.showCommentDialog && 
                     <FormInputDialog
-                        saveCallBack={this.commentUpdated.bind(this)}
+                        saveCallBack={this.updateComment.bind(this)}
                         cancelCallBack={this.cancelAddComment.bind(this)}
                         editMode={true}
                         titleStr={'New Comment'}
+                        defaultValue='New Comment Here'
                     />
                 }
             </Panel>
@@ -225,16 +226,16 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         this.setState({ isEditing: !this.state.isEditing });
     }
 
-    private addComment(): void { this.setState({ showCommentDialog: true }); }
+    private showCommentDialog(): void { this.setState({ showCommentDialog: true }); }
 
     private cancelAddComment(): void { this.setState({ showCommentDialog: false }); }
 
-    private commentUpdated(commentStr: string) {
+    private updateComment(commentStr: string) {
         const newProd = new ProductModel();
         Object.assign(newProd, this.state.draftProduct);
         newProd.comments = [].concat.apply((newProd.comments || []), [{
             commentGuid: uuidv4(),
-            commentAuthor: '',
+            commentAuthor: AppService.CurrentUser,
             commentDate: new Date().toJSON(),
             commentValue: commentStr
         } as CommentsModel]);
@@ -254,7 +255,6 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
             MailService.SendEmail('Update', teamEmails, 'A product has been ' + result.resultStr)
             .catch(e => Promise.reject(e));
-            // this.setState({ isEditing: false, draftProduct: result.productModel, originalProduct: result.productModel });
             this.props.productUpdatedCallBack(false);
         })
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
