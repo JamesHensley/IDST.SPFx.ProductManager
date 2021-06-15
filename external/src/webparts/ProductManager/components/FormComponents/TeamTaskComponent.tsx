@@ -18,7 +18,6 @@ export class TeamTaskComponent extends React.Component<ITeamTaskComponentProps, 
     private row = `${styles.gridRow} ${styles.attachmentItem} ${styles.bordered}`;
 
     render(): React.ReactElement<ITeamTaskComponentProps> {
-        // console.log('TeamTaskComponent.render: ', this.props, this.state);
         return(
             <div key={this.props.task.taskGuid} className={this.row} onClick={this.taskClicked.bind(this, this.props.task)}>
                 {

@@ -53,6 +53,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                 <ProductDetailPane
                     key={new Date().getTime()}
                     paneCloseCallBack={this.eventPaneClose.bind(this)}
+                    productUpdatedCallBack={this.eventPaneUpdated.bind(this)}
                     currentProductId={this.state.currentProductId}
                     currentProduct={this.state.currentProduct}
                     isVisible={this.state.panelVisible}
@@ -101,8 +102,22 @@ export default class PageComponent extends React.Component <IPageComponentProps,
             panelVisible: true,
             panelEditing: false,
             currentProductId: prodId,
-            currentProduct: this.state.allProducts.reduce((t,n) => n.guid == prodId ? n : t, null)
+            currentProduct: this.state.allProducts.reduce((t,n) => n.guid === prodId ? n : t, null)
         });
+    }
+
+    private eventPaneUpdated(): void {
+        RecordService.GetProducts()
+        .then(allProducts => {
+            this.setState({
+                allProducts: allProducts,
+                panelEditing: false,
+                panelVisible: true,
+                currentProduct: allProducts.reduce((t,n) => n.guid === this.state.currentProductId ? n : t, null)
+            });
+        })
+        .then(() => Promise.resolve())
+        .catch(e => Promise.reject(e));
     }
 
     private eventPaneClose(): void {
@@ -114,16 +129,18 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 
     //#region Emitter receivers
     private async updateProducts(): Promise<void> {
+        /*
         return RecordService.GetProducts()
         .then(allProducts => {
             console.log('PageComponent.updateProducts-State:', this.state);
             this.setState({
                 allProducts: allProducts,
-                currentProduct: allProducts.reduce((t,n) => n.guid == this.state.currentProductId ? n : t, null)
+                currentProduct: allProducts.reduce((t,n) => n.guid === this.state.currentProductId ? n : t, null)
             });
         })
         .then(() => Promise.resolve())
         .catch(e => Promise.reject(e));
+        */
     }
 
     private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {

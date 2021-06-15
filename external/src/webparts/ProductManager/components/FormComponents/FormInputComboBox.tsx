@@ -32,7 +32,7 @@ export class FormInputComboBox extends React.Component<IFormInputProps, IFormInp
                             options={this.state.options}
                         />
                     )}
-                    {this.props.editing && 
+                    {this.props.editing &&
                         <TextField
                             value={this.props.fieldValue}
                             multiline={this.props.editLines ? true : false}

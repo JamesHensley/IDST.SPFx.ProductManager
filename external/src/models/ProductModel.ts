@@ -9,9 +9,9 @@ export enum ProductStatus {
 }
 
 export class ProductModel {
-    public constructor(init?:Partial<ProductModel>) {
+    public constructor(init?: Partial<ProductModel>) {
         Object.assign(this, init);
-    }    
+    }
 
     public id: number;
     public guid: string;
@@ -42,6 +42,6 @@ export class ProductModel {
         const taskedTeams = this.tasks.map(d => d.taskedTeamId);
         const teamNames = AppService.AppSettings.teams.reduce((t, n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
 
-        return `${this.title} ${this.description} ${prodTypeTitle} ${eventTypeTitle} ${teamNames}`
+        return `${this.title} ${this.description} ${prodTypeTitle} ${eventTypeTitle} ${teamNames}`;
     }
 }

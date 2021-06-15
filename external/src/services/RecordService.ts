@@ -122,10 +122,6 @@ export class RecordService {
         prod.eventType = AppService.AppSettings.eventTypes[0] ? AppService.AppSettings.eventTypes[0].eventTypeId : null;
         prod.eventDate = new Date(new Date(prod.returnDateExpected).getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON();
 
-        //prod.filterString = `${prod.title} ${prod.description} ${prodTypeTitle}`;
-        //const taskedTeams = prod.tasks.map(d => d.taskedTeamId);
-        //prod.filterString += AppService.AppSettings.teams.reduce((t,n) => taskedTeams.indexOf(n.id) >= 0 ? t + n.name : t, '');
-
         return prod;
     }
 }

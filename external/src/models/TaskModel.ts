@@ -10,4 +10,6 @@ export class TaskModel {
     taskDescription: string;
     taskState: TaskState;
     taskSuspense: string;
+    taskStart?: Date;
+    taskFinish?: Date;
 }

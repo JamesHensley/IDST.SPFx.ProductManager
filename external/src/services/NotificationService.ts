@@ -1,8 +1,8 @@
 
 export enum NotificationType {
-    Create,
-    Update,
-    Delete
+    Create = 'Created',
+    Update = 'Updated',
+    Delete = 'Deleted'
 }
 
 export class NotificationService {
@@ -17,6 +17,6 @@ export class NotificationService {
     }
 
     public static Notify(notificationType: NotificationType, message?: string): void {
-        this.listeners.forEach(l => l.call(l, message + notificationType.toString()));
+        this.listeners.forEach(l => l.call(l, `${message} ${notificationType.toString()}`));
     }
 }

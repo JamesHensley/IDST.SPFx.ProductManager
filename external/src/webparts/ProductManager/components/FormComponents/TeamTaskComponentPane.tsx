@@ -66,7 +66,7 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
                                         labelValue={'Task Status'}
                                         fieldValue={this.state.draftTask.taskState}
                                         fieldRef={'taskState'}
-                                        onUpdated={this.fieldUpdated.bind(this)}
+                                        onUpdated={this.statusChanged.bind(this)}
                                         editing={this.props.isEditing}
                                         options={ [
                                             { key: TaskState.pending, value: 'Pending' } as KeyValPair,
@@ -99,8 +99,16 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
         );
     }
 
+    private statusChanged(fieldValue: string, fieldRef: string): void {
+        if (fieldValue === 'Pending') { this.state.draftTask.taskStart = new Date(); }
+        if (fieldValue === 'Complete') { this.state.draftTask.taskFinish = new Date(); }
+        this.fieldUpdated(fieldValue, fieldRef);
+    }
+
     private fieldUpdated(fieldValue: string, fieldRef: string): void {
-        const newDraft = JSON.parse(JSON.stringify(this.state.draftTask));
+        let newDraft = new TaskModel();
+        Object.assign(newDraft, this.state.draftTask);
+        //const newDraft = JSON.parse(JSON.stringify(this.state.draftTask));
         newDraft[fieldRef] = fieldValue;
         this.setState({ draftTask: newDraft });
     }

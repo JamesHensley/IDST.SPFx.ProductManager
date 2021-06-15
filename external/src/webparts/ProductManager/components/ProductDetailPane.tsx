@@ -26,6 +26,8 @@ export interface IProductDetailPaneProps {
     currentProduct: ProductModel;
     /** used to notify the parent that the pane should be destroyed */
     paneCloseCallBack: () => void;
+    /** used to notify the parent that the item was updated */
+    productUpdatedCallBack: () => void;
 }
 
 export interface IProductDetailPaneState {
@@ -211,13 +213,14 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
             MailService.SendEmail('Update', teamEmails, 'A product has been ' + result.resultStr)
             .catch(e => Promise.reject(e));
-            this.setState({ isEditing: false, draftProduct: result.productModel, originalProduct: result.productModel });
+            // this.setState({ isEditing: false, draftProduct: result.productModel, originalProduct: result.productModel });
+            this.props.productUpdatedCallBack();
         })
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
     }
 
     private cancelRFIChanges(): void {
-        if(this.state.draftProduct.newProduct) {
+        if (this.state.draftProduct.newProduct) {
             this.props.paneCloseCallBack();
         } else {
             this.setState({ isEditing: false, draftProduct: this.state.originalProduct });
@@ -225,13 +228,15 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private fieldUpdated(newVal: any, fieldRef: string): void {
-        const temp = JSON.parse(JSON.stringify(this.state.draftProduct));
-        temp[fieldRef] = newVal;
-        this.setState({ draftProduct: temp });
+        let newDraft = new ProductModel();
+        Object.assign(newDraft, this.state.draftProduct);
+        newDraft[fieldRef] = newVal;
+        this.setState({ draftProduct: newDraft });
     }
 
     private taskAdded(newTask: TaskModel): void {
-        const newDraft: ProductModel = JSON.parse(JSON.stringify(this.state.draftProduct));
+        let newDraft = new ProductModel();
+        Object.assign(newDraft, this.state.draftProduct);
         newDraft.tasks = [].concat.apply(this.state.draftProduct.tasks, [newTask]);
         this.setState({ draftProduct: newDraft });
     }

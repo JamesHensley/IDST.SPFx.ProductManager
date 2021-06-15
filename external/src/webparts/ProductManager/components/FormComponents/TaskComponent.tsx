@@ -35,7 +35,6 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
     }
 
     render(): React.ReactElement<ITaskComponentProps> {
-        // console.log('TaskComponent.render: ', this.props, this.state);
         return (
             <div className={`${this.grid} ${styles.padTop3}`}>
                 <Label>Teams and Tasks</Label>
@@ -55,7 +54,7 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
                         <TeamTaskComponent
                             task={a}
                             isPaneVisible={paneState.isPaneVisible}
-                            key={a.taskedTeamId}
+                            key={a.taskGuid}
                             editing={this.props.isEditing}
                             taskUpdated={this.taskUpdated.bind(this)}
                             taskClicked={this.taskClicked.bind(this)}
@@ -68,7 +67,6 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
     }
 
     private createNewTask(): void {
-        // console.log('TaskComponent.createNewTask');
         const newTask = new TaskModel();
         newTask.taskDescription = 'New Task';
         newTask.taskGuid = uuidv4();
