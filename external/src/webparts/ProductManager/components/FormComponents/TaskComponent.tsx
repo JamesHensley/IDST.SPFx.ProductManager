@@ -39,14 +39,10 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
             <div className={`${this.grid} ${styles.padTop3}`}>
                 <Label>Teams and Tasks</Label>
                 <div className={styles.gridRow}>
-                    <div className={styles.gridCol1}>
-                        {this.props.isEditing &&
-                            <IconButton iconProps={{ iconName: 'CalculatorAddition' }} onClick={this.createNewTask.bind(this)}></IconButton>
-                        }
-                    </div>
                     <Label className={styles.gridCol2} style={{ fontSize: '.9rem' }}>Status</Label>
                     <Label className={styles.gridCol2} style={{ fontSize: '.9rem' }}>Team</Label>
-                    <Label className={styles.gridCol7} style={{ fontSize: '.9rem' }}>Task Description</Label>
+                    <Label className={styles.gridCol5} style={{ fontSize: '.9rem' }}>Task Description</Label>
+                    <Label className={styles.gridCol3} style={{ fontSize: '.9rem' }}>Suspense</Label>
                 </div>
                 {(this.props.TaskItems || []).map(a => {
                     const paneState: ITaskPaneState = this.state.taskPanes.reduce((t,n) => n.taskId === a.taskGuid ? n : t, null);

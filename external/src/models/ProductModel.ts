@@ -1,5 +1,6 @@
 import AppService from '../services/AppService';
 import { AttachmentModel } from './AttachmentModel';
+import { CommentsModel } from './CommentsModel';
 import { TaskModel } from './TaskModel';
 
 export enum ProductStatus {
@@ -31,6 +32,7 @@ export class ProductModel {
     public classificationId: string;
     public requestUrl: string;
     public customer: string;
+    public comments: Array<CommentsModel>;
 
     /** Used internally to determine if the loaded product is being created or if it exists in SharePoint already */
     public newProduct: boolean;

@@ -3,6 +3,7 @@ import * as styles from '../ProductManager.module.scss';
 import { TaskModel } from '../../../../models/TaskModel';
 import { TeamTaskComponentPane } from './TeamTaskComponentPane';
 import AppService from '../../../../services/AppService';
+import { format } from 'date-fns';
 
 export interface ITeamTaskComponentProps {
     taskUpdated: (newTask: TaskModel) => void;
@@ -14,7 +15,6 @@ export interface ITeamTaskComponentProps {
 }
 
 export class TeamTaskComponent extends React.Component<ITeamTaskComponentProps, {}> {
-    private grid = `${styles.grid} ${styles.attachmentManager}`;
     private row = `${styles.gridRow} ${styles.attachmentItem} ${styles.bordered}`;
 
     render(): React.ReactElement<ITeamTaskComponentProps> {
@@ -29,10 +29,10 @@ export class TeamTaskComponent extends React.Component<ITeamTaskComponentProps, 
                         isEditing={this.props.editing}
                     />
                 }
-                <div className={styles.gridCol1}></div>
                 <div className={styles.gridCol2}>{this.props.task.taskState}</div>
                 <div className={styles.gridCol2}>{AppService.AppSettings.teams.reduce((t,n) => n.id === this.props.task.taskedTeamId ? n.name : t, '')}</div>
-                <div className={styles.gridCol7}>{this.props.task.taskDescription}</div>
+                <div className={styles.gridCol5}>{this.props.task.taskDescription}</div>
+                <div className={styles.gridCol3}>{format(new Date(this.props.task.taskSuspense), AppService.DateFormatView)}</div>
             </div>
         );
     }

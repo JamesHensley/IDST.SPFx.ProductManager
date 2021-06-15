@@ -81,7 +81,8 @@ export class RecordService {
     }
 
     public static GetUniqueValsForListField(fieldName: string): Promise<Array<string>> {
-        return this.spService.GetSingleFieldValues(AppService.AppSettings.productListUrl, fieldName)
+        return this.GetProducts()
+        .then(items => items.map(d => d[fieldName]).filter((f, i, e) => e.indexOf(f) == i).sort())
         .then(results => Promise.resolve(results));
     }
 

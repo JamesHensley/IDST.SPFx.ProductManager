@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import AppService from './AppService';
 import { TeamModel } from '../models/TeamModel';
 import { TaskModel, TaskState } from '../models/TaskModel';
+import { CommentsModel } from '../models/CommentsModel';
 
 export class Faker {
     private static _sentences: Array<string>;
@@ -67,7 +68,8 @@ export class Faker {
             EventDate: new Date(new Date(endDate).getTime() + (1000 * 60 * 60 * 24)).toJSON(),
             ClassificationId: (AppService.AppSettings.classificationModels[Math.round(Math.random() * (AppService.AppSettings.classificationModels.length - 1))]).classificationId,
             RequestUrl: 'https://www.github.com',
-            Customer: this._fakeCustomers[Math.round(Math.random() * (this._fakeCustomers.length - 1))]
+            Customer: this._fakeCustomers[Math.round(Math.random() * (this._fakeCustomers.length - 1))],
+            Comments: ''
         };
         // item.ProductStatus === 'Closed' ? new Date(new Date(item.RequestDate).getTime() + (3 * 24 * 60 * 60 * 1000)).toJSON() : null;
         return item;

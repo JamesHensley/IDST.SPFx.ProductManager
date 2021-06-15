@@ -106,12 +106,12 @@ export default class PageComponent extends React.Component <IPageComponentProps,
         });
     }
 
-    private eventPaneUpdated(): void {
+    private eventPaneUpdated(continueEditing: boolean): void {
         RecordService.GetProducts()
         .then(allProducts => {
             this.setState({
                 allProducts: allProducts,
-                panelEditing: false,
+                panelEditing: continueEditing,
                 panelVisible: true,
                 currentProduct: allProducts.reduce((t,n) => n.guid === this.state.currentProductId ? n : t, null)
             });

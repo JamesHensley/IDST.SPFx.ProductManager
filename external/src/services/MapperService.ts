@@ -1,14 +1,14 @@
 import { AttachmentModel } from '../models/AttachmentModel';
 import { ProductModel, ProductStatus } from '../models/ProductModel';
 import { SpListAttachment, SpProductItem } from '../models/SpListItem';
-import { TaskModel } from '../models/TaskModel';
 import { TeamModel } from '../models/TeamModel';
 import AppService from './AppService';
 
 export class MapperService {
+
+
     public static MapProductToItem(prod: ProductModel): SpProductItem {
-        // TODO: Finish this
-        const listItem: SpProductItem = {
+        return new SpProductItem({
             Id: prod.id,
             Guid: prod.guid,
             Title: prod.title,
@@ -24,13 +24,13 @@ export class MapperService {
             EventDate: prod.eventDate,
             ClassificationId: prod.classificationId,
             RequestUrl: prod.requestUrl,
-            Customer: prod.customer
-        };
-        return listItem;
+            Customer: prod.customer,
+            Comments: JSON.stringify(prod.comments)
+        });
     }
 
     public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
-        const pModel: ProductModel = new ProductModel({
+        return new ProductModel({
             id: item.Id,
             guid: item.Guid,
             title: item.Title,
@@ -47,11 +47,10 @@ export class MapperService {
             eventDate: item.EventDate,
             classificationId: item.ClassificationId,
             requestUrl: item.RequestUrl,
+            comments: JSON.parse(item.Comments || '[]'),
             customer: item.Customer,
             newProduct: false
         });
-
-        return pModel;
     }
 
     public static mapTeam(teamId: string): TeamModel {

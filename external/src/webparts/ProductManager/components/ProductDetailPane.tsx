@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Panel, PanelType, Separator, Stack, DefaultButton, ICommandBarItemProps, Label } from '@fluentui/react';
+import { Panel, PanelType, Separator, Stack, DefaultButton, ICommandBarItemProps, Label, Dialog, TextField, DialogFooter } from '@fluentui/react';
 
 import * as styles from './ProductManager.module.scss';
 
@@ -18,6 +18,10 @@ import { MailService } from '../../../services/MailService';
 import { FormInputDropDown } from './FormComponents/FormInputDropDown';
 import { KeyValPair } from './FormComponents/IFormInputProps';
 import { FormInputComboBox } from './FormComponents/FormInputComboBox';
+import { FormInputDialog } from './FormComponents/FormInputDialog';
+import { CommentsModel } from '../../../models/CommentsModel';
+import { v4 as uuidv4 } from 'uuid';
+import { CommentComponent } from './FormComponents/CommentComponent';
 
 export interface IProductDetailPaneProps {
     isVisible: boolean;
@@ -27,13 +31,14 @@ export interface IProductDetailPaneProps {
     /** used to notify the parent that the pane should be destroyed */
     paneCloseCallBack: () => void;
     /** used to notify the parent that the item was updated */
-    productUpdatedCallBack: () => void;
+    productUpdatedCallBack: (newPanelEditValue: boolean) => void;
 }
 
 export interface IProductDetailPaneState {
     isEditing: boolean;
     draftProduct: ProductModel;
     originalProduct: ProductModel;
+    showCommentDialog: boolean;
 }
 
 // This needs a lot of work... especially the editing portion
@@ -44,7 +49,8 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         this.state = {
             isEditing: this.props.isEditing,
             draftProduct: this.props.currentProduct,
-            originalProduct: this.props.currentProduct
+            originalProduct: this.props.currentProduct,
+            showCommentDialog: false
         };
     }
 
@@ -61,15 +67,18 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 closeButtonAriaLabel='Close'
                 type={PanelType.medium}
             >
-                {
-                    this.state.draftProduct &&
-                    <div className={styles.grid + ' ' + styles.formStyles}>
-                    <Stack horizontal tokens={{ childrenGap: 10 }}>
-                        <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
-                        {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
-                        {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
-                    </Stack>
-
+                { this.state.draftProduct &&
+                <div className={styles.grid + ' ' + styles.formStyles}>
+                    <div className={styles.gridRow}>
+                        <div className={styles.gridCol12}>
+                            <Stack horizontal tokens={{ childrenGap: 10 }}>
+                                <DefaultButton onClick={this.addComment.bind(this)}>Add Comment</DefaultButton>
+                                <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
+                                {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
+                                {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
+                            </Stack>
+                        </div>
+                    </div>
                     <div className={styles.gridRow}>
                         <div className={styles.gridCol12}>
                             <FormInputText
@@ -192,7 +201,17 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         onUpdated={this.fieldUpdated.bind(this)}
                         isEditing={this.state.isEditing}
                     />
+                    <Separator />
+                    <CommentComponent comments={this.state.draftProduct.comments || []}/>
                 </div>
+                }
+                { this.state.showCommentDialog && 
+                    <FormInputDialog
+                        saveCallBack={this.commentUpdated.bind(this)}
+                        cancelCallBack={this.cancelAddComment.bind(this)}
+                        editMode={true}
+                        titleStr={'New Comment'}
+                    />
                 }
             </Panel>
         );
@@ -206,6 +225,28 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         this.setState({ isEditing: !this.state.isEditing });
     }
 
+    private addComment(): void { this.setState({ showCommentDialog: true }); }
+
+    private cancelAddComment(): void { this.setState({ showCommentDialog: false }); }
+
+    private commentUpdated(commentStr: string) {
+        const newProd = new ProductModel();
+        Object.assign(newProd, this.state.draftProduct);
+        newProd.comments = [].concat.apply((newProd.comments || []), [{
+            commentGuid: uuidv4(),
+            commentAuthor: '',
+            commentDate: new Date().toJSON(),
+            commentValue: commentStr
+        } as CommentsModel]);
+
+        RecordService.UpdateProductByGuid(newProd.guid, newProd)
+        .then(result => {
+            this.setState({ draftProduct: result.productModel, showCommentDialog: false });
+            this.props.productUpdatedCallBack(this.state.isEditing);
+        })
+        .catch(e => Promise.reject(e));
+    }
+
     private saveRFI(): void {
         RecordService.UpdateProductByGuid(this.state.draftProduct.guid, this.state.draftProduct)
         .then(result => {
@@ -214,7 +255,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             MailService.SendEmail('Update', teamEmails, 'A product has been ' + result.resultStr)
             .catch(e => Promise.reject(e));
             // this.setState({ isEditing: false, draftProduct: result.productModel, originalProduct: result.productModel });
-            this.props.productUpdatedCallBack();
+            this.props.productUpdatedCallBack(false);
         })
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
     }

@@ -18,6 +18,10 @@ export class CustomSpFieldTeamTask {
 }
 
 export class SpProductItem {
+    public constructor(init?: Partial<SpProductItem>) {
+        Object.assign(this, init);
+    }
+
     public Id: number;
     public Title: string;
     public Guid: string;
@@ -34,4 +38,5 @@ export class SpProductItem {
     public ClassificationId: string;
     public RequestUrl: string;
     public Customer: string;
+    public Comments: string;
 }
