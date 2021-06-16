@@ -1,5 +1,5 @@
 {
-  "name": "idst-spfx-product-manager",
+  "name": "spfx-scaffold",
   "version": "0.0.1",
   "private": true,
   "main": "lib/index.js",

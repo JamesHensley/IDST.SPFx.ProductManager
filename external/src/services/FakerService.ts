@@ -6,22 +6,24 @@ import { TaskModel, TaskState } from '../models/TaskModel';
 import { CommentsModel } from '../models/CommentsModel';
 
 export class Faker {
-    private static _sentences: Array<string>;
     private static _fakeCustomers = ['Doctor Creep', 'George Washington', 'Daniel Boone'];
 
-    public static CreateFakeAttachment(itemGUID: string): SpListAttachment {
-        const attachmentName = [ 'File1', 'File2', 'File3', 'File4', 'File5' ][Math.round(Math.random() * 4)];
-        const extn = ['docx', 'doc','ppt', 'pptx', 'xls', 'xlsx', 'txt', 'pdf', 'csv', 'json'][Math.round(Math.random() * 7)];
-        const author: string = ['Jimmy', 'Johnny "Two Fingers"', 'Vince', 'Fat Tony', 'Bob'][Math.round(Math.random() * 4)];
-        const attachment: SpListAttachment = {
-            Author: { Name: author } as SPAuthor,
+    public static CreateFakeAttachment(linkedProductGuid: string, fileName?: string): SpListAttachment {
+        const attachmentName = fileName ? fileName.split('.').reverse[1] : [ 'File1', 'File2', 'File3', 'File4', 'File5' ][Math.round(Math.random() * 4)];
+        const extn = fileName ? fileName.split('.')[0] : ['docx', 'doc','ppt', 'pptx', 'xls', 'xlsx', 'txt', 'pdf', 'csv', 'json'][Math.round(Math.random() * 7)];
+
+        // const author: string = ['Jimmy', 'Johnny "Two Fingers"', 'Vince', 'Fat Tony', 'Bob'][Math.round(Math.random() * 4)];
+        const author = AppService.CurrentSpUser;
+
+        const attachment: SpListAttachment = new SpListAttachment({
+            Author: { Name: author.displayName, Email: author.email } as SPAuthor,
             Id: uuidv4(),
             Updated: new Date(),
-            Title: `Attached Document ${Math.round(Math.random() * 300)}`,
-            Url: `${attachmentName}.${extn}`,
-            Version: '1',
-            LinkedProductGuid: itemGUID
-        };
+            Title: fileName ? fileName.split('.').reverse[1] : `Attached Document ${Math.round(Math.random() * 300)}`,
+            Url: `${AppService.AppSettings.documentListUrl}/${attachmentName}.${extn}`,
+            Version: 1,
+            LinkedProductGuid: linkedProductGuid
+        });
         return attachment;
     }
 
@@ -71,7 +73,10 @@ export class Faker {
             Customer: this._fakeCustomers[Math.round(Math.random() * (this._fakeCustomers.length - 1))],
             Comments: ''
         };
-        // item.ProductStatus === 'Closed' ? new Date(new Date(item.RequestDate).getTime() + (3 * 24 * 60 * 60 * 1000)).toJSON() : null;
+
+        // Create up to 3 fake attachments for this fake item
+        for (let x = 0; x < Math.round(Math.random() * 3); x++) { this.CreateFakeAttachment(item.Guid); }
+
         return item;
     }
 

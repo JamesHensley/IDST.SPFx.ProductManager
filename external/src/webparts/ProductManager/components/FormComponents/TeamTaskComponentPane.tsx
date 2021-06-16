@@ -106,9 +106,9 @@ export class TeamTaskComponentPane extends React.Component<ITeamTaskComponentPan
     }
 
     private fieldUpdated(fieldValue: string, fieldRef: string): void {
-        let newDraft = new TaskModel();
+        const newDraft = new TaskModel();
         Object.assign(newDraft, this.state.draftTask);
-        //const newDraft = JSON.parse(JSON.stringify(this.state.draftTask));
+        // const newDraft = JSON.parse(JSON.stringify(this.state.draftTask));
         newDraft[fieldRef] = fieldValue;
         this.setState({ draftTask: newDraft });
     }

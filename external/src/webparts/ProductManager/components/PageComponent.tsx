@@ -85,7 +85,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 
     public componentDidMount(): void {
         this.receivers = {
-            productEvents: this.updateProducts.bind(this),
+            productEvents: this.productsUpdated.bind(this),
             cmdbarEvents: this.cmdBarItemClicked.bind(this)
         };
         AppService.RegisterProductListener(this.receivers.productEvents);
@@ -128,8 +128,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     //#region Emitter receivers
-    private async updateProducts(): Promise<void> {
-        /*
+    private async productsUpdated(): Promise<void> {
         return RecordService.GetProducts()
         .then(allProducts => {
             console.log('PageComponent.updateProducts-State:', this.state);
@@ -140,7 +139,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
         })
         .then(() => Promise.resolve())
         .catch(e => Promise.reject(e));
-        */
     }
 
     private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {

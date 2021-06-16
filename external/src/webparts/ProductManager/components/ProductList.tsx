@@ -6,6 +6,8 @@ import { format } from 'date-fns';
 import AppService from '../../../services/AppService';
 import { TaskModel } from '../../../models/TaskModel';
 import { TeamModel } from '../../../models/TeamModel';
+import { RecordService } from '../../../services/RecordService';
+import { MapperService } from '../../../services/MapperService';
 
 const controlStyles = {
   root: {
@@ -84,6 +86,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     return (this.props.allProducts || [])
     .filter(i => (i.filterString.toLowerCase().indexOf(SortFilterSetting.FilterText.toLowerCase()) >= 0))
     .map(d => {
+
       return {
         key: d.guid,
         title: d.title,
@@ -98,7 +101,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         eventType: AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === d.eventType ? n.eventTitle : t, ''),
         eventDate: format(new Date(d.eventDate), AppService.DateFormatValue),
         classification: AppService.AppSettings.classificationModels.reduce((t,n) => n.classificationId === d.classificationId ? n.classificationTitle : t, ''),
-        tasks: d.tasks || []
+        tasks: d.tasks || [],
       } as IDocument;
     })
     .sort((a,b) => {

@@ -1,16 +1,21 @@
 
 export class SPAuthor {
     Name: string;
+    Email: string;
 }
 
 export class SpListAttachment {
-    Id: string;
-    Title: string;
-    Updated: Date;
-    Author: SPAuthor;
-    Url: string;
-    Version: string;
-    LinkedProductGuid: string;
+    public constructor(init?: Partial<SpListAttachment>) {
+        Object.assign(this, init);
+    }
+
+    public Id: string;
+    public Title: string;
+    public Updated: Date;
+    public Author: SPAuthor;
+    public Url: string;
+    public Version: number;
+    public LinkedProductGuid: string;
 }
 
 export class CustomSpFieldTeamTask {

@@ -193,7 +193,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         </div>
                     </div>
                     <Separator />
-                    <AttachmentComponent AttachmentItems={this.state.draftProduct.attachedDocuments} />
+                    <AttachmentComponent AttachmentItems={this.state.draftProduct.attachedDocuments} Product={this.state.draftProduct} />
                     <Separator />
                     <TaskComponent
                         TaskItems={this.state.draftProduct.tasks}
@@ -205,7 +205,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                     <CommentComponent comments={this.state.draftProduct.comments || []} />
                 </div>
                 }
-                { this.state.showCommentDialog && 
+                { this.state.showCommentDialog &&
                     <FormInputDialog
                         saveCallBack={this.updateComment.bind(this)}
                         cancelCallBack={this.cancelAddComment.bind(this)}
@@ -230,7 +230,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
     private cancelAddComment(): void { this.setState({ showCommentDialog: false }); }
 
-    private updateComment(commentStr: string) {
+    private updateComment(commentStr: string): void {
         const newProd = new ProductModel();
         Object.assign(newProd, this.state.draftProduct);
         newProd.comments = [].concat.apply((newProd.comments || []), [{
@@ -269,14 +269,14 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private fieldUpdated(newVal: any, fieldRef: string): void {
-        let newDraft = new ProductModel();
+        const newDraft = new ProductModel();
         Object.assign(newDraft, this.state.draftProduct);
         newDraft[fieldRef] = newVal;
         this.setState({ draftProduct: newDraft });
     }
 
     private taskAdded(newTask: TaskModel): void {
-        let newDraft = new ProductModel();
+        const newDraft = new ProductModel();
         Object.assign(newDraft, this.state.draftProduct);
         newDraft.tasks = [].concat.apply(this.state.draftProduct.tasks, [newTask]);
         this.setState({ draftProduct: newDraft });

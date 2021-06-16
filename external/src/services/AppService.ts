@@ -1,8 +1,9 @@
 import { ICommandBarItemProps } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { SPAuthor } from '../models/SpListItem';
 import ProductManagerWebPart, { IProductManagerWebPartProps } from '../webparts/ProductManager/ProductManagerWebPart';
 import { NotificationService, NotificationType } from './NotificationService';
-
+import { SPUser } from '@microsoft/sp-page-context';
 export interface ICmdBarListenerProps {
     callback: () => Promise<void>;
     btnKeys?: Array<string>;
@@ -75,6 +76,10 @@ export default class AppService {
 
     public static get CurrentUser(): string {
         return 'Jimmy';
+    }
+
+    public static get CurrentSpUser(): SPUser {
+        return this.AppContext.pageContext.user;
     }
     //#endregion
 }

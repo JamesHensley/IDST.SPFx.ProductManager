@@ -1,3 +1,1 @@
-export interface MetricModel {
-    
-}
+export interface MetricModel { }

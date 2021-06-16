@@ -2,7 +2,6 @@ import { Label } from '@fluentui/react';
 import * as React from 'react';
 import { CommentsModel } from '../../../../models/CommentsModel';
 
-
 import * as styles from '../ProductManager.module.scss';
 
 export interface ICommentComponentProps {
@@ -10,7 +9,6 @@ export interface ICommentComponentProps {
 }
 
 export const CommentComponent: React.FunctionComponent<ICommentComponentProps> = (props) => {
-
     return (
         <div className={styles.grid}>
             <div className={styles.gridRow}>
@@ -29,4 +27,4 @@ export const CommentComponent: React.FunctionComponent<ICommentComponentProps> =
             }
         </div>
     );
-}
+};

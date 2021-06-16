@@ -5,8 +5,6 @@ import { TeamModel } from '../models/TeamModel';
 import AppService from './AppService';
 
 export class MapperService {
-
-
     public static MapProductToItem(prod: ProductModel): SpProductItem {
         return new SpProductItem({
             Id: prod.id,
@@ -63,15 +61,15 @@ export class MapperService {
     }
 
     public static MapSpAttachmentToAttachment(item: SpListAttachment): AttachmentModel {
-        const attachment: AttachmentModel = {
+        const attachment: AttachmentModel = new AttachmentModel({
             Id: item.Id,
             Title: item.Title,
             Author: item.Author.Name,
             Url: item.Url,
             Updated: item.Updated,
-            Icon: 'NoIcon',
-            LinkedProductGuid: item.LinkedProductGuid
-        };
+            LinkedProductGuid: item.LinkedProductGuid,
+            Version: item.Version
+        });
 
         return attachment;
     }

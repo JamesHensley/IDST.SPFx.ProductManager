@@ -49,15 +49,16 @@ export class FormInputComboBox extends React.Component<IFormInputProps, IFormInp
 
     componentDidMount(): void {
         RecordService.GetUniqueValsForListField(this.props.fieldRef)
-        .then(data => data.map(d => { return { key: d, text: d } as IComboBoxOption }))
+        .then(data => data.map(d => { return { key: d, text: d } as IComboBoxOption; }))
         .then(data => {
             this.comboOptions = data;
             this.setState({ lastUpdate: new Date().getTime() });
-        });
+        })
+        .catch(e => Promise.reject(e));
     }
 
     private fieldUpdated(event: React.FormEvent<IComboBox>, option?: IComboBoxOption, index?: number, value?: string): void {
-        //console.log('ComboUpdate: ', event, option, index, value);
+        // console.log('ComboUpdate: ', event, option, index, value);
         if (!option && value) {
             console.log('Adding value to options list', value);
             this.comboOptions = [].concat.apply(this.comboOptions, [{ key: value, text: value } as IComboBoxOption])

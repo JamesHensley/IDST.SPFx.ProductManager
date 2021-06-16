@@ -42,6 +42,16 @@ export class RecordService {
         return spItems;
     }
 
+    public static async AddAttachmentsForItem(guid: string, files: FileList): Promise<Array<AttachmentModel>> {
+        return this.spService.AddAttachment(AppService.AppSettings.documentListUrl, guid, files)
+        .then(spAttachments => spAttachments.map(d => MapperService.MapSpAttachmentToAttachment(d)))
+        .then(attachments => {
+            AppService.ProductChanged(NotificationType.Create, 'Attachments: ');
+            return Promise.resolve(attachments);
+        })
+        .catch(e => Promise.reject(e))
+    }
+
     public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<IResult> {
         const newItem = MapperService.MapProductToItem(newProduct);
         if (newProduct.newProduct) {
@@ -82,7 +92,7 @@ export class RecordService {
 
     public static GetUniqueValsForListField(fieldName: string): Promise<Array<string>> {
         return this.GetProducts()
-        .then(items => items.map(d => d[fieldName]).filter((f, i, e) => e.indexOf(f) == i).sort())
+        .then(items => items.map(d => d[fieldName]).filter((f, i, e) => e.indexOf(f) === i).sort())
         .then(results => Promise.resolve(results));
     }
 
