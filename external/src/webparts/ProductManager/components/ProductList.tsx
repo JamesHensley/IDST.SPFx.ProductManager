@@ -8,6 +8,7 @@ import { TaskModel } from '../../../models/TaskModel';
 import { TeamModel } from '../../../models/TeamModel';
 import { RecordService } from '../../../services/RecordService';
 import { MapperService } from '../../../services/MapperService';
+import ProductDetailPane from './ProductDetailPane';
 
 const controlStyles = {
   root: {
@@ -157,6 +158,14 @@ export default class ProductList extends React.Component<IProductListProps, IPro
               <DetailsRow {...props} styles={{ root: { cursor: 'pointer' } }} />
             </div>);
           }}
+        />
+        <ProductDetailPane
+            key={new Date().getTime()}
+            paneCloseCallBack={this.eventPaneClose.bind(this)}
+            // productUpdatedCallBack={this.eventPaneUpdated.bind(this)}
+            currentProduct={this.state.currentProduct}
+            isVisible={this.state.panelVisible}
+            isEditing={this.state.panelEditing}
         />
       </div>
     );

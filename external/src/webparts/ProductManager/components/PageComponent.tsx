@@ -46,16 +46,18 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     public render(): React.ReactElement<{}> {
+        /*
+            <ProductDetailPane
+                key={new Date().getTime()}
+                paneCloseCallBack={this.eventPaneClose.bind(this)}
+                // productUpdatedCallBack={this.eventPaneUpdated.bind(this)}
+                currentProduct={this.state.currentProduct}
+                isVisible={this.state.panelVisible}
+                isEditing={this.state.panelEditing}
+            />
+        */
         return(
             <div className={styles.productManager}>
-                <ProductDetailPane
-                    key={new Date().getTime()}
-                    paneCloseCallBack={this.eventPaneClose.bind(this)}
-                    productUpdatedCallBack={this.eventPaneUpdated.bind(this)}
-                    currentProduct={this.state.currentProduct}
-                    isVisible={this.state.panelVisible}
-                    isEditing={this.state.panelEditing}
-                />
                 <div className={styles.grid}>
                     <div className={styles.gridRow}>
                         <ProductManagerCmdBar />
@@ -65,7 +67,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                             {this.state.view === 'ProductList' &&
                                 <ProductList
                                     // Adding a KEY here with the current time lets us force the product list to redraw
-                                    key={new Date().getTime()}
+                                    // key={new Date().getTime()}
                                     allProducts={this.state.allProducts.slice()}
                                     productClicked={this.productClicked.bind(this)}
                                 />
@@ -102,8 +104,8 @@ export default class PageComponent extends React.Component <IPageComponentProps,
         });
     }
 
+    /*
     private eventPaneUpdated(continueEditing: boolean): void {
-        /*
         RecordService.GetProducts()
         .then(allProducts => {
             // We're either going to use the GUID of the current product (update) OR find the GUID of the new product (created)
@@ -119,8 +121,8 @@ export default class PageComponent extends React.Component <IPageComponentProps,
         })
         .then(() => Promise.resolve())
         .catch(e => Promise.reject(e));
-        */
     }
+    */
 
     private eventPaneClose(): void {
         this.setState({
@@ -134,12 +136,11 @@ export default class PageComponent extends React.Component <IPageComponentProps,
         return RecordService.GetProducts()
         .then(allProducts => {
             // We're either going to use the GUID of the current product (update) OR find the GUID of the new product (created)
-            const currProdId = this.state.currentProduct.guid || this.state.allProducts
-                .map(d => d.guid).reduce((t,n) => ((allProducts.map(d => d.guid)).indexOf(n) < 0) ? n : t, null)
-
+            // const currProdId = this.state.currentProduct.guid || allProducts
+            //    .map(d => d.guid).reduce((t,n) => ((this.state.allProducts.map(d => d.guid)).indexOf(n) < 0) ? n : t, null)
             this.setState({
-                allProducts: allProducts,
-                currentProduct: allProducts.reduce((t,n) => n.guid === currProdId ? n : t, null)
+                allProducts: allProducts
+                // currentProduct: allProducts.reduce((t,n) => n.guid === currProdId ? n : t, null)
             });
         })
         .then(() => Promise.resolve())
