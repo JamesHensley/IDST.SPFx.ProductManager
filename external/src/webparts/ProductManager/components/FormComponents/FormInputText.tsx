@@ -9,6 +9,7 @@ import { IFormInputProps } from './IFormInputProps';
 export class FormInputText extends React.Component<IFormInputProps, {}> {
 
     render(): React.ReactElement<IFormInputProps> {
+        const ctrlStyles = { root: { width: '100%' } };
         return(
             <div className={`${styles.gridRow} ${styles.padTop2}`}>
                 <div className={`${styles.gridCol12} ${styles.fieldValue}`}>
@@ -22,6 +23,7 @@ export class FormInputText extends React.Component<IFormInputProps, {}> {
                             multiline={this.props.editLines ? true : false}
                             rows={this.props.editLines ? this.props.editLines : 1}
                             onChange={this.fieldUpdated.bind(this)}
+                            styles={ctrlStyles}
                         />
                     )}
                 </div>

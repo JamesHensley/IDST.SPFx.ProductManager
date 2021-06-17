@@ -5,11 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 import * as styles from '../ProductManager.module.scss';
 
 import { TaskModel, TaskState } from '../../../../models/TaskModel';
-import { TeamTaskComponent } from './TeamTaskComponent';
+import { TeamTaskRowComponent } from './TeamTaskRowComponent';
 import AppService from '../../../../services/AppService';
+import { TeamModel } from '../../../../models/TeamModel';
 
 export interface ITaskPaneState {
-    taskId: string;
+    teamId: string;
     isPaneVisible: boolean;
 }
 export interface ITaskComponentProps {
@@ -25,16 +26,23 @@ export interface ITaskComponentState {
 
 export class TaskComponent extends React.Component<ITaskComponentProps, ITaskComponentState> {
     private grid = `${styles.grid} ${styles.attachmentManager}`;
-    private row = `${styles.gridRow} ${styles.attachmentItem} ${styles.bordered}`;
-
+    private teamIds: Array<String> = [];
+    private teamModels: Array<TeamModel> = [];
+    
     constructor(props: ITaskComponentProps) {
         super(props);
+
+        this.teamIds = (this.props.TaskItems || []).map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i);
+        this.teamModels = AppService.AppSettings.teams.reduce((t, n) => (this.teamIds.indexOf(n.id) >= 0) ? t.concat([n]) : t, [])
+
         this.state = {
-            taskPanes: this.props.TaskItems.map(d => { return { taskId: d.taskGuid, isPaneVisible: false } as ITaskPaneState; })
+            taskPanes: this.teamIds.map(d => { return { teamId: d, isPaneVisible: false } as ITaskPaneState; })
         };
     }
 
     render(): React.ReactElement<ITaskComponentProps> {
+        // const teams = (this.props.TaskItems || []).map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i);
+        // const teamModels: Array<TeamModel> = AppService.AppSettings.teams.reduce((t, n) => teams.indexOf(n.id) ? t.concat([n]) : t, [])
         return (
             <div className={`${this.grid} ${styles.padTop3}`}>
                 <Label>Teams and Tasks</Label>
@@ -44,25 +52,28 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
                     <Label className={styles.gridCol5} style={{ fontSize: '.9rem' }}>Task Description</Label>
                     <Label className={styles.gridCol3} style={{ fontSize: '.9rem' }}>Suspense</Label>
                 </div>
-                {(this.props.TaskItems || []).map(a => {
-                    const paneState: ITaskPaneState = this.state.taskPanes.reduce((t,n) => n.taskId === a.taskGuid ? n : t, null);
-                    return (
-                        <TeamTaskComponent
-                            task={a}
-                            isPaneVisible={paneState.isPaneVisible}
-                            key={a.taskGuid}
-                            editing={this.props.isEditing}
-                            taskUpdated={this.taskUpdated.bind(this)}
-                            taskClicked={this.taskClicked.bind(this)}
-                            taskUpdateCancel={this.taskEditCancel.bind(this)}
-                        />
-                    );
-                })}
+                {
+                    this.teamModels.map(team => {
+                        const paneState: ITaskPaneState = this.state.taskPanes.reduce((t, n) => n.teamId === team.id ? n : t, null);
+                        return (
+                            <TeamTaskRowComponent
+                                key={team.id}
+                                teamModel={team}
+                                teamTasks={(this.props.TaskItems || []).filter(f => f.taskedTeamId === team.id)}
+                                isPaneVisible={paneState.isPaneVisible}
+                                editing={this.props.isEditing}
+                                tasksUpdated={this.teamTasksUpdated.bind(this)}
+                                teamClicked={this.teamClicked.bind(this)}
+                            />
+                        );
+                    })
+                }
             </div>
         );
     }
 
     private createNewTask(): void {
+        /*
         const newTask = new TaskModel();
         newTask.taskDescription = 'New Task';
         newTask.taskGuid = uuidv4();
@@ -75,23 +86,29 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
             .concat([{ isPaneVisible: true, taskId: newTask.taskGuid } as ITaskPaneState]);
         this.setState({ taskPanes: newTaskPanes });
         this.props.onTaskAdded(newTask);
+        */
     }
 
-    private taskUpdated(newTask: TaskModel): void {
-        const newTasks: any = this.props.TaskItems.reduce((t,n) => n.taskGuid !== newTask.taskGuid ? t.concat(n) : t.concat(newTask), []);
-        const newPanes = this.state.taskPanes.map(d => { return { taskId: d.taskId, isPaneVisible: false } as ITaskPaneState; });
-
-        this.props.onUpdated(newTasks, 'tasks');
+    private teamTasksUpdated(newTasks: Array<TaskModel>): void {
+        if (newTasks) {
+            // Save tasks
+            // const newTasks: any = this.props.TaskItems.reduce((t,n) => n.taskGuid !== newTask.taskGuid ? t.concat(n) : t.concat(newTask), []);
+            // this.props.onUpdated(newTasks, 'tasks');
+        }
+        else {
+            //User canceled
+        }
+        const newPanes = this.state.taskPanes.map(d => { return { teamId: d.teamId, isPaneVisible: false } as ITaskPaneState; });
         this.setState({ taskPanes: newPanes });
     }
 
     private taskEditCancel(taskId: string): void {
-        const newPanes = this.state.taskPanes.map(d => { return { taskId: d.taskId, isPaneVisible: false } as ITaskPaneState; });
-        this.setState({ taskPanes: newPanes });
+        // const newPanes = this.state.taskPanes.map(d => { return { taskId: d.taskId, isPaneVisible: false } as ITaskPaneState; });
+        // this.setState({ taskPanes: newPanes });
     }
 
-    private taskClicked(taskId: string): void {
-        const newPanes = this.state.taskPanes.map(d => { return { taskId: d.taskId, isPaneVisible: (d.taskId === taskId) } as ITaskPaneState; });
+    private teamClicked(teamId: string): void {
+        const newPanes = this.state.taskPanes.map(d => { return { teamId: d.teamId, isPaneVisible: (d.teamId === teamId) } as ITaskPaneState; });
         this.setState({ taskPanes: newPanes });
     }
 }

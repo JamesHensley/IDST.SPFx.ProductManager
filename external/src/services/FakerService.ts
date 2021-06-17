@@ -49,7 +49,14 @@ export class Faker {
             .map(d => d.id);
 
         const tasks: Array<TaskModel> = (teams.length > 0 ? teams : [AppService.AppSettings.teams[0].id])
-            .map(d => this.CreateFakeTask(d));
+            .map(d => {
+                const teamTasks: Array<TaskModel> = [];
+                for (var x = 1; x < Math.round(Math.random() * 4); x++) {
+                    teamTasks.push(this.CreateFakeTask(d));
+                }
+                return teamTasks;
+            })
+            .reduce((t,n) => [].concat.apply(t, n), []);
 
         const reqDate = new Date().getTime() + (((Math.round(Math.random() === 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24);
         const endDate = new Date().getTime() + ((Math.round(Math.random() * 14) + 1) * 1000 * 60 * 60 * 24);

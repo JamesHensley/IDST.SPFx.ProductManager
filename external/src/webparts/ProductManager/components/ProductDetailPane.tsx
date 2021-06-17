@@ -56,7 +56,6 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     public render(): React.ReactElement<IProductDetailPaneProps> {
-        console.log('ProductDetailPane.render: ', this.state);
         return (
             <Panel
                 className={styles.productDetailPane}

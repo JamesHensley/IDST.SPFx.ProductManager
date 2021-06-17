@@ -11,7 +11,7 @@ export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
     render(): React.ReactElement<IFormInputProps> {
         const options = this.props.options.map(d => { return { key: d.key, text: d.value } as IDropdownOption; });
         const selectedKey = this.props.fieldValue;
-        const dropdownStyles = { root: { width: '100%' } };
+        const ctrlStyles = { root: { width: '100%' } };
         return(
             <div className={`${styles.gridRow} ${styles.padTop2}`}>
                 <div className={`${styles.gridCol12} ${styles.fieldValue}`}>
@@ -25,7 +25,7 @@ export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
                             options={options}
                             defaultSelectedKey={selectedKey}
                             onChange={this.fieldUpdated.bind(this)}
-                            styles={dropdownStyles}
+                            styles={ctrlStyles}
                         />
                     )}
                 </div>
