@@ -8,9 +8,8 @@ import { SPService } from './SPService';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { v4 as uuidv4 } from 'uuid';
 import { NotificationType } from './NotificationService';
-import { ProductTypeModel } from '../models/ProductTypeModel';
-import { task } from 'gulp';
 import { TaskModel, TaskState } from '../models/TaskModel';
+import { CommentsModel } from '../models/CommentsModel';
 
 export interface IResult {
     productModel: ProductModel;
@@ -19,6 +18,7 @@ export interface IResult {
 export class RecordService {
     private static _prodService = new SPService();
     private static _mockService = new MockSPService();
+    private static listeners: Array<() => Promise<void>> = [];
 
     private static get spService(): ISPService {
         return AppService.AppSettings.isDebugging ? this._mockService : this._prodService;
@@ -42,25 +42,25 @@ export class RecordService {
         return spItems;
     }
 
-    public static async AddAttachmentsForItem(guid: string, files: FileList): Promise<Array<AttachmentModel>> {
-        return this.spService.AddAttachment(AppService.AppSettings.documentListUrl, guid, files)
+    public static async AddAttachmentsForItem(product: ProductModel, files: FileList): Promise<Array<AttachmentModel>> {
+        return this.spService.AddAttachment(AppService.AppSettings.documentListUrl, product.guid, files)
         .then(spAttachments => spAttachments.map(d => MapperService.MapSpAttachmentToAttachment(d)))
         .then(attachments => {
-            AppService.ProductChanged(NotificationType.Create, 'Attachments: ');
+            AppService.ProductChanged(NotificationType.AttachAdd, product);
             return Promise.resolve(attachments);
         })
         .catch(e => Promise.reject(e))
     }
 
-    public static async SaveProduct(guid: string, newProduct: ProductModel): Promise<IResult> {
-        const resultStr = guid ? 'Updated' : 'Created';
-        const newItem = MapperService.MapProductToItem(newProduct);
+    public static async SaveProduct(product: ProductModel, broadcastChange: boolean): Promise<IResult> {
+        const resultStr = product.guid ? 'Updated' : 'Created';
+        const newItem = MapperService.MapProductToItem(product);
         
-        return (guid ? this.spService.UpdateListItem(AppService.AppSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem))
-            .then((newItem: SpProductItem) => {
-            AppService.ProductChanged(NotificationType.Create, newProduct.title);
+        return (product.guid ? this.spService.UpdateListItem(AppService.AppSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem))
+        .then((newItem: SpProductItem) => {
             return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
             .then(attachments => {
+                if(broadcastChange) { AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product); }
                 return Promise.resolve({
                     productModel: MapperService.MapItemToProduct(newItem, attachments),
                     resultStr: resultStr

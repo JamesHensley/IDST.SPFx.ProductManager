@@ -22,6 +22,7 @@ import { FormInputDialog } from './FormComponents/FormInputDialog';
 import { CommentsModel } from '../../../models/CommentsModel';
 import { v4 as uuidv4 } from 'uuid';
 import { CommentComponent } from './FormComponents/CommentComponent';
+import { tr } from 'date-fns/locale';
 
 export interface IProductDetailPaneProps {
     isVisible: boolean;
@@ -31,13 +32,12 @@ export interface IProductDetailPaneProps {
     /** used to notify the parent that the pane should be destroyed */
     paneCloseCallBack: () => void;
     /** used to notify the parent that the item was updated */
-    productUpdatedCallBack: (newPanelEditValue: boolean) => void;
+    // productUpdatedCallBack: (newPanelEditValue: boolean) => void;
 }
 
 export interface IProductDetailPaneState {
     isEditing: boolean;
     draftProduct: ProductModel;
-    originalProduct: ProductModel;
     showCommentDialog: boolean;
 }
 
@@ -45,17 +45,18 @@ export interface IProductDetailPaneState {
 export default class ProductDetailPane extends React.Component<IProductDetailPaneProps, IProductDetailPaneState> {
     constructor(props: IProductDetailPaneProps) {
         super(props);
+        const draftProduct: ProductModel = new ProductModel();
+        Object.assign(draftProduct, this.props.currentProduct);
 
         this.state = {
             isEditing: this.props.isEditing,
-            draftProduct: this.props.currentProduct,
-            originalProduct: this.props.currentProduct,
+            draftProduct: draftProduct,
             showCommentDialog: false
         };
     }
 
     public render(): React.ReactElement<IProductDetailPaneProps> {
-        console.log('ProductDetailPane.render: ', this.props, this.state);
+        console.log('ProductDetailPane.render: ', this.state);
         return (
             <Panel
                 className={styles.productDetailPane}
@@ -235,40 +236,41 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     private cancelAddComment(): void { this.setState({ showCommentDialog: false }); }
 
     private updateComment(commentStr: string): void {
-        const newProd = new ProductModel();
-        Object.assign(newProd, this.state.draftProduct);
-        newProd.comments = [].concat.apply((newProd.comments || []), [{
+        const comment: CommentsModel = {
             commentGuid: uuidv4(),
             commentAuthor: AppService.CurrentUser,
             commentDate: new Date().toJSON(),
             commentValue: commentStr
-        } as CommentsModel]);
+        };
 
-        RecordService.SaveProduct(newProd.guid, newProd)
-        .then(result => {
-            this.setState({ draftProduct: result.productModel, showCommentDialog: false });
-            this.props.productUpdatedCallBack(this.state.isEditing);
-        })
-        .catch(e => Promise.reject(e));
+        // We're seperating these out in case someone adds a comment to a new product and then decides
+        // to cancel the action.  If we processed the comment before the initial save, the product would
+        // get saved
+        if (this.state.isEditing) {
+            const newDraft = new ProductModel();
+            Object.assign(newDraft, this.state.draftProduct);
+            newDraft.comments.push(comment);
+            this.setState({ draftProduct: newDraft, showCommentDialog: false });
+        } else {
+            RecordService.SaveProduct(this.state.draftProduct, false)
+            .then(result => this.setState({ draftProduct: result.productModel, showCommentDialog: false }))
+            .catch(e => console.log('Update failed for: ', this.state.draftProduct));
+        }
     }
 
     private saveRFI(): void {
-        RecordService.SaveProduct(this.state.draftProduct.guid, this.state.draftProduct)
-        .then(result => {
-            const teamIds = (this.state.draftProduct.tasks || []).map(d => d.taskedTeamId);
-            const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
-            MailService.SendEmail('Update', teamEmails, 'A product has been ' + result.resultStr)
-            .catch(e => Promise.reject(e));
-            this.props.productUpdatedCallBack(false);
-        })
+        // We let the parent component close this pane.
+        RecordService.SaveProduct(this.state.draftProduct, true)
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
     }
 
     private cancelRFIChanges(): void {
         if (!this.state.draftProduct.guid) {
+            // Canceled creating a new product
             this.props.paneCloseCallBack();
         } else {
-            this.setState({ isEditing: false, draftProduct: this.state.originalProduct });
+            // Canceled updating an existing product
+            this.setState({ isEditing: false, draftProduct: this.props.currentProduct });
         }
     }
 
@@ -288,7 +290,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
     private addAttachment(files: FileList): void {
         if (this.state.draftProduct.guid) {
-            RecordService.AddAttachmentsForItem(this.state.draftProduct.guid, files)
+            RecordService.AddAttachmentsForItem(this.state.draftProduct, files)
             .then(results => console.log('Uploaded: ', results));
         }
     }

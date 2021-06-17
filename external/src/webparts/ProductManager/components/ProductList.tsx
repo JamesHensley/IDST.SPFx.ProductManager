@@ -159,14 +159,6 @@ export default class ProductList extends React.Component<IProductListProps, IPro
             </div>);
           }}
         />
-        <ProductDetailPane
-            key={new Date().getTime()}
-            paneCloseCallBack={this.eventPaneClose.bind(this)}
-            // productUpdatedCallBack={this.eventPaneUpdated.bind(this)}
-            currentProduct={this.state.currentProduct}
-            isVisible={this.state.panelVisible}
-            isEditing={this.state.panelEditing}
-        />
       </div>
     );
   }

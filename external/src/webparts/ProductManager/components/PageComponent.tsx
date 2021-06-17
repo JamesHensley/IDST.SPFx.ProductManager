@@ -46,39 +46,40 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     public render(): React.ReactElement<{}> {
-        /*
-            <ProductDetailPane
-                key={new Date().getTime()}
-                paneCloseCallBack={this.eventPaneClose.bind(this)}
-                // productUpdatedCallBack={this.eventPaneUpdated.bind(this)}
-                currentProduct={this.state.currentProduct}
-                isVisible={this.state.panelVisible}
-                isEditing={this.state.panelEditing}
-            />
-        */
         return(
-            <div className={styles.productManager}>
-                <div className={styles.grid}>
-                    <div className={styles.gridRow}>
-                        <ProductManagerCmdBar />
-                    </div>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol12}>
-                            {this.state.view === 'ProductList' &&
-                                <ProductList
-                                    // Adding a KEY here with the current time lets us force the product list to redraw
-                                    // key={new Date().getTime()}
-                                    allProducts={this.state.allProducts.slice()}
-                                    productClicked={this.productClicked.bind(this)}
-                                />
-                            }
-                            {this.state.view === 'RollUp' &&
-                                <RollupView></RollupView>
-                            }
+            <>
+                <ProductDetailPane
+                    // Adding key here causes the component to be destroyed/rebuilt on each render
+                    key={new Date().getTime()}
+                    paneCloseCallBack={this.eventPaneClose.bind(this)}
+                    // productUpdatedCallBack={this.eventPaneUpdated.bind(this)}
+                    currentProduct={this.state.currentProduct}
+                    isVisible={this.state.panelVisible}
+                    isEditing={this.state.panelEditing}
+                />
+                <div className={styles.productManager}>
+                    <div className={styles.grid}>
+                        <div className={styles.gridRow}>
+                            <ProductManagerCmdBar />
+                        </div>
+                        <div className={styles.gridRow}>
+                            <div className={styles.gridCol12}>
+                                {this.state.view === 'ProductList' &&
+                                    <ProductList
+                                        // Adding key here causes the component to be destroyed/rebuilt on each render
+                                        key={new Date().getTime()}
+                                        allProducts={this.state.allProducts.slice()}
+                                        productClicked={this.productClicked.bind(this)}
+                                    />
+                                }
+                                {this.state.view === 'RollUp' &&
+                                    <RollupView></RollupView>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </>
         );
     }
 
@@ -132,15 +133,20 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     //#region Emitter receivers
+
+    /** Receives the PRODUCT UPDATED message whenever the recordservice saves a product */
     private async productsUpdated(): Promise<void> {
         return RecordService.GetProducts()
         .then(allProducts => {
             // We're either going to use the GUID of the current product (update) OR find the GUID of the new product (created)
             // const currProdId = this.state.currentProduct.guid || allProducts
-            //    .map(d => d.guid).reduce((t,n) => ((this.state.allProducts.map(d => d.guid)).indexOf(n) < 0) ? n : t, null)
+            //    .map(d => d.guid).reduce((t,n) => ((this.state.allProducts.map(d => d.guid)).indexOf(n) < 0) ? n : t, null);
             this.setState({
-                allProducts: allProducts
-                // currentProduct: allProducts.reduce((t,n) => n.guid === currProdId ? n : t, null)
+                allProducts: allProducts,
+                //currentProduct: allProducts.reduce((t,n) => n.guid === currProdId ? n : t, null),
+                currentProduct: null,
+                panelEditing: false,
+                panelVisible: false
             });
         })
         .then(() => Promise.resolve())

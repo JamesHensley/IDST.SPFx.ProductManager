@@ -4,6 +4,8 @@ import { SPAuthor } from '../models/SpListItem';
 import ProductManagerWebPart, { IProductManagerWebPartProps } from '../webparts/ProductManager/ProductManagerWebPart';
 import { NotificationService, NotificationType } from './NotificationService';
 import { SPUser } from '@microsoft/sp-page-context';
+import { ProductModel } from '../models/ProductModel';
+import { MailService } from './MailService';
 export interface ICmdBarListenerProps {
     callback: () => Promise<void>;
     btnKeys?: Array<string>;
@@ -29,27 +31,29 @@ export default class AppService {
     //#region Emitters
     public static RegisterProductListener(callback: () => Promise<void>): void {
         this._productListeners.push(callback);
-        // console.log('RegisterProductListener: ', this._productListeners);
     }
 
     public static UnRegisterProductListener(callback: () => void): void {
         this._productListeners = this._productListeners.filter(f => f !== callback);
-        // console.log('UnRegisterProductListener: ', this._productListeners);
     }
 
-    public static ProductChanged(type: NotificationType, msg: string): void {
+    public static ProductChanged(notificationType: NotificationType, product: ProductModel): void {
         this._productListeners.forEach(l => l.call(l));
-        NotificationService.Notify(type, msg);
+        NotificationService.Notify(notificationType, product.title);
+
+        const teamIds = (product.tasks || []).map(d => d.taskedTeamId);
+        const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
+        MailService.SendEmail('Update', teamEmails, `A product has been ${notificationType.toString()}`)
+        .catch(e => Promise.reject(e));
     }
+    
 
     public static RegisterCmdBarListener(p: ICmdBarListenerProps): void {
         this._cmdBarListeners.push(p);
-        // console.log('RegisterCmdBarListener: ', this._cmdBarListeners);
     }
 
     public static UnRegisterCmdBarListener(callback: () => Promise<void>): void {
         this._cmdBarListeners = this._cmdBarListeners.filter(f => f.callback !== callback);
-        // console.log('UnRegisterCmdBarListener: ', this._cmdBarListeners);
     }
 
     public static MenuItemClicked(item: ICommandBarItemProps): void {

@@ -2,7 +2,8 @@
 export enum NotificationType {
     Create = 'Created',
     Update = 'Updated',
-    Delete = 'Deleted'
+    Delete = 'Deleted',
+    AttachAdd = 'Attachment Added'
 }
 
 export class NotificationService {

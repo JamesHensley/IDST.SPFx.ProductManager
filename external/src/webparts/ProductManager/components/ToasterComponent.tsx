@@ -3,7 +3,7 @@ import * as React from 'react';
 import { NotificationService } from '../../../services/NotificationService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { RGBA_REGEX } from '@fluentui/react';
+import { ProductModel } from '../../../models/ProductModel';
 
 export interface IToasterComponentProps {}
 
@@ -21,7 +21,7 @@ export default class ToasterComponent extends React.Component<IToasterComponentP
 
     componentWillUnmount(): void { NotificationService.UnRegisterProductListener(this.receiver); }
 
-    private notificationFired(msg: string): void { toast.info(msg); }
+    private notificationFired(msg: string, product: ProductModel): void { toast.info(msg); }
 
     render(): JSX.Element {
         return <ToastContainer
