@@ -1,16 +1,15 @@
 import * as React from 'react';
-import { Label, Icon, DefaultButton } from '@fluentui/react';
+import { Label, Icon, DefaultButton, Stack } from '@fluentui/react';
 import { getFileTypeIconProps } from '@fluentui/react-file-type-icons';
 
 import * as styles from '../ProductManager.module.scss';
 
 import { AttachmentModel } from '../../../../models/AttachmentModel';
-import { RecordService } from '../../../../services/RecordService';
-import { ProductModel } from '../../../../models/ProductModel';
 
 export interface IAttachmentComponentProps {
-    Product: ProductModel;
+    canAddAttachments: boolean;
     AttachmentItems: Array<AttachmentModel>;
+    AddAttachmentCallback: (files: FileList) => void;
 }
 
 export class AttachmentComponent extends React.Component<IAttachmentComponentProps, {}> {
@@ -20,13 +19,22 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
     public render(): React.ReactElement<IAttachmentComponentProps> {
         return (
             <div className={`${this.grid} ${styles.padTop3}`}>
-                <div className={styles.gridRow}><Label className={styles.gridCol12}>Attachments</Label></div>
                 <div className={styles.gridRow}>
-                    <div className={styles.gridCol12}>
-                        <input id='attachment' type='file' multiple accept=".*" />
-                        <DefaultButton onClick={this.uploadFiles.bind(this)}>Upload</DefaultButton>
-                    </div>
+                    <Label className={styles.gridCol12}>
+                        Attachments
+                        { !this.props.canAddAttachments &&
+                            <span style={{ fontSize: '0.7rem', fontWeight: 'normal', paddingLeft: '10px' }}>Attachments can only be added after the first save</span>
+                        }
+                    </Label>
                 </div>
+                { this.props.canAddAttachments &&
+                    <div className={styles.gridRow}>
+                        <div className={styles.gridCol12}>
+                            <input id='attachment' type='file' multiple accept=".*" />
+                            <DefaultButton onClick={this.uploadFiles.bind(this)}>Upload</DefaultButton>
+                        </div>
+                    </div>
+                }
                 <div className={styles.gridRow}>
                     <Label className={styles.gridCol1} style={{ fontSize: '.9rem' }}></Label>
                     <Label className={styles.gridCol6} style={{ fontSize: '.9rem' }}>Title</Label>
@@ -58,9 +66,6 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
 
     private uploadFiles(): void {
         const files = (document.querySelector('#attachment') as HTMLInputElement).files;
-        if (files.length > 0 && this.props.Product.guid) {
-            RecordService.AddAttachmentsForItem(this.props.Product.guid, files)
-            .then(results => console.log('Uploaded: ', results));
-        }
+        if (files.length > 0) { this.props.AddAttachmentCallback(files); }
     }
 }

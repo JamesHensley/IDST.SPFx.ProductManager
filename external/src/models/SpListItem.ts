@@ -44,4 +44,5 @@ export class SpProductItem {
     public RequestUrl: string;
     public Customer: string;
     public Comments: string;
+    public Active: boolean;
 }

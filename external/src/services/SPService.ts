@@ -1,4 +1,4 @@
-import { SpListAttachment, SpProductItem } from '../models/SpListItem';
+import { SPAuthor, SpListAttachment, SpProductItem } from '../models/SpListItem';
 import { ISPService } from './ISPService';
 
 import { SPHttpClient, SPHttpClientConfiguration } from '@microsoft/sp-http';
@@ -26,16 +26,20 @@ export class SPService implements ISPService {
                 .then(buff => {
                     // Now that we have an arrayBuffer, we can upload this into SP
                     return this.executeUpload(listUrl, productGuid, d.name, buff);
-                })
+                });
             })
-        )
+        );
     }
 
     AddListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
         throw new Error('Method not implemented.');
     }
 
-    UpdateListItemByGuid(listUrl: string, guid: string, item: SpProductItem): Promise<SpProductItem> {
+    UpdateListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
+        throw new Error('Method not implemented.');
+    }
+
+    RemoveListItem(listUrl: string, item: SpProductItem): Promise<void> {
         throw new Error('Method not implemented.');
     }
 
@@ -50,7 +54,7 @@ export class SPService implements ISPService {
     }
 
     private executeUpload(listUrl: string, productGuid: string, fileName: string, arrayBuffer: ArrayBuffer): Promise<SpListAttachment> {
-        //const documentLibrary = '';
+        // const documentLibrary = '';
         const webUrl = AppService.AppContext.pageContext.web.absoluteUrl;
         // const targetUrl =  `${AppService.AppContext.pageContext.web.serverRelativeUrl}/${documentLibrary}`;
         const targetUrl = listUrl;
@@ -67,7 +71,7 @@ export class SPService implements ISPService {
         .then(result => result.json())
         .then(result => Promise.resolve(new SpListAttachment({
                 Id: result.d.ListItemAllFields.GUID,
-                Author: AppService.CurrentSpUser,
+                Author: { Name: AppService.CurrentSpUser.displayName, Email: AppService.CurrentSpUser.email } as SPAuthor,
                 LinkedProductGuid: productGuid,
                 Title: result.d.Name,
                 Url: result.d.ServerRelativeUrl,

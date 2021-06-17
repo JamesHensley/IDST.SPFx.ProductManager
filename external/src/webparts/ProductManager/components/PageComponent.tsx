@@ -16,7 +16,6 @@ export interface IPageComponentProps { }
 export interface IPageComponentState {
     panelVisible: boolean;
     panelEditing: boolean;
-    currentProductId: string;
     currentProduct: ProductModel;
     allProducts: Array<ProductModel>;
     view: string;
@@ -34,7 +33,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
         this.state = {
             panelVisible: false,
             panelEditing: false,
-            currentProductId: null,
             currentProduct: null,
             allProducts: [],
             view: 'ProductList'
@@ -54,7 +52,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                     key={new Date().getTime()}
                     paneCloseCallBack={this.eventPaneClose.bind(this)}
                     productUpdatedCallBack={this.eventPaneUpdated.bind(this)}
-                    currentProductId={this.state.currentProductId}
                     currentProduct={this.state.currentProduct}
                     isVisible={this.state.panelVisible}
                     isEditing={this.state.panelEditing}
@@ -101,29 +98,34 @@ export default class PageComponent extends React.Component <IPageComponentProps,
         this.setState({
             panelVisible: true,
             panelEditing: false,
-            currentProductId: prodId,
             currentProduct: this.state.allProducts.reduce((t,n) => n.guid === prodId ? n : t, null)
         });
     }
 
     private eventPaneUpdated(continueEditing: boolean): void {
+        /*
         RecordService.GetProducts()
         .then(allProducts => {
+            // We're either going to use the GUID of the current product (update) OR find the GUID of the new product (created)
+            const currProdId = this.state.currentProduct.guid || this.state.allProducts
+                .map(d => d.guid).reduce((t,n) => ((allProducts.map(d => d.guid)).indexOf(n) < 0) ? n : t, null)
+
             this.setState({
                 allProducts: allProducts,
                 panelEditing: continueEditing,
                 panelVisible: true,
-                currentProduct: allProducts.reduce((t,n) => n.guid === this.state.currentProductId ? n : t, null)
+                currentProduct: allProducts.reduce((t,n) => n.guid === this.state.currentProduct.guid ? n : t, null)
             });
         })
         .then(() => Promise.resolve())
         .catch(e => Promise.reject(e));
+        */
     }
 
     private eventPaneClose(): void {
         this.setState({
             panelVisible: false,
-            currentProductId: null
+            currentProduct: null
         });
     }
 
@@ -131,10 +133,13 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     private async productsUpdated(): Promise<void> {
         return RecordService.GetProducts()
         .then(allProducts => {
-            console.log('PageComponent.updateProducts-State:', this.state);
+            // We're either going to use the GUID of the current product (update) OR find the GUID of the new product (created)
+            const currProdId = this.state.currentProduct.guid || this.state.allProducts
+                .map(d => d.guid).reduce((t,n) => ((allProducts.map(d => d.guid)).indexOf(n) < 0) ? n : t, null)
+
             this.setState({
                 allProducts: allProducts,
-                currentProduct: allProducts.reduce((t,n) => n.guid === this.state.currentProductId ? n : t, null)
+                currentProduct: allProducts.reduce((t,n) => n.guid === currProdId ? n : t, null)
             });
         })
         .then(() => Promise.resolve())
@@ -153,7 +158,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
             case 'newProduct':
                 const newRecord = RecordService.GetNewProductModel(item.data.id);
                 this.setState({
-                    currentProductId: newRecord.guid,
                     currentProduct: newRecord,
                     panelVisible: true,
                     panelEditing: true

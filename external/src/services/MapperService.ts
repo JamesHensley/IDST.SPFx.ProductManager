@@ -23,7 +23,8 @@ export class MapperService {
             ClassificationId: prod.classificationId,
             RequestUrl: prod.requestUrl,
             Customer: prod.customer,
-            Comments: JSON.stringify(prod.comments)
+            Comments: JSON.stringify(prod.comments),
+            Active: true
         });
     }
 
@@ -46,8 +47,7 @@ export class MapperService {
             classificationId: item.ClassificationId,
             requestUrl: item.RequestUrl,
             comments: JSON.parse(item.Comments || '[]'),
-            customer: item.Customer,
-            newProduct: false
+            customer: item.Customer
         });
     }
 

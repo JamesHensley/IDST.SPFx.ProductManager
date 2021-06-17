@@ -26,7 +26,7 @@ import { CommentComponent } from './FormComponents/CommentComponent';
 export interface IProductDetailPaneProps {
     isVisible: boolean;
     isEditing: boolean;
-    currentProductId: string;
+    // currentProductId: string;
     currentProduct: ProductModel;
     /** used to notify the parent that the pane should be destroyed */
     paneCloseCallBack: () => void;
@@ -193,7 +193,11 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         </div>
                     </div>
                     <Separator />
-                    <AttachmentComponent AttachmentItems={this.state.draftProduct.attachedDocuments} Product={this.state.draftProduct} />
+                    <AttachmentComponent
+                        AttachmentItems={this.state.draftProduct.attachedDocuments}
+                        AddAttachmentCallback={this.addAttachment.bind(this)}
+                        canAddAttachments={this.state.draftProduct.guid ? true : false}
+                    />
                     <Separator />
                     <TaskComponent
                         TaskItems={this.state.draftProduct.tasks}
@@ -240,7 +244,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             commentValue: commentStr
         } as CommentsModel]);
 
-        RecordService.UpdateProductByGuid(newProd.guid, newProd)
+        RecordService.SaveProduct(newProd.guid, newProd)
         .then(result => {
             this.setState({ draftProduct: result.productModel, showCommentDialog: false });
             this.props.productUpdatedCallBack(this.state.isEditing);
@@ -249,7 +253,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private saveRFI(): void {
-        RecordService.UpdateProductByGuid(this.state.draftProduct.guid, this.state.draftProduct)
+        RecordService.SaveProduct(this.state.draftProduct.guid, this.state.draftProduct)
         .then(result => {
             const teamIds = (this.state.draftProduct.tasks || []).map(d => d.taskedTeamId);
             const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
@@ -261,7 +265,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private cancelRFIChanges(): void {
-        if (this.state.draftProduct.newProduct) {
+        if (!this.state.draftProduct.guid) {
             this.props.paneCloseCallBack();
         } else {
             this.setState({ isEditing: false, draftProduct: this.state.originalProduct });
@@ -280,5 +284,12 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         Object.assign(newDraft, this.state.draftProduct);
         newDraft.tasks = [].concat.apply(this.state.draftProduct.tasks, [newTask]);
         this.setState({ draftProduct: newDraft });
+    }
+
+    private addAttachment(files: FileList): void {
+        if (this.state.draftProduct.guid) {
+            RecordService.AddAttachmentsForItem(this.state.draftProduct.guid, files)
+            .then(results => console.log('Uploaded: ', results));
+        }
     }
 }

@@ -9,8 +9,8 @@ export class Faker {
     private static _fakeCustomers = ['Doctor Creep', 'George Washington', 'Daniel Boone'];
 
     public static CreateFakeAttachment(linkedProductGuid: string, fileName?: string): SpListAttachment {
-        const attachmentName = fileName ? fileName.split('.').reverse[1] : [ 'File1', 'File2', 'File3', 'File4', 'File5' ][Math.round(Math.random() * 4)];
-        const extn = fileName ? fileName.split('.')[0] : ['docx', 'doc','ppt', 'pptx', 'xls', 'xlsx', 'txt', 'pdf', 'csv', 'json'][Math.round(Math.random() * 7)];
+        const attachmentName = fileName ? fileName.split('.').reverse()[1] : [ 'File1', 'File2', 'File3', 'File4', 'File5' ][Math.round(Math.random() * 4)];
+        const extn = fileName ? fileName.split('.').reverse()[0] : ['docx', 'doc','ppt', 'pptx', 'xls', 'xlsx', 'txt', 'pdf', 'csv', 'json'][Math.round(Math.random() * 7)];
 
         // const author: string = ['Jimmy', 'Johnny "Two Fingers"', 'Vince', 'Fat Tony', 'Bob'][Math.round(Math.random() * 4)];
         const author = AppService.CurrentSpUser;
@@ -19,7 +19,7 @@ export class Faker {
             Author: { Name: author.displayName, Email: author.email } as SPAuthor,
             Id: uuidv4(),
             Updated: new Date(),
-            Title: fileName ? fileName.split('.').reverse[1] : `Attached Document ${Math.round(Math.random() * 300)}`,
+            Title: fileName ? fileName.split('.').reverse()[1] : `Attached Document ${Math.round(Math.random() * 300)}`,
             Url: `${AppService.AppSettings.documentListUrl}/${attachmentName}.${extn}`,
             Version: 1,
             LinkedProductGuid: linkedProductGuid
@@ -71,7 +71,8 @@ export class Faker {
             ClassificationId: (AppService.AppSettings.classificationModels[Math.round(Math.random() * (AppService.AppSettings.classificationModels.length - 1))]).classificationId,
             RequestUrl: 'https://www.github.com',
             Customer: this._fakeCustomers[Math.round(Math.random() * (this._fakeCustomers.length - 1))],
-            Comments: ''
+            Comments: '',
+            Active: true
         };
 
         // Create up to 3 fake attachments for this fake item

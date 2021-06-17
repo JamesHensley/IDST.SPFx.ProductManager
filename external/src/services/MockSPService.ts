@@ -15,11 +15,13 @@ export class MockSPService implements ISPService {
                 this._mockedProductItems.push(Faker.CreateFakeItem());
             }
         }
-        return this._mockedProductItems;
+        return this._mockedProductItems.filter(f => f.Active);
     }
+
     private set mockedProductItems(val: Array<SpProductItem>) {
         this._mockedProductItems = val;
     }
+
     private get mockedAttachmentItems(): Array<SpListAttachment> {
         if (this._mockedAttachmentItems.length === 0) {
             this._mockedProductItems.forEach(mP => {
@@ -31,6 +33,7 @@ export class MockSPService implements ISPService {
 
         return this._mockedAttachmentItems;
     }
+
     private set mockedAttachmentItems(val: Array<SpListAttachment>) {
         this._mockedAttachmentItems = val;
     }
@@ -45,8 +48,25 @@ export class MockSPService implements ISPService {
     }
 
     AddListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
+        item.Guid = uuidv4();
+        item.Id = Math.max(...this.mockedProductItems.map(d => d.Id)) + 1;
         this.mockedProductItems = this.mockedProductItems.concat([item]);
         return Promise.resolve(item);
+    }
+
+    UpdateListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
+        this.mockedProductItems = this.mockedProductItems.reduce((t, n) => n.Guid === item.Guid ? t.concat([item]) : t.concat([n]), []);
+        return Promise.resolve(item);
+    }
+
+    RemoveListItem(listUrl: string, item: SpProductItem): Promise<void> {
+        this.mockedProductItems.forEach((i) => i.Active = i.Guid === item.Guid ? false : i.Active);
+        return Promise.resolve();
+    }
+
+    GetListItems(listUrl: string): Promise<Array<SpProductItem>> {
+        console.log('MockSPService.GetListItems: ', this.mockedProductItems, this.mockedAttachmentItems);
+        return Promise.resolve(this.mockedProductItems);
     }
 
     AddAttachment(listUrl: string, productGuid: string, fileList: FileList): Promise<Array<SpListAttachment>> {
@@ -59,16 +79,6 @@ export class MockSPService implements ISPService {
                 })
             })
         )
-    }
-
-    UpdateListItemByGuid(listUrl: string, guid: string, item: SpProductItem): Promise<SpProductItem> {
-        this.mockedProductItems = this.mockedProductItems.reduce((t, n) => n.Guid === guid ? t.concat([item]) : t.concat([n]), []);
-        return Promise.resolve(item);
-    }
-
-    GetListItems(listUrl: string): Promise<Array<SpProductItem>> {
-        console.log('MockSPService.GetListItems: ', this.mockedProductItems, this.mockedAttachmentItems);
-        return Promise.resolve(this.mockedProductItems);
     }
 
     GetAttachmentItems(listUrl: string): Promise<Array<SpListAttachment>> {
@@ -103,7 +113,6 @@ export class MockSPService implements ISPService {
             Updated: result.d.Modified
         });
         */
-        debugger;
         const returnObj = Faker.CreateFakeAttachment(productGuid, fileName);
         this.mockedAttachmentItems.push(returnObj);
         return Promise.resolve(returnObj);

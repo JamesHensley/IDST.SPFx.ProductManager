@@ -27,7 +27,7 @@ export class RecordService {
     public static async GetProducts(): Promise<Array<ProductModel>> {
         const spItems: Array<SpProductItem> = await this.spService.GetListItems(AppService.AppSettings.productListUrl);
         const spAttachments: Array<SpListAttachment> = await this.spService.GetAttachmentItems(AppService.AppSettings.documentListUrl);
-        return MapperService.MapItemsToProducts(spItems, spAttachments);
+        return MapperService.MapItemsToProducts(spItems.filter(f => f.Active), spAttachments);
     }
 
     public static async GetProductByGUID(guid: string): Promise<ProductModel> {
@@ -52,37 +52,31 @@ export class RecordService {
         .catch(e => Promise.reject(e))
     }
 
-    public static async UpdateProductByGuid(guid: string, newProduct: ProductModel): Promise<IResult> {
+    public static async SaveProduct(guid: string, newProduct: ProductModel): Promise<IResult> {
+        const resultStr = guid ? 'Updated' : 'Created';
         const newItem = MapperService.MapProductToItem(newProduct);
-        if (newProduct.newProduct) {
-            return this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem)
+        
+        return (guid ? this.spService.UpdateListItem(AppService.AppSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem))
             .then((newItem: SpProductItem) => {
-                AppService.ProductChanged(NotificationType.Create, newProduct.title);
-                return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
-                .then(attachments => {
-                    return Promise.resolve({
-                        productModel: MapperService.MapItemToProduct(newItem, attachments),
-                        resultStr: 'Created'
-                    } as IResult);
-                })
-                .catch(e => Promise.reject(e));
+            AppService.ProductChanged(NotificationType.Create, newProduct.title);
+            return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
+            .then(attachments => {
+                return Promise.resolve({
+                    productModel: MapperService.MapItemToProduct(newItem, attachments),
+                    resultStr: resultStr
+                } as IResult);
             })
             .catch(e => Promise.reject(e));
-        } else {
-            return this.spService.UpdateListItemByGuid(AppService.AppSettings.productListUrl, guid, newItem)
-            .then((newItem: SpProductItem) => {
-                AppService.ProductChanged(NotificationType.Update, newProduct.title);
-                return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
-                .then(attachments => {
-                    return Promise.resolve({
-                        productModel: MapperService.MapItemToProduct(newItem, attachments),
-                        resultStr: 'Updated'
-                    } as IResult);
-                })
-                .catch(e => Promise.reject(e));
-            })
-            .catch(e => Promise.reject(e));
-        }
+        })
+        .catch(e => Promise.reject(e));
+    }
+
+    public static async RemoveProduct(product: ProductModel): Promise<Array<ProductModel>> {
+        return this.spService.RemoveListItem(AppService.AppSettings.productListUrl, MapperService.MapProductToItem(product))
+        .then(async () => {
+            const items = await this.GetProducts();
+            return Promise.resolve(items);
+        })
     }
 
     public static CopyAndSortArray<T>(items: T[], columnKey: string, isSortedDescending?: boolean): T[] {
@@ -96,15 +90,12 @@ export class RecordService {
         .then(results => Promise.resolve(results));
     }
 
-    /**
-     * Creates a new empty product model
-     */
+    /** Creates a new empty product model but does not commit it to SharePoint */
     public static GetNewProductModel(productType?: string): ProductModel {
         const prod = new ProductModel({
-            guid: uuidv4(),
+            guid: null,
             requestDate: new Date().toJSON(),
             returnDateExpected: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON(),
-            newProduct: true,
             status: ProductStatus.open,
             title: 'New Product',
             description: '',
