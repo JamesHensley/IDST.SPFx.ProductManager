@@ -1,10 +1,12 @@
 import * as React from 'react';
 import * as styles from '../ProductManager.module.scss';
-import { TaskModel } from '../../../../models/TaskModel';
+import { TaskModel, TaskState } from '../../../../models/TaskModel';
 import { TeamTasksPaneComponent } from './TeamTasksPaneComponent';
 import AppService from '../../../../services/AppService';
 import { format } from 'date-fns';
 import { TeamModel } from '../../../../models/TeamModel';
+import { Stack } from '@fluentui/react';
+import { MetricService } from '../../../../services/MetricService';
 
 export interface ITeamTaskComponentProps {
     teamModel: TeamModel;
@@ -17,9 +19,10 @@ export interface ITeamTaskComponentProps {
 }
 
 export class TeamTaskRowComponent extends React.Component<ITeamTaskComponentProps, {}> {
-    private row = `${styles.gridRow} ${styles.attachmentItem} ${styles.bordered}`;
-
     render(): React.ReactElement<ITeamTaskComponentProps> {
+        const completed = this.props.teamTasks.filter(f => f.taskState == TaskState.complete).length;
+        const teamStatus: string = `${completed} of ${this.props.teamTasks.length} complete`
+    
         const lastSuspense = new Date(Math.max(...this.props.teamTasks.map(d => new Date(d.taskSuspense).getTime())));
         return(
             <>
@@ -29,14 +32,14 @@ export class TeamTaskRowComponent extends React.Component<ITeamTaskComponentProp
                         cancelCallBack={this.taskPaneCancel.bind(this)}
                         committedTasks={this.props.teamTasks}
                         isEditing={this.props.editing}
+                        teamModel={this.props.teamModel}
                     />
                 }
-                <div className={this.row} onClick={this.teamClicked.bind(this, this.props.teamModel)}>
-                    <div className={styles.gridCol2}></div>
-                    <div className={styles.gridCol2}>{this.props.teamModel.name}</div>
-                    <div className={styles.gridCol5}></div>
-                    <div className={styles.gridCol3}>{format(lastSuspense, AppService.DateFormatView)}</div>
-                </div>
+                <Stack horizontal onClick={this.teamClicked.bind(this, this.props.teamModel)} styles={{ root: { display: 'flex' } }} className={styles.taskedTeamItem}>
+                    <Stack.Item styles={{ root: { width: '20%'}}}>{this.props.teamModel.name}</Stack.Item>
+                    <Stack.Item styles={{ root: { width: '60%'}}}>{teamStatus}</Stack.Item>
+                    <Stack.Item styles={{ root: { width: '20%'}}}>{format(lastSuspense, AppService.DateFormatView)}</Stack.Item>
+                </Stack>
             </>
         );
     }
@@ -46,7 +49,6 @@ export class TeamTaskRowComponent extends React.Component<ITeamTaskComponentProp
     }
 
     private teamTasksUpdated(newTasks: Array<TaskModel>): void {
-        // console.log('TeamTaskComponent.taskPaneUpdate: ', newTask);
         this.props.tasksUpdated(newTasks);
     }
 

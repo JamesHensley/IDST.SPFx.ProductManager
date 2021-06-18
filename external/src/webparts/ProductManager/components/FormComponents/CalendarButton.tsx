@@ -24,21 +24,18 @@ export const CalendarButton: React.FunctionComponent<ICalendarButtonProps> = (pr
     );
 
     return (
-      <div>
-        <div ref={buttonContainerRef}>
-            <IconButton iconProps={{ iconName: 'calendar' }} className={styles.appIcon} title='' ariaLabel='' onClick={toggleShowCalendar} />
-        </div>
-
-        {showCalendar && (
-          <Callout
-            isBeakVisible={false}
-            gapSpace={0}
-            doNotLayer={false}
-            target={buttonContainerRef}
-            directionalHint={DirectionalHint.bottomLeftEdge}
-            onDismiss={hideCalendar}
-            setInitialFocus
-          >
+      <div style={{ width: '100%' }} ref={buttonContainerRef}>
+          <IconButton iconProps={{ iconName: 'calendar' }} className={styles.appIcon} title='' ariaLabel='' onClick={toggleShowCalendar} />
+          { showCalendar &&
+            <Callout
+              isBeakVisible={false}
+              gapSpace={0}
+              doNotLayer={false}
+              target={buttonContainerRef}
+              directionalHint={DirectionalHint.bottomLeftEdge}
+              onDismiss={hideCalendar}
+              setInitialFocus
+            >
             <FocusTrapZone isClickableOutsideFocusTrap>
               <Calendar
                 onSelectDate={onSelectDate}
@@ -51,7 +48,7 @@ export const CalendarButton: React.FunctionComponent<ICalendarButtonProps> = (pr
               />
             </FocusTrapZone>
           </Callout>
-        )}
+        }
       </div>
     );
 };

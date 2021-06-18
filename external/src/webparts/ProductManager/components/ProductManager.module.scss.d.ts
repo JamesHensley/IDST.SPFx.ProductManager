@@ -41,6 +41,7 @@ interface CssExports {
   'productList': string;
   'productManager': string;
   'stickyListHeader': string;
+  'taskedTeamItem': string;
   'teamPanel': string;
 }
 declare var cssExports: CssExports;

@@ -11,24 +11,22 @@ export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
     render(): React.ReactElement<IFormInputProps> {
         const options = this.props.options.map(d => { return { key: d.key, text: d.value } as IDropdownOption; });
         const selectedKey = this.props.fieldValue;
-        const ctrlStyles = { root: { width: '100%' } };
+        // const ctrlStyles = { root: { width: '100%' } };
         return(
-            <div className={`${styles.gridRow} ${styles.padTop2}`}>
-                <div className={`${styles.gridCol12} ${styles.fieldValue}`}>
-                    <Label>{this.props.labelValue}</Label>
-                    {!this.props.editing && (
-                        <Text>{this.props.options.reduce((t,n) => n.key === this.props.fieldValue ? n.value : t, '')}</Text>
-                    )}
-                    {this.props.editing && (
-                        <Dropdown
-                            multiSelect={false}
-                            options={options}
-                            defaultSelectedKey={selectedKey}
-                            onChange={this.fieldUpdated.bind(this)}
-                            styles={ctrlStyles}
-                        />
-                    )}
-                </div>
+            <div className={`${styles.padTop2} ${styles.fieldValue}`} style={{ width: '100%' }}>
+                <Label>{this.props.labelValue}</Label>
+                {!this.props.editing && (
+                    <Text>{this.props.options.reduce((t,n) => n.key === this.props.fieldValue ? n.value : t, '')}</Text>
+                )}
+                {this.props.editing && (
+                    <Dropdown
+                        multiSelect={false}
+                        options={options}
+                        defaultSelectedKey={selectedKey}
+                        onChange={this.fieldUpdated.bind(this)}
+                        // styles={ctrlStyles}
+                    />
+                )}
             </div>
         );
     }

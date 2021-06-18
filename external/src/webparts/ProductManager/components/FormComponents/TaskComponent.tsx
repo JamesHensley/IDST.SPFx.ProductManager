@@ -1,59 +1,62 @@
 import * as React from 'react';
-import { Label, IconButton } from '@fluentui/react';
+import { Label, Stack } from '@fluentui/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import * as styles from '../ProductManager.module.scss';
 
-import { TaskModel, TaskState } from '../../../../models/TaskModel';
+import { TaskModel } from '../../../../models/TaskModel';
 import { TeamTaskRowComponent } from './TeamTaskRowComponent';
 import AppService from '../../../../services/AppService';
 import { TeamModel } from '../../../../models/TeamModel';
+
+export interface ITaskComponentProps {
+    TaskItems: Array<TaskModel>;
+    isEditing: boolean;
+    onUpdated: (newVal: Array<TaskModel>) => void;
+}
 
 export interface ITaskPaneState {
     teamId: string;
     isPaneVisible: boolean;
 }
-export interface ITaskComponentProps {
-    TaskItems: Array<TaskModel>;
-    isEditing: boolean;
-    onUpdated: (newVal: string, fieldRef: string) => void;
-    onTaskAdded: (newTask: TaskModel) => void;
-}
 
 export interface ITaskComponentState {
     taskPanes: Array<ITaskPaneState>;
+    draftTasks: Array<TaskModel>;
 }
 
 export class TaskComponent extends React.Component<ITaskComponentProps, ITaskComponentState> {
     private grid = `${styles.grid} ${styles.attachmentManager}`;
-    private teamIds: Array<String> = [];
-    private teamModels: Array<TeamModel> = [];
-    
+    // private teamIds: Array<String> = [];
+    // private teamModels: Array<TeamModel> = [];
+
     constructor(props: ITaskComponentProps) {
         super(props);
-
-        this.teamIds = (this.props.TaskItems || []).map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i);
-        this.teamModels = AppService.AppSettings.teams.reduce((t, n) => (this.teamIds.indexOf(n.id) >= 0) ? t.concat([n]) : t, [])
-
+        
+        const panes = this.props.TaskItems.map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i).map(d => { return { teamId: d, isPaneVisible: false } as ITaskPaneState; });
         this.state = {
-            taskPanes: this.teamIds.map(d => { return { teamId: d, isPaneVisible: false } as ITaskPaneState; })
+            taskPanes: panes,
+            draftTasks: this.props.TaskItems
         };
     }
 
+    private get teamModels(): Array<TeamModel> {
+        const teamIds = (this.state.draftTasks || this.props.TaskItems || []).map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i);
+        return AppService.AppSettings.teams.reduce((t, n) => (teamIds.indexOf(n.id) >= 0) ? t.concat([n]) : t, [])
+    }
+
     render(): React.ReactElement<ITaskComponentProps> {
-        // const teams = (this.props.TaskItems || []).map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i);
-        // const teamModels: Array<TeamModel> = AppService.AppSettings.teams.reduce((t, n) => teams.indexOf(n.id) ? t.concat([n]) : t, [])
+        const stackItemStyles = { root: { display: 'flex', minWidth: '50%', cursor: 'pointer' } };
         return (
-            <div className={`${this.grid} ${styles.padTop3}`}>
+            <Stack styles={{ root: { display: 'flex' }}}>
                 <Label>Teams and Tasks</Label>
-                <div className={styles.gridRow}>
-                    <Label className={styles.gridCol2} style={{ fontSize: '.9rem' }}>Status</Label>
-                    <Label className={styles.gridCol2} style={{ fontSize: '.9rem' }}>Team</Label>
-                    <Label className={styles.gridCol5} style={{ fontSize: '.9rem' }}>Task Description</Label>
-                    <Label className={styles.gridCol3} style={{ fontSize: '.9rem' }}>Suspense</Label>
-                </div>
+                <Stack horizontal>
+                    <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Team</Label></Stack.Item>
+                    <Stack.Item styles={{ root: { width: '60%'}}}><Label style={{ fontSize: '.9rem' }}>Status</Label></Stack.Item>
+                    <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Suspense</Label></Stack.Item>
+                </Stack>
                 {
-                    this.teamModels.map(team => {
+                    this.teamModels.map((team: TeamModel) => {
                         const paneState: ITaskPaneState = this.state.taskPanes.reduce((t, n) => n.teamId === team.id ? n : t, null);
                         return (
                             <TeamTaskRowComponent
@@ -68,7 +71,7 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
                         );
                     })
                 }
-            </div>
+            </Stack>
         );
     }
 
@@ -89,17 +92,21 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
         */
     }
 
+    /** Called when a user clicks the SAVE or CANCEL button on a Teams task pane */
     private teamTasksUpdated(newTasks: Array<TaskModel>): void {
+        let newDrafts: Array<TaskModel> = [];
         if (newTasks) {
             // Save tasks
-            // const newTasks: any = this.props.TaskItems.reduce((t,n) => n.taskGuid !== newTask.taskGuid ? t.concat(n) : t.concat(newTask), []);
-            // this.props.onUpdated(newTasks, 'tasks');
+            const teams = newTasks.map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i);
+            newDrafts = this.state.draftTasks.filter(f => teams.indexOf(f.taskedTeamId) < 0).concat(newTasks);
         }
         else {
             //User canceled
+            newDrafts = this.props.TaskItems;
         }
         const newPanes = this.state.taskPanes.map(d => { return { teamId: d.teamId, isPaneVisible: false } as ITaskPaneState; });
-        this.setState({ taskPanes: newPanes });
+        this.setState({ taskPanes: newPanes, draftTasks: newDrafts });
+        this.props.onUpdated(newDrafts);
     }
 
     private taskEditCancel(taskId: string): void {

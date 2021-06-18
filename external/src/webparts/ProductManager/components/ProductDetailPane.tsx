@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Panel, PanelType, Separator, Stack, DefaultButton, ICommandBarItemProps, Label, Dialog, TextField, DialogFooter } from '@fluentui/react';
+import { Panel, PanelType, Separator, Stack, DefaultButton, ICommandBarItemProps, Label, Dialog, TextField, DialogFooter, IStackItemStyles } from '@fluentui/react';
 
 import * as styles from './ProductManager.module.scss';
 
@@ -23,6 +23,7 @@ import { CommentsModel } from '../../../models/CommentsModel';
 import { v4 as uuidv4 } from 'uuid';
 import { CommentComponent } from './FormComponents/CommentComponent';
 import { tr } from 'date-fns/locale';
+import { NotificationService, NotificationType } from '../../../services/NotificationService';
 
 export interface IProductDetailPaneProps {
     isVisible: boolean;
@@ -56,6 +57,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     public render(): React.ReactElement<IProductDetailPaneProps> {
+        const stackItemStyles: IStackItemStyles = { root: { display: 'flex' } };
         return (
             <Panel
                 className={styles.productDetailPane}
@@ -68,146 +70,109 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 type={PanelType.medium}
             >
                 { this.state.draftProduct &&
-                <div className={styles.grid + ' ' + styles.formStyles}>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol12}>
-                            <Stack horizontal tokens={{ childrenGap: 10 }}>
+                    <Stack>
+                        <Stack horizontal>
+                            <Stack.Item grow>
+                                <Stack horizontal tokens={{ childrenGap: 10 }}>
+                                    <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
+                                    {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
+                                    {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
+                                </Stack>
+                            </Stack.Item>
+                            <Stack.Item>
                                 <DefaultButton onClick={this.showCommentDialog.bind(this)}>Add Comment</DefaultButton>
-                                <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
-                                {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
-                                {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
-                            </Stack>
-                        </div>
-                    </div>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol12}>
-                            <FormInputText
-                                labelValue={'Title'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.title}
-                                fieldRef={'title'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol6}>
-                            <FormInputComboBox
-                                labelValue={'Customer'}
-                                fieldValue={this.state.draftProduct.customer}
-                                fieldRef={'customer'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                                editing={this.state.isEditing}
-                            />
-                        </div>
-                        <div className={styles.gridCol6}>
-                            <FormInputDropDown
-                                labelValue={'Classification'}
-                                fieldValue={this.state.draftProduct.classificationId}
-                                fieldRef={'classificationId'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                                editing={this.state.isEditing}
-                                options={AppService.AppSettings.classificationModels.map(d => { return { key: d.classificationId, value: d.classificationTitle } as KeyValPair; })}
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol12}>
-                            <FormInputText
-                                labelValue={'Description'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.description} editLines={8}
-                                fieldRef={'description'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol12}>
-                            <FormInputUrl
-                                labelValue={'Request URL'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.requestUrl}
-                                fieldRef={'requestUrl'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol4}>
-                            <FormInputDropDown
-                                labelValue={'Product Type'}
-                                fieldValue={this.state.draftProduct.productType}
-                                fieldRef={'productType'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                                editing={this.state.isEditing}
-                                options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
-                            />
-                        </div>
-                        <div className={styles.gridCol4}>
-                            <FormInputDropDown
-                                labelValue={'Product Status'}
-                                fieldValue={this.state.draftProduct.status}
-                                fieldRef={'status'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                                editing={this.state.isEditing}
-                                options={[
-                                    { key: ProductStatus.open, value: 'Open' } as KeyValPair,
-                                    { key: ProductStatus.closed, value: 'Closed' } as KeyValPair,
-                                    { key: ProductStatus.canceled, value: 'Canceled' } as KeyValPair
-                                ]}
-                            />
-                        </div>
-                        <div className={styles.gridCol4}>
-                            <FormInputDropDown
-                                labelValue={'Event Type'}
-                                fieldValue={this.state.draftProduct.eventType}
-                                fieldRef={'eventType'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                                editing={this.state.isEditing}
-                                options={AppService.AppSettings.eventTypes.map(d => { return { key: d.eventTypeId, value: d.eventTitle } as KeyValPair; })}
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol4}>
-                            <FormInputDate
-                                labelValue={'Start Date'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.requestDate}
-                                fieldRef={'requestDate'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
-                        </div>
-                        <div className={styles.gridCol4}>
-                            <FormInputDate
-                                labelValue={'Suspense Date'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.returnDateExpected}
-                                fieldRef={'returnDateExpected'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
-                        </div>
-                        <div className={styles.gridCol4}>
-                            <FormInputDate
-                                labelValue={'Event Date'} editing={this.state.isEditing}
-                                fieldValue={this.state.draftProduct.eventDate}
-                                fieldRef={'eventDate'}
-                                onUpdated={this.fieldUpdated.bind(this)}
-                            />
-                        </div>
-                    </div>
-                    <Separator />
-                    <AttachmentComponent
-                        AttachmentItems={this.state.draftProduct.attachedDocuments}
-                        AddAttachmentCallback={this.addAttachment.bind(this)}
-                        canAddAttachments={this.state.draftProduct.guid ? true : false}
-                    />
-                    <Separator />
-                    <TaskComponent
-                        TaskItems={this.state.draftProduct.tasks}
-                        onTaskAdded={this.taskAdded.bind(this)}
-                        onUpdated={this.fieldUpdated.bind(this)}
-                        isEditing={this.state.isEditing}
-                    />
-                    <Separator />
-                    <CommentComponent comments={this.state.draftProduct.comments || []} />
-                </div>
+                            </Stack.Item>
+                        </Stack>
+                        <FormInputText
+                            labelValue={'Title'} editing={this.state.isEditing}
+                            fieldValue={this.state.draftProduct.title}
+                            fieldRef={'title'}
+                            onUpdated={this.fieldUpdated.bind(this)}
+                        />
+                        <Stack horizontal>
+                            <Stack.Item grow styles={stackItemStyles}>
+                                <FormInputComboBox
+                                    labelValue={'Customer'}
+                                    fieldValue={this.state.draftProduct.customer}
+                                    fieldRef={'customer'}
+                                    onUpdated={this.fieldUpdated.bind(this)}
+                                    editing={this.state.isEditing}
+                                />
+                            </Stack.Item>
+                            <Stack.Item grow styles={stackItemStyles}>
+                                <FormInputDropDown
+                                    labelValue={'Classification'}
+                                    fieldValue={this.state.draftProduct.classificationId}
+                                    fieldRef={'classificationId'}
+                                    onUpdated={this.fieldUpdated.bind(this)}
+                                    editing={this.state.isEditing}
+                                    options={AppService.AppSettings.classificationModels.map(d => { return { key: d.classificationId, value: d.classificationTitle } as KeyValPair; })}
+                                />
+                            </Stack.Item>
+                        </Stack>
+                        <FormInputText
+                            labelValue={'Description'} editing={this.state.isEditing}
+                            fieldValue={this.state.draftProduct.description} editLines={8}
+                            fieldRef={'description'}
+                            onUpdated={this.fieldUpdated.bind(this)}
+                        />
+                        <FormInputUrl
+                            labelValue={'Request URL'} editing={this.state.isEditing}
+                            fieldValue={this.state.draftProduct.requestUrl}
+                            fieldRef={'requestUrl'}
+                            onUpdated={this.fieldUpdated.bind(this)}
+                        />
+                        <Stack horizontal>
+                        <Stack.Item grow styles={stackItemStyles}>
+                                <FormInputDropDown
+                                    labelValue={'Product Type'}
+                                    fieldValue={this.state.draftProduct.productType}
+                                    fieldRef={'productType'}
+                                    onUpdated={this.fieldUpdated.bind(this)}
+                                    editing={this.state.isEditing}
+                                    options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
+                                />
+                            </Stack.Item>
+                            <Stack.Item grow styles={stackItemStyles}>
+                                <FormInputDropDown
+                                    labelValue={'Product Status'}
+                                    fieldValue={this.state.draftProduct.status}
+                                    fieldRef={'status'}
+                                    onUpdated={this.fieldUpdated.bind(this)}
+                                    editing={this.state.isEditing}
+                                    options={[
+                                        { key: ProductStatus.open, value: 'Open' } as KeyValPair,
+                                        { key: ProductStatus.closed, value: 'Closed' } as KeyValPair,
+                                        { key: ProductStatus.canceled, value: 'Canceled' } as KeyValPair
+                                    ]}
+                                />
+                            </Stack.Item>
+                            <Stack.Item grow styles={stackItemStyles}>
+                                <FormInputDropDown
+                                    labelValue={'Event Type'}
+                                    fieldValue={this.state.draftProduct.eventType}
+                                    fieldRef={'eventType'}
+                                    onUpdated={this.fieldUpdated.bind(this)}
+                                    editing={this.state.isEditing}
+                                    options={AppService.AppSettings.eventTypes.map(d => { return { key: d.eventTypeId, value: d.eventTitle } as KeyValPair; })}
+                                />
+                            </Stack.Item>
+                        </Stack>
+                        <Separator />
+                        <AttachmentComponent
+                            AttachmentItems={this.state.draftProduct.attachedDocuments}
+                            AddAttachmentCallback={this.addAttachment.bind(this)}
+                            canAddAttachments={this.state.draftProduct.guid ? true : false}
+                        />
+                        <Separator />
+                        <TaskComponent
+                            TaskItems={this.state.draftProduct.tasks}
+                            onUpdated={this.tasksUpdated.bind(this)}
+                            isEditing={this.state.isEditing}
+                        />
+                        <Separator />
+                        <CommentComponent comments={this.state.draftProduct.comments || []} />
+                    </Stack>
                 }
                 { this.state.showCommentDialog &&
                     <FormInputDialog
@@ -258,6 +223,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private saveRFI(): void {
+        console.log('Saving record: ', this.state.draftProduct);
         // We let the parent component close this pane.
         RecordService.SaveProduct(this.state.draftProduct, true)
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
@@ -280,6 +246,15 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         this.setState({ draftProduct: newDraft });
     }
 
+    private tasksUpdated(newVal: Array<TaskModel>) {
+        const newDraft = new ProductModel();
+        Object.assign(newDraft, this.state.draftProduct);
+        newDraft.tasks = newVal;
+        this.setState({ draftProduct: newDraft });
+        console.log('Updated Tasks for: ', newDraft);
+    }
+
+    /** Called when a user clicks the ADD TASK button from this PANE */
     private taskAdded(newTask: TaskModel): void {
         const newDraft = new ProductModel();
         Object.assign(newDraft, this.state.draftProduct);
@@ -287,10 +262,27 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         this.setState({ draftProduct: newDraft });
     }
 
-    private addAttachment(files: FileList): void {
+    /**  */
+    private async addAttachment(files: FileList): Promise<void> {
         if (this.state.draftProduct.guid) {
-            RecordService.AddAttachmentsForItem(this.state.draftProduct, files)
-            .then(results => console.log('Uploaded: ', results));
+            return RecordService.AddAttachmentsForItem(this.state.draftProduct, files)
+            .then(results => {
+                return RecordService.GetAttachmentsForItem(this.state.draftProduct.guid)
+                .then(allDocs => {
+                    const draftProduct: ProductModel = new ProductModel();
+                    Object.assign(draftProduct, this.props.currentProduct);
+                    draftProduct.attachedDocuments = allDocs;
+                    this.setState({ draftProduct: draftProduct });
+    
+                    NotificationService.Notify(NotificationType.AttachAdd, this.state.draftProduct.title, results.map(d => d.Title).join(','));
+                    return Promise.resolve()
+                })
+                .catch(e => Promise.reject(e));
+            })
+            .catch(e => Promise.reject(e));
+        }
+        else {
+            return Promise.reject('No Files Selected')
         }
     }
 }

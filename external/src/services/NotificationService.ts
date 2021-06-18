@@ -17,7 +17,7 @@ export class NotificationService {
         this.listeners = this.listeners.filter(f => f !== callback);
     }
 
-    public static Notify(notificationType: NotificationType, message?: string): void {
-        this.listeners.forEach(l => l.call(l, `${message} ${notificationType.toString()}`));
+    public static Notify(notificationType: NotificationType, message?: string, extraMsg?: string): void {
+        this.listeners.forEach(l => l.call(l, notificationType.toString(), message, extraMsg));
     }
 }

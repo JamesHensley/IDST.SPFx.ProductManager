@@ -51,7 +51,7 @@ export class Faker {
         const tasks: Array<TaskModel> = (teams.length > 0 ? teams : [AppService.AppSettings.teams[0].id])
             .map(d => {
                 const teamTasks: Array<TaskModel> = [];
-                for (var x = 1; x < Math.round(Math.random() * 4); x++) {
+                for (var x = 0; x < Math.round(Math.random() * 4); x++) {
                     teamTasks.push(this.CreateFakeTask(d));
                 }
                 return teamTasks;

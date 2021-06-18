@@ -5,6 +5,10 @@ export enum TaskState {
 }
 
 export class TaskModel {
+    public constructor(init?: Partial<TaskModel>) {
+        Object.assign(this, init);
+    }
+
     taskGuid: string;
     taskedTeamId: string;
     taskDescription: string;

@@ -21,7 +21,16 @@ export default class ToasterComponent extends React.Component<IToasterComponentP
 
     componentWillUnmount(): void { NotificationService.UnRegisterProductListener(this.receiver); }
 
-    private notificationFired(msg: string, product: ProductModel): void { toast.info(msg); }
+    private notificationFired(title: string, msg?: string, extraMsg?: string): void {
+        const toastMsg = (
+            <>
+                <div>{title}</div>
+                {msg && <div>{msg}</div>}
+                {extraMsg && <div>{extraMsg}</div>}
+            </>
+        );
+        toast.info(toastMsg);
+    }
 
     render(): JSX.Element {
         return <ToastContainer

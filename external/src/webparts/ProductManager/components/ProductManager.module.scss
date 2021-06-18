@@ -125,6 +125,14 @@ div[class*="pageContent"] {
   cursor: pointer;
 }
 
+.taskedTeamItem:hover {
+  background-color: rgba(0, 0, 0, 0.07);
+}
+
+.taskedTeamItem {
+  cursor: pointer;
+}
+
 .appIcon {
   i {
     color:#6a7373;

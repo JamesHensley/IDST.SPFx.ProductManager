@@ -9,53 +9,50 @@ import { AttachmentModel } from '../../../../models/AttachmentModel';
 export interface IAttachmentComponentProps {
     canAddAttachments: boolean;
     AttachmentItems: Array<AttachmentModel>;
-    AddAttachmentCallback: (files: FileList) => void;
+    AddAttachmentCallback: (files: FileList) => Promise<void>;
 }
 
-export class AttachmentComponent extends React.Component<IAttachmentComponentProps, {}> {
+export interface IAttachmentComponentState {
+    lastUpdate: number;
+}
+
+export class AttachmentComponent extends React.Component<IAttachmentComponentProps, IAttachmentComponentState> {
     private grid = `${styles.grid} ${styles.attachmentManager}`;
     private row = `${styles.gridRow} ${styles.attachmentItem} ${styles.bordered}`;
 
     public render(): React.ReactElement<IAttachmentComponentProps> {
+        const stackItemStyles = { root: { display: 'flex', minWidth: '50%', cursor: 'pointer' } };
         return (
-            <div className={`${this.grid} ${styles.padTop3}`}>
-                <div className={styles.gridRow}>
-                    <Label className={styles.gridCol12}>
-                        Attachments
-                        { !this.props.canAddAttachments &&
-                            <span style={{ fontSize: '0.7rem', fontWeight: 'normal', paddingLeft: '10px' }}>Attachments can only be added after the first save</span>
-                        }
-                    </Label>
-                </div>
+            <Stack key={new Date().getTime()}>
+                <Label className={styles.gridCol12}>
+                    Attachments
+                    { !this.props.canAddAttachments &&
+                        <span style={{ fontSize: '0.7rem', fontWeight: 'normal', paddingLeft: '10px' }}>Attachments can only be added after the first save</span>
+                    }
+                </Label>
                 { this.props.canAddAttachments &&
-                    <div className={styles.gridRow}>
-                        <div className={styles.gridCol12}>
-                            <input id='attachment' type='file' multiple accept=".*" />
-                            <DefaultButton onClick={this.uploadFiles.bind(this)}>Upload</DefaultButton>
-                        </div>
-                    </div>
+                    <Stack horizontal>
+                        <Stack.Item grow styles={{ root: { display: 'flex' } }}><input id='attachment' type='file' multiple accept=".*" /></Stack.Item>
+                        <Stack.Item styles={{ root: { display: 'flex' } }}><DefaultButton onClick={this.uploadFiles.bind(this)}>Upload</DefaultButton></Stack.Item>
+                    </Stack>
                 }
-                <div className={styles.gridRow}>
-                    <Label className={styles.gridCol1} style={{ fontSize: '.9rem' }}></Label>
-                    <Label className={styles.gridCol6} style={{ fontSize: '.9rem' }}>Title</Label>
-                    <Label className={styles.gridCol5} style={{ fontSize: '.9rem' }}>Author</Label>
-                </div>
+                <Stack horizontal>
+                    <Stack.Item grow styles={stackItemStyles}><Label style={{ fontSize: '.9rem', paddingLeft: '25px' }}>Title</Label></Stack.Item>
+                    <Stack.Item grow styles={stackItemStyles}><Label style={{ fontSize: '.9rem' }}>Author</Label></Stack.Item>
+                </Stack>
                 {(this.props.AttachmentItems || []).map(a => {
-                    const docIcon = getFileTypeIconProps({
-                        extension: (a.Url.split('.').reverse()[0]),
-                        size: 16, imageFileType: 'png'
-                    });
+                    const docIcon = getFileTypeIconProps({ extension: (a.Url.split('.').reverse()[0]), size: 16, imageFileType: 'png' });
                     return (
-                        <div key={a.Id} className={this.row} onClick={this.attachmentClicked.bind(this, a)}>
-                            <div className={styles.gridCol1}>
-                                <Icon {...docIcon}/>
-                            </div>
-                            <div className={styles.gridCol6}>{a.Title}</div>
-                            <div className={styles.gridCol5}>{a.Author}</div>
-                        </div>
+                        <Stack horizontal key={a.Id} onClick={this.attachmentClicked.bind(this, a)} className={styles.attachmentItem}>
+                            <Stack.Item grow styles={stackItemStyles}>
+                                <span style={{ minWidth: '25px' }}><Icon {...docIcon}/></span>
+                                {a.Title}
+                            </Stack.Item>
+                            <Stack.Item grow styles={stackItemStyles}>{a.Author}</Stack.Item>
+                        </Stack>
                     );
                 })}
-            </div>
+            </Stack>
         );
     }
 
@@ -66,6 +63,13 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
 
     private uploadFiles(): void {
         const files = (document.querySelector('#attachment') as HTMLInputElement).files;
-        if (files.length > 0) { this.props.AddAttachmentCallback(files); }
+        if (files.length > 0) {
+            this.props.AddAttachmentCallback(files)
+            .then(() => {
+                console.log('Uploaded: ', files);
+                this.setState({ lastUpdate: new Date().getTime() })
+            })
+            .catch(e => Promise.reject(e));
+        }
     }
 }

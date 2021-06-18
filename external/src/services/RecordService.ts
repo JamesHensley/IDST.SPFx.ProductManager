@@ -45,10 +45,7 @@ export class RecordService {
     public static async AddAttachmentsForItem(product: ProductModel, files: FileList): Promise<Array<AttachmentModel>> {
         return this.spService.AddAttachment(AppService.AppSettings.documentListUrl, product.guid, files)
         .then(spAttachments => spAttachments.map(d => MapperService.MapSpAttachmentToAttachment(d)))
-        .then(attachments => {
-            AppService.ProductChanged(NotificationType.AttachAdd, product);
-            return Promise.resolve(attachments);
-        })
+        .then(attachments => Promise.resolve(attachments))
         .catch(e => Promise.reject(e))
     }
 
