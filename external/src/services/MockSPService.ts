@@ -65,7 +65,7 @@ export class MockSPService implements ISPService {
     }
 
     GetListItems(listUrl: string): Promise<Array<SpProductItem>> {
-        console.log('MockSPService.GetListItems: ', this.mockedProductItems, this.mockedAttachmentItems);
+        // console.log('MockSPService.GetListItems: ', this.mockedProductItems, this.mockedAttachmentItems);
         return Promise.resolve(this.mockedProductItems);
     }
 

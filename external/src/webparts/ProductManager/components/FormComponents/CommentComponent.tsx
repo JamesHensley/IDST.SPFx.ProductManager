@@ -1,4 +1,4 @@
-import { Label } from '@fluentui/react';
+import { Label, Stack } from '@fluentui/react';
 import * as React from 'react';
 import { CommentsModel } from '../../../../models/CommentsModel';
 
@@ -10,21 +10,15 @@ export interface ICommentComponentProps {
 
 export const CommentComponent: React.FunctionComponent<ICommentComponentProps> = (props) => {
     return (
-        <div className={styles.grid}>
-            <div className={styles.gridRow}>
-                <div className={styles.gridCol12}>
-                    <Label>Comments</Label>
-                </div>
-            </div>
+        <Stack>
+            <Label>Comments</Label>
             {
                 props.comments.map(d => {
                     return (
-                        <div className={styles.gridRow} key={d.commentGuid}>
-                            <div className={styles.gridCol12}>{d.commentValue}</div>
-                        </div>
+                        <div key={d.commentGuid}>{d.commentAuthor} - {d.commentValue}</div>
                     );
                 })
             }
-        </div>
+        </Stack>
     );
 };

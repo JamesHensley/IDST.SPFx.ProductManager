@@ -206,18 +206,21 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             commentDate: new Date().toJSON(),
             commentValue: commentStr
         };
+        const newDraft = new ProductModel();
+        Object.assign(newDraft, this.state.draftProduct);
+        newDraft.comments.push(comment);
 
         // We're seperating these out in case someone adds a comment to a new product and then decides
         // to cancel the action.  If we processed the comment before the initial save, the product would
         // get saved
         if (this.state.isEditing) {
-            const newDraft = new ProductModel();
-            Object.assign(newDraft, this.state.draftProduct);
-            newDraft.comments.push(comment);
             this.setState({ draftProduct: newDraft, showCommentDialog: false });
         } else {
-            RecordService.SaveProduct(this.state.draftProduct, false)
-            .then(result => this.setState({ draftProduct: result.productModel, showCommentDialog: false }))
+            RecordService.SaveProduct(newDraft, false)
+            .then(result => {
+                NotificationService.Notify(NotificationType.AttachAdd, newDraft.title);
+                this.setState({ draftProduct: result.productModel, showCommentDialog: false });
+            })
             .catch(e => console.log('Update failed for: ', this.state.draftProduct));
         }
     }

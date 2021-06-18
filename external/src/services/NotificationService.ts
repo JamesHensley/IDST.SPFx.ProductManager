@@ -3,7 +3,8 @@ export enum NotificationType {
     Create = 'Created',
     Update = 'Updated',
     Delete = 'Deleted',
-    AttachAdd = 'Attachment Added'
+    AttachAdd = 'Attachment Added',
+    CommentAdd = 'Comment Added'
 }
 
 export class NotificationService {
