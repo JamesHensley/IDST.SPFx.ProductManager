@@ -73,7 +73,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                                     />
                                 }
                                 {this.state.view === 'RollUp' &&
-                                    <RollupView></RollupView>
+                                    <RollupView products={this.state.allProducts} />
                                 }
                             </div>
                         </div>

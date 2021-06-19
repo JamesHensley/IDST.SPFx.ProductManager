@@ -4,6 +4,7 @@ import AppService from './AppService';
 import { TeamModel } from '../models/TeamModel';
 import { TaskModel, TaskState } from '../models/TaskModel';
 import { CommentsModel } from '../models/CommentsModel';
+import { startOfMonth, subDays, addDays } from 'date-fns';
 
 export class Faker {
     private static _fakeCustomers = ['Doctor Creep', 'George Washington', 'Daniel Boone'];
@@ -35,8 +36,15 @@ export class Faker {
             taskDescription: 'Fake Tasking Description',
             taskState: TaskState[state],
             taskGuid: uuidv4(),
-            taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 7)).toJSON()
+            taskSuspense: addDays(new Date(), 7).toJSON()
         };
+        switch(task.taskState) {
+            case TaskState.complete:
+                task.taskFinish = subDays(new Date(task.taskSuspense), 2);
+            case TaskState.working:
+                task.taskStart = subDays(new Date(task.taskSuspense), 4);
+                break;
+        }
         return task;
     }
 
