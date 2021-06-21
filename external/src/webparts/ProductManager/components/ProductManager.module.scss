@@ -1,6 +1,5 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 
-
 div[class*='ms-Persona-details'] {
   display: none;
 }
@@ -20,6 +19,7 @@ div[class*="CanvasZone"] {
 div[class*="pageContent"] {
   max-width: none;
 }
+
 
 /* implementations of the Office UI Fabric grid */
 .grid { @include ms-Grid; }

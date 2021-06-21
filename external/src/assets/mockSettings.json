@@ -46,6 +46,7 @@
         {
             "typeId": "ca0a3b95-0770-4dfb-b358-f1beb2e5290e",
             "typeName": "ProductType 1",
+            "colorValue": "rgb(100, 100, 250)",
             "typeDescription": "This is a detail explaination of the product and could include instructions to the teams.  This one has a 7 day suspense",
             "defaultSuspenseDays": 7,
             "defaultTemplateDocs": [
@@ -62,6 +63,7 @@
         {
             "typeId": "a3bca095-b358-fb4d-0770-eb2e5f1be029",
             "typeName": "ProductType 2",
+            "colorValue": "rgb(210, 210, 0)",
             "typeDescription": "This is a detail explaination of the product and could include instructions to the teams.  This one has a 14 day suspense",
             "defaultSuspenseDays": 14,
             "defaultTemplateDocs": [
@@ -84,6 +86,7 @@
         {
             "typeId": "3b95ca0a-0770-4dfb-b358-e5290ef1beb2",
             "typeName": "ProductType 3",
+            "colorValue": "rgb(133, 0, 0)",
             "typeDescription": "This is a detail explaination of the product and could include instructions to the teams.  This one has a 21 day suspense",
             "defaultSuspenseDays": 21,
             "defaultTemplateDocs": [],

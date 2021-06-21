@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { ChartControl, ChartType } from '@pnp/spfx-controls-react';
-import { v4 as uuidv4 } from 'uuid';
+// import { ChartControl, ChartType } from '@pnp/spfx-controls-react';
+// import { v4 as uuidv4 } from 'uuid';
 
 import Timeline from 'react-calendar-timeline'
 // make sure you include the timeline stylesheet or the timeline will not be styled
@@ -10,6 +10,7 @@ import { ProductModel, ProductStatus } from '../../../models/ProductModel';
 import AppService from '../../../services/AppService';
 import { MetricService } from '../../../services/MetricService';
 import { startOfMonth, endOfMonth } from 'date-fns';
+import ColorService from '../../../services/ColorService';
 
 export interface IRollupViewProps {
     products: Array<ProductModel>;
@@ -35,7 +36,10 @@ export interface ITimelineItem {
     canChangeGroup: boolean;
 }
 
-export interface IItemProps { productGuid: string; }
+export interface IItemProps {
+    productGuid: string;
+    style: any;
+}
 
 export default class RollupView extends React.Component <IRollupViewProps, {}> {
     private tlRef: Timeline;
@@ -60,6 +64,7 @@ export default class RollupView extends React.Component <IRollupViewProps, {}> {
         .reduce((t1, n1) => {
             const metrics = MetricService.GetTaskMetrics(n1.tasks);
             const xx = n1.tasks.reduce((t2, n2) => {
+                const prodModel = AppService.AppSettings.productTypes.reduce((t, n) => n.typeId == n1.productType ? n : t, null);
                 const retObj: ITimelineItem = {
                     id: 0,
                     group: this.calendarGroups.reduce((t, n) => n.guid === n2.taskedTeamId ? n.id : t, 0),
@@ -67,7 +72,14 @@ export default class RollupView extends React.Component <IRollupViewProps, {}> {
                     start_time: metrics.earliestStart.getTime(),
                     end_time: metrics.latestFinish.getTime(),
                     canChangeGroup: false, canMove: false, canResize: false,
-                    itemProps: { productGuid: n1.guid }
+                    itemProps: {
+                        productGuid: n1.guid,
+                        style: {
+                            backgroundColor:  prodModel ? prodModel.colorValue : '',
+                            selectedBgColor:  prodModel ? prodModel.colorValue : '',
+                            color: prodModel ? ColorService.GetTextColor(prodModel.colorValue) : ''
+                        }
+                    }
                 };
                 return t2.concat([retObj]);
             }, []);
@@ -95,6 +107,7 @@ export default class RollupView extends React.Component <IRollupViewProps, {}> {
                 canResize={false}
                 onItemSelect={this.itemClicked.bind(this)}
                 onItemClick={this.itemClicked.bind(this)}
+                timeSteps={{ second: 0, minute: 0, hour: 0, day: 1, month: 1, year: 1 }}
             />
         );
     }
@@ -119,6 +132,5 @@ export default class RollupView extends React.Component <IRollupViewProps, {}> {
             .reduce((t: string, n: ITimelineItem) => n.id === itemId ? n.itemProps.productGuid : t, null);
 
         this.props.productClicked(clickedProductGuid);
-        
     }
 }

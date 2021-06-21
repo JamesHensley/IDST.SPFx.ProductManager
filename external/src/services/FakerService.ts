@@ -29,7 +29,7 @@ export class Faker {
     }
 
     private static CreateFakeTask(teamId: string): TaskModel {
-        const possibleStates = ['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete'];
+        const possibleStates = ['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete'];
         const baseDate = startOfDay(this.getRandomDate(new Date(), 20));
         const state = possibleStates[Math.round(Math.random() * (possibleStates.length - 1))];
         const task: TaskModel = {

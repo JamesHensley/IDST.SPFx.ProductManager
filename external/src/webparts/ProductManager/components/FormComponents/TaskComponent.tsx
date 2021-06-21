@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Label, Stack } from '@fluentui/react';
+import { Icon, IconButton, Label, Stack } from '@fluentui/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import * as styles from '../ProductManager.module.scss';
@@ -26,10 +26,6 @@ export interface ITaskComponentState {
 }
 
 export class TaskComponent extends React.Component<ITaskComponentProps, ITaskComponentState> {
-    private grid = `${styles.grid} ${styles.attachmentManager}`;
-    // private teamIds: Array<String> = [];
-    // private teamModels: Array<TeamModel> = [];
-
     constructor(props: ITaskComponentProps) {
         super(props);
         
@@ -49,30 +45,45 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
         const stackItemStyles = { root: { display: 'flex', minWidth: '50%', cursor: 'pointer' } };
         return (
             <Stack styles={{ root: { display: 'flex' }}}>
-                <Label>Teams and Tasks</Label>
                 <Stack horizontal>
-                    <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Team</Label></Stack.Item>
-                    <Stack.Item styles={{ root: { width: '60%'}}}><Label style={{ fontSize: '.9rem' }}>Status</Label></Stack.Item>
-                    <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Suspense</Label></Stack.Item>
+                    <Stack.Item>
+                        <Label>Teams and Tasks</Label>
+                    </Stack.Item>
+                    <Stack.Item grow>
+                        <IconButton iconProps={{ iconName: 'add' }} className={styles.appIcon} title='' ariaLabel='' onClick={this.addTeamTask.bind(this)} />
+                    </Stack.Item>
                 </Stack>
-                {
-                    this.teamModels.map((team: TeamModel) => {
-                        const paneState: ITaskPaneState = this.state.taskPanes.reduce((t, n) => n.teamId === team.id ? n : t, null);
-                        return (
-                            <TeamTaskRowComponent
-                                key={team.id}
-                                teamModel={team}
-                                teamTasks={(this.props.TaskItems || []).filter(f => f.taskedTeamId === team.id)}
-                                isPaneVisible={paneState.isPaneVisible}
-                                editing={this.props.isEditing}
-                                tasksUpdated={this.teamTasksUpdated.bind(this)}
-                                teamClicked={this.teamClicked.bind(this)}
-                            />
-                        );
-                    })
-                }
+                <Stack.Item grow styles={{ root: { paddingLeft: '10px' }}}>
+                    <Stack horizontal>
+                        <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Team</Label></Stack.Item>
+                        <Stack.Item styles={{ root: { width: '60%'}}}><Label style={{ fontSize: '.9rem' }}>Status</Label></Stack.Item>
+                        <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Suspense</Label></Stack.Item>
+                    </Stack>
+                </Stack.Item>
+                <Stack.Item grow styles={{ root: { paddingLeft: '20px' }}}>
+                    {
+                        this.teamModels.map((team: TeamModel) => {
+                            const paneState: ITaskPaneState = this.state.taskPanes.reduce((t, n) => n.teamId === team.id ? n : t, null);
+                            return (
+                                <TeamTaskRowComponent
+                                    key={team.id}
+                                    teamModel={team}
+                                    teamTasks={(this.props.TaskItems || []).filter(f => f.taskedTeamId === team.id)}
+                                    isPaneVisible={paneState.isPaneVisible}
+                                    editing={this.props.isEditing}
+                                    tasksUpdated={this.teamTasksUpdated.bind(this)}
+                                    teamClicked={this.teamClicked.bind(this)}
+                                />
+                            );
+                        })
+                    }
+                </Stack.Item>
             </Stack>
         );
+    }
+
+    private addTeamTask(): void {
+
     }
 
     private createNewTask(): void {

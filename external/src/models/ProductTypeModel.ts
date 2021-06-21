@@ -17,6 +17,7 @@ export class ProductTypeModel {
     public defaultSuspenseDays: number;
     public defaultTemplateDocs: Array<DocTemplate>;
     public defaultTeamTasks: Array<TaskTemplate>;
+    public colorValue: string;
     /** Indicates if this product is still active or has been discontinuted */
     public active: boolean;
 }

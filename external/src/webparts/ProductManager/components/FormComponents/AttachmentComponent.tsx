@@ -24,7 +24,7 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
         const stackItemStyles = { root: { display: 'flex', minWidth: '50%', cursor: 'pointer' } };
         return (
             <Stack key={new Date().getTime()}>
-                <Label className={styles.gridCol12}>
+                <Label>
                     Attachments
                     { !this.props.canAddAttachments &&
                         <span style={{ fontSize: '0.7rem', fontWeight: 'normal', paddingLeft: '10px' }}>Attachments can only be added after the first save</span>
@@ -40,18 +40,20 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
                     <Stack.Item grow styles={stackItemStyles}><Label style={{ fontSize: '.9rem', paddingLeft: '25px' }}>Title</Label></Stack.Item>
                     <Stack.Item grow styles={stackItemStyles}><Label style={{ fontSize: '.9rem' }}>Author</Label></Stack.Item>
                 </Stack>
-                {(this.props.AttachmentItems || []).map(a => {
-                    const docIcon = getFileTypeIconProps({ extension: (a.Url.split('.').reverse()[0]), size: 16, imageFileType: 'png' });
-                    return (
-                        <Stack horizontal key={a.Id} onClick={this.attachmentClicked.bind(this, a)} className={styles.attachmentItem}>
-                            <Stack.Item grow styles={stackItemStyles}>
-                                <span style={{ minWidth: '25px' }}><Icon {...docIcon}/></span>
-                                {a.Title}
-                            </Stack.Item>
-                            <Stack.Item grow styles={stackItemStyles}>{a.Author}</Stack.Item>
-                        </Stack>
-                    );
-                })}
+                <Stack.Item styles={{ root: { paddingLeft: '20px'}}}>
+                    {(this.props.AttachmentItems || []).map(a => {
+                        const docIcon = getFileTypeIconProps({ extension: (a.Url.split('.').reverse()[0]), size: 16, imageFileType: 'png' });
+                        return (
+                            <Stack horizontal key={a.Id} onClick={this.attachmentClicked.bind(this, a)} className={styles.attachmentItem}>
+                                <Stack.Item grow styles={stackItemStyles}>
+                                    <span style={{ minWidth: '25px' }}><Icon {...docIcon}/></span>
+                                    {a.Title}
+                                </Stack.Item>
+                                <Stack.Item grow styles={stackItemStyles}>{a.Author}</Stack.Item>
+                            </Stack>
+                        );
+                    })}
+                </Stack.Item>
             </Stack>
         );
     }

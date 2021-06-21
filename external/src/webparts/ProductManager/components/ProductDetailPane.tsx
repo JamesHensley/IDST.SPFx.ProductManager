@@ -1,20 +1,18 @@
 import * as React from 'react';
-import { Panel, PanelType, Separator, Stack, DefaultButton, ICommandBarItemProps, Label, Dialog, TextField, DialogFooter, IStackItemStyles } from '@fluentui/react';
+import { Panel, PanelType, Separator, Stack, DefaultButton, ICommandBarItemProps, Label, Dialog, TextField, DialogFooter, IStackItemStyles, IPanelHeaderRenderer } from '@fluentui/react';
 
 import * as styles from './ProductManager.module.scss';
+import { FontSizes } from '@fluentui/theme';
 
-import { format } from 'date-fns';
 import { ProductModel, ProductStatus } from '../../../models/ProductModel';
 import { RecordService } from '../../../services/RecordService';
 
-import { FormInputDate } from './FormComponents/FormInputDate';
 import { FormInputText } from './FormComponents/FormInputText';
 import { FormInputUrl } from './FormComponents/FormInputUrl';
-import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
+import AppService from '../../../services/AppService';
 import { TaskComponent } from './FormComponents/TaskComponent';
 import { AttachmentComponent } from './FormComponents/AttachmentComponent';
 import { TaskModel } from '../../../models/TaskModel';
-import { MailService } from '../../../services/MailService';
 import { FormInputDropDown } from './FormComponents/FormInputDropDown';
 import { KeyValPair } from './FormComponents/IFormInputProps';
 import { FormInputComboBox } from './FormComponents/FormInputComboBox';
@@ -22,7 +20,6 @@ import { FormInputDialog } from './FormComponents/FormInputDialog';
 import { CommentsModel } from '../../../models/CommentsModel';
 import { v4 as uuidv4 } from 'uuid';
 import { CommentComponent } from './FormComponents/CommentComponent';
-import { tr } from 'date-fns/locale';
 import { NotificationService, NotificationType } from '../../../services/NotificationService';
 
 export interface IProductDetailPaneProps {
@@ -64,28 +61,15 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 className={styles.productDetailPane}
                 isLightDismiss={!this.state.isEditing}
                 isHiddenOnDismiss={false}
-                headerText={this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
                 isOpen={this.props.isVisible}
                 onDismiss={this.closePane.bind(this)}
                 closeButtonAriaLabel='Close'
                 type={PanelType.medium}
+                onRenderHeader={this.getPaneHeader.bind(this)}
             >
+                <div id='panelHeader' />
                 { this.state.draftProduct &&
                     <Stack>
-                        {this.props.canMakeEdits &&
-                            <Stack horizontal>
-                                <Stack.Item grow>
-                                    <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                        <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
-                                        {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
-                                        {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
-                                    </Stack>
-                                </Stack.Item>
-                                <Stack.Item>
-                                    <DefaultButton onClick={this.showCommentDialog.bind(this)}>Add Comment</DefaultButton>
-                                </Stack.Item>
-                            </Stack>
-                        }
                         <FormInputText
                             labelValue={'Title'} editing={this.state.isEditing}
                             fieldValue={this.state.draftProduct.title}
@@ -290,5 +274,31 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         else {
             return Promise.reject('No Files Selected')
         }
+    }
+
+    private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
+        console.log('getPaneHeader: ', arguments);
+
+        return (<div style={{ width: '100%' }} className='ms-Panel-content content-200'>
+            {this.props.canMakeEdits &&
+            <Stack grow styles={{ root: { display: 'flex' }}}>
+                <Label style={{ fontSize: '1.5rem' }}>
+                    {this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
+                </Label>
+                <Stack horizontal>
+                    <Stack.Item grow>
+                        <Stack horizontal tokens={{ childrenGap: 10 }}>
+                            <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
+                            {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
+                            {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
+                        </Stack>
+                    </Stack.Item>
+                    <Stack.Item>
+                        <DefaultButton onClick={this.showCommentDialog.bind(this)}>Add Comment</DefaultButton>
+                    </Stack.Item>
+                </Stack>
+            </Stack>
+            }
+        </div>);
     }
 }
