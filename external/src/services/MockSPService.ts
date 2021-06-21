@@ -11,7 +11,7 @@ export class MockSPService implements ISPService {
 
     private get mockedProductItems(): Array<SpProductItem> {
         if (this._mockedProductItems.length === 0) {
-            for (let x = 0; x < 4; x++) {
+            for (let x = 0; x < 20; x++) {
                 this._mockedProductItems.push(Faker.CreateFakeItem());
             }
         }

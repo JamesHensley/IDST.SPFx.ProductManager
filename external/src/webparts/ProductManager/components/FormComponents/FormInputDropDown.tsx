@@ -13,7 +13,10 @@ export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
         const selectedKey = this.props.fieldValue;
         // const ctrlStyles = { root: { width: '100%' } };
         return(
-            <div className={`${styles.padTop2} ${styles.fieldValue}`} style={{ width: '100%' }}>
+            <div className={`${styles.padTop2} ${styles.fieldValue}`}
+                style={{ width: '100%' }}
+                title={this.props.toolTip ? this.props.toolTip : ''}
+            >
                 <Label>{this.props.labelValue}</Label>
                 {!this.props.editing && (
                     <Text>{this.props.options.reduce((t,n) => n.key === this.props.fieldValue ? n.value : t, '')}</Text>
@@ -24,7 +27,6 @@ export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
                         options={options}
                         defaultSelectedKey={selectedKey}
                         onChange={this.fieldUpdated.bind(this)}
-                        // styles={ctrlStyles}
                     />
                 )}
             </div>

@@ -1,3 +1,5 @@
+import { TaskState } from "./TaskModel";
+
 export interface MetricModel {
     totalTasks: number;
     pendingTasks: number;
@@ -7,4 +9,5 @@ export interface MetricModel {
     earliestStart: Date;
     latestFinish: Date;
     bustedSuspenses: boolean;
+    overallStatus: TaskState;
 }

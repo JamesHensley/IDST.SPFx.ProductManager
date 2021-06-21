@@ -34,6 +34,7 @@ export interface IProductDetailPaneProps {
     paneCloseCallBack: () => void;
     /** used to notify the parent that the item was updated */
     // productUpdatedCallBack: (newPanelEditValue: boolean) => void;
+    canMakeEdits: boolean;
 }
 
 export interface IProductDetailPaneState {
@@ -71,18 +72,20 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
             >
                 { this.state.draftProduct &&
                     <Stack>
-                        <Stack horizontal>
-                            <Stack.Item grow>
-                                <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                    <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
-                                    {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
-                                    {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
-                                </Stack>
-                            </Stack.Item>
-                            <Stack.Item>
-                                <DefaultButton onClick={this.showCommentDialog.bind(this)}>Add Comment</DefaultButton>
-                            </Stack.Item>
-                        </Stack>
+                        {this.props.canMakeEdits &&
+                            <Stack horizontal>
+                                <Stack.Item grow>
+                                    <Stack horizontal tokens={{ childrenGap: 10 }}>
+                                        <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
+                                        {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
+                                        {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
+                                    </Stack>
+                                </Stack.Item>
+                                <Stack.Item>
+                                    <DefaultButton onClick={this.showCommentDialog.bind(this)}>Add Comment</DefaultButton>
+                                </Stack.Item>
+                            </Stack>
+                        }
                         <FormInputText
                             labelValue={'Title'} editing={this.state.isEditing}
                             fieldValue={this.state.draftProduct.title}

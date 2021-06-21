@@ -1,6 +1,8 @@
 import { AttachmentModel } from '../models/AttachmentModel';
+import { CommentsModel } from '../models/CommentsModel';
 import { ProductModel, ProductStatus } from '../models/ProductModel';
 import { SpListAttachment, SpProductItem } from '../models/SpListItem';
+import { TaskModel } from '../models/TaskModel';
 import { TeamModel } from '../models/TeamModel';
 import AppService from './AppService';
 
@@ -29,7 +31,7 @@ export class MapperService {
     }
 
     public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
-        return new ProductModel({
+        const product = new ProductModel({
             id: item.Id,
             guid: item.Guid,
             title: item.Title,
@@ -38,7 +40,7 @@ export class MapperService {
             requestDate: item.RequestDate,
             returnDateExpected: item.ReturnDateExpected,
             returnDateActual: item.ReturnDateActual,
-            tasks: JSON.parse(item.AssignedTeamData || '[]'),
+            tasks: JSON.parse(item.AssignedTeamData || '[]').map((d: any) => new TaskModel(d)),
             attachedDocuments: attachments.filter(f => f.LinkedProductGuid === item.Guid).map(d => this.MapSpAttachmentToAttachment(d)),
             status: ProductStatus[item.ProductStatus],
             productType: item.ProductType,
@@ -46,9 +48,11 @@ export class MapperService {
             eventDate: item.EventDate,
             classificationId: item.ClassificationId,
             requestUrl: item.RequestUrl,
-            comments: JSON.parse(item.Comments || '[]'),
+            comments: JSON.parse(item.Comments || '[]').map(d => new CommentsModel(d)),
             customer: item.Customer
         });
+        
+        return product;
     }
 
     public static mapTeam(teamId: string): TeamModel {

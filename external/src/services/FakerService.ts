@@ -4,7 +4,7 @@ import AppService from './AppService';
 import { TeamModel } from '../models/TeamModel';
 import { TaskModel, TaskState } from '../models/TaskModel';
 import { CommentsModel } from '../models/CommentsModel';
-import { startOfMonth, subDays, addDays } from 'date-fns';
+import { startOfMonth, subDays, addDays, startOfDay } from 'date-fns';
 
 export class Faker {
     private static _fakeCustomers = ['Doctor Creep', 'George Washington', 'Daniel Boone'];
@@ -29,20 +29,22 @@ export class Faker {
     }
 
     private static CreateFakeTask(teamId: string): TaskModel {
-        const team = AppService.AppSettings.teams.reduce((t,n) => n.id === teamId ? n : t, null);
-        const state = ['pending', 'working', 'complete'][Math.round(Math.random() * 2)];
+        const possibleStates = ['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete'];
+        const baseDate = startOfDay(this.getRandomDate(new Date(), 20));
+        const state = possibleStates[Math.round(Math.random() * (possibleStates.length - 1))];
         const task: TaskModel = {
             taskedTeamId: teamId,
             taskDescription: 'Fake Tasking Description',
             taskState: TaskState[state],
             taskGuid: uuidv4(),
-            taskSuspense: addDays(new Date(), 7).toJSON()
+            taskSuspense: addDays(baseDate, 7).toJSON()
         };
+
         switch(task.taskState) {
             case TaskState.complete:
-                task.taskFinish = subDays(new Date(task.taskSuspense), 2);
+                task.taskFinish = addDays(baseDate, 4);
             case TaskState.working:
-                task.taskStart = subDays(new Date(task.taskSuspense), 4);
+                task.taskStart = baseDate;
                 break;
         }
         return task;
@@ -71,15 +73,16 @@ export class Faker {
 
         const item: SpProductItem = {
             Id: Math.floor(Math.random() * 300),
-            Title: (title ? title : this.mockTitles[Math.round(Math.random() * this.mockTitles.length)]),
+            Title: (title ? title : this.mockTitles[Math.round(Math.random() * (this.mockTitles.length - 1))]),
             Guid: newItemGuid,
-            Description: this.mockSentences[Math.round(Math.random() * this.mockSentences.length)],
+            Description: this.mockSentences[Math.round(Math.random() * (this.mockSentences.length - 1))],
             RequestDate: new Date(reqDate).toJSON(),
             ReturnDateExpected: new Date(endDate).toJSON(),
             ReturnDateActual: null,
             Requestor: 'Some Requestor',
             AssignedTeamData: JSON.stringify(tasks),
-            ProductStatus: ['open', 'closed', 'canceled'][Math.round(Math.random() * 2)],
+            //ProductStatus: ['open', 'closed', 'canceled'][Math.round(Math.random() * 2)],
+            ProductStatus: null,
             ProductType: (AppService.AppSettings.productTypes[Math.round(Math.random() * (AppService.AppSettings.productTypes.length - 1))]).typeId,
             EventType: (AppService.AppSettings.eventTypes[Math.round(Math.random() * (AppService.AppSettings.eventTypes.length - 1))]).eventTypeId,
             EventDate: new Date(new Date(endDate).getTime() + (1000 * 60 * 60 * 24)).toJSON(),
@@ -89,6 +92,9 @@ export class Faker {
             Comments: '',
             Active: true
         };
+
+        item.ProductStatus = tasks.map(d => d.taskState)
+            .reduce((t, n) => t == 'closed' && n == TaskState.complete ? t : 'open', 'closed');
 
         // Create up to 3 fake attachments for this fake item
         for (let x = 0; x < Math.round(Math.random() * 3); x++) { this.CreateFakeAttachment(item.Guid); }
@@ -328,4 +334,9 @@ export class Faker {
         `Sunrise Blademourner`,
         `Wind Fauna`
     ];
+
+    private static getRandomDate(baseDate: Date, window: number): Date {
+        const randomDays = Math.round(Math.random() * window);
+        return Math.round(Math.random()) ? addDays(baseDate, randomDays) : subDays(baseDate, randomDays);
+    }
 }

@@ -12,4 +12,5 @@ export interface IFormInputProps {
     editLines?: number;
     options?: Array<KeyValPair>;
     onUpdated: (newVal: string, fieldRef: string) => void;
+    toolTip?: string;
 }

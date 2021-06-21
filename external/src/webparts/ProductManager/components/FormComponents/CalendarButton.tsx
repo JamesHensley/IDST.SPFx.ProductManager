@@ -5,6 +5,7 @@ import { IconButton, Callout, DirectionalHint, FocusTrapZone, Calendar } from '@
 import { useBoolean } from '@fluentui/react-hooks';
 
 import * as styles from '../ProductManager.module.scss';
+import { startOfDay } from 'date-fns';
 
 export interface ICalendarButtonProps {
     dateVal: string;
@@ -18,7 +19,7 @@ export const CalendarButton: React.FunctionComponent<ICalendarButtonProps> = (pr
     const onSelectDate = React.useCallback(
       (date: Date, dateRangeArray: Date[]): void => {
         hideCalendar();
-        props.dateChangeCallback(date.toJSON());
+        props.dateChangeCallback(startOfDay(date).toJSON());
       },
       [hideCalendar]
     );

@@ -56,6 +56,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                     currentProduct={this.state.currentProduct}
                     isVisible={this.state.panelVisible}
                     isEditing={this.state.panelEditing}
+                    canMakeEdits={this.state.view !== 'RollUp'}
                 />
                 <div className={styles.productManager}>
                     <div className={styles.grid}>
@@ -73,7 +74,9 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                                     />
                                 }
                                 {this.state.view === 'RollUp' &&
-                                    <RollupView products={this.state.allProducts} />
+                                    <RollupView products={this.state.allProducts}
+                                        productClicked={this.productClicked.bind(this)}
+                                    />
                                 }
                             </div>
                         </div>

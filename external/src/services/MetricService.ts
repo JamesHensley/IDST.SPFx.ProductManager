@@ -11,27 +11,28 @@ export class MetricService {
     }
 
     public static GetTaskMetrics(taskModels: Array<TaskModel>): MetricModel {
-        // const start = Math.min(...taskModels.map(d => d.taskStart.getTime()));
-        // const curr = Math.max(...taskModels.map(d => d.taskFinish.getTime())) - start;
-        // const suspense = Math.max(...taskModels.map(d => new Date(d.taskSuspense).getTime())) - start;
-
-        console.log('taskStart: ', taskModels.map(d => { return { state: d.taskState, start: d.taskStart }}));
-        console.log('taskFinish: ', taskModels.map(d => { return { state: d.taskState, start: d.taskFinish }}));
-
         const retObj = {
             totalTasks: taskModels.length,
             pendingTasks: taskModels.filter(f => f.taskState === TaskState.pending).length,
             workingTasks: taskModels.filter(f => f.taskState === TaskState.working).length,
             completedTasks: taskModels.filter(f => f.taskState === TaskState.complete).length,
-            latestSuspense: new Date(Math.max(...taskModels.map(d => new Date(d.taskSuspense).getTime()))),
+            latestSuspense: new Date(Math.max(...taskModels.map(d => new Date(d.taskSuspense).getTime()).filter(f => f))),
             bustedSuspenses: taskModels
                 .filter(f => f.taskState !== TaskState.complete)
                 .filter(f => new Date().getTime() > new Date(f.taskSuspense).getTime())
                 .length > 0,
-            earliestStart: new Date(Math.min(...taskModels.map(d => (d.taskStart ? d.taskStart.getTime() : null)))),
-            latestFinish: new Date(Math.max(...taskModels.map(d => (d.taskFinish ? d.taskFinish.getTime() : null))))
-        } as MetricModel;
+            } as MetricModel;
 
+        retObj.earliestStart = ((inVal) => inVal ? new Date(inVal) : null)(taskModels
+            .reduce((t, n) => n.taskStart ? t.concat([n.taskStart.getTime()]) : t, []).filter(f => f)
+            .sort()[0]);
+
+        retObj.latestFinish = ((inVal) => inVal ? new Date(inVal) : null)(taskModels
+            .reduce((t, n) => n.taskFinish ? t.concat([n.taskFinish.getTime()]) : t, []).filter(f => f)
+            .sort().reverse()[0]);
+        retObj.overallStatus = (stats => stats.length == 1 && stats[0] == TaskState.complete ? TaskState.complete : TaskState.working)(taskModels.map(d => d.taskState).filter((f, i, e) => e.indexOf(f) == i))
+
+        // console.log(retObj);
         return retObj;
     }
 }

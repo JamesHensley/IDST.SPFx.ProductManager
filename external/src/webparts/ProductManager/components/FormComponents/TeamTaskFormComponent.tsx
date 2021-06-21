@@ -7,6 +7,7 @@ import { FormInputDropDown } from './FormInputDropDown';
 import AppService from '../../../../services/AppService';
 import { KeyValPair } from './IFormInputProps';
 import { DefaultButton, IStackItemStyles, Stack } from '@fluentui/react';
+import { startOfDay } from 'date-fns';
 
 
 export interface ITeamTaskFormComponentProps {
@@ -45,13 +46,14 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
                             labelValue={'Task Status'}
                             fieldValue={this.state.draftTask.taskState}
                             fieldRef={'taskState'}
-                            onUpdated={this.statusChanged.bind(this)}
+                            onUpdated={this.fieldUpdated.bind(this)}
                             editing={this.props.isEditing}
                             options={ [
                                 { key: TaskState.pending, value: 'Pending' } as KeyValPair,
                                 { key: TaskState.working, value: 'Working' } as KeyValPair,
                                 { key: TaskState.complete, value: 'Complete' } as KeyValPair
                             ] }
+                            toolTip={`${this.state.draftTask.taskStart} - ${this.state.draftTask.taskFinish}`}
                         />
                     </Stack.Item>
                     <Stack.Item grow styles={stackItemStyles}>
@@ -80,17 +82,14 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
         );
     }
 
-    private statusChanged(fieldValue: string, fieldRef: string): void {
-        if (fieldValue === 'Pending') { this.state.draftTask.taskStart = new Date(); }
-        if (fieldValue === 'Complete') { this.state.draftTask.taskFinish = new Date(); }
-        this.fieldUpdated(fieldValue, fieldRef);
-    }
-
     private fieldUpdated(fieldValue: string, fieldRef: string): void {
         const newDraft = new TaskModel();
         Object.assign(newDraft, this.state.draftTask);
 
         newDraft[fieldRef] = fieldValue;
+        if (fieldRef == 'taskState' && fieldValue === 'Pending') { newDraft.taskStart = startOfDay(new Date()); }
+        if (fieldRef == 'taskState' && fieldValue === 'Complete') { newDraft.taskFinish = startOfDay(new Date()); }
+
         this.setState({ draftTask: newDraft });
         this.props.updateCallback(newDraft);
     }
