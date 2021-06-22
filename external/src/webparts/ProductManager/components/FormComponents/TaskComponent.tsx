@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { Icon, IconButton, Label, Stack } from '@fluentui/react';
+import { useState } from 'react';
+import { DefaultButton, Dropdown, IconButton, IDropdownOption, Label, Stack, Dialog, DialogContent, DialogType, DialogFooter } from '@fluentui/react';
+
 import { v4 as uuidv4 } from 'uuid';
 
 import * as styles from '../ProductManager.module.scss';
 
-import { TaskModel } from '../../../../models/TaskModel';
+import { TaskModel, TaskState } from '../../../../models/TaskModel';
 import { TeamTaskRowComponent } from './TeamTaskRowComponent';
 import AppService from '../../../../services/AppService';
 import { TeamModel } from '../../../../models/TeamModel';
@@ -23,6 +25,7 @@ export interface ITaskPaneState {
 export interface ITaskComponentState {
     taskPanes: Array<ITaskPaneState>;
     draftTasks: Array<TaskModel>;
+    isTeamDialogVisible: boolean;
 }
 
 export class TaskComponent extends React.Component<ITaskComponentProps, ITaskComponentState> {
@@ -32,7 +35,8 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
         const panes = this.props.TaskItems.map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i).map(d => { return { teamId: d, isPaneVisible: false } as ITaskPaneState; });
         this.state = {
             taskPanes: panes,
-            draftTasks: this.props.TaskItems
+            draftTasks: this.props.TaskItems,
+            isTeamDialogVisible: false
         };
     }
 
@@ -42,65 +46,71 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
     }
 
     render(): React.ReactElement<ITaskComponentProps> {
-        const stackItemStyles = { root: { display: 'flex', minWidth: '50%', cursor: 'pointer' } };
         return (
-            <Stack styles={{ root: { display: 'flex' }}}>
-                <Stack horizontal>
-                    <Stack.Item>
-                        <Label>Teams and Tasks</Label>
+            <>
+                <Stack styles={{ root: { display: 'flex' }}}>
+                    <Stack horizontal>
+                        <Stack.Item>
+                            <Label>Teams and Tasks</Label>
+                        </Stack.Item>
+                        { this.props.isEditing &&
+                            <Stack.Item grow>
+                                <IconButton iconProps={{ iconName: 'add' }} className={styles.appIcon} title='' ariaLabel='' onClick={this.addTeamTask.bind(this)} />
+                            </Stack.Item>
+                        }
+                    </Stack>
+                    <Stack.Item grow styles={{ root: { paddingLeft: '10px' }}}>
+                        <Stack horizontal>
+                            <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Team</Label></Stack.Item>
+                            <Stack.Item styles={{ root: { width: '60%'}}}><Label style={{ fontSize: '.9rem' }}>Status</Label></Stack.Item>
+                            <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Suspense</Label></Stack.Item>
+                        </Stack>
                     </Stack.Item>
-                    <Stack.Item grow>
-                        <IconButton iconProps={{ iconName: 'add' }} className={styles.appIcon} title='' ariaLabel='' onClick={this.addTeamTask.bind(this)} />
+                    <Stack.Item grow styles={{ root: { paddingLeft: '20px' }}}>
+                        {
+                            this.teamModels.map((team: TeamModel) => {
+                                const paneState: ITaskPaneState = this.state.taskPanes.reduce((t, n) => n.teamId === team.id ? n : t, null);
+                                return (
+                                    <TeamTaskRowComponent
+                                        key={team.id}
+                                        teamModel={team}
+                                        teamTasks={(this.props.TaskItems || []).filter(f => f.taskedTeamId === team.id)}
+                                        isPaneVisible={paneState.isPaneVisible}
+                                        editing={this.props.isEditing}
+                                        tasksUpdated={this.teamTasksUpdated.bind(this)}
+                                        teamClicked={this.teamClicked.bind(this)}
+                                    />
+                                );
+                            })
+                        }
                     </Stack.Item>
                 </Stack>
-                <Stack.Item grow styles={{ root: { paddingLeft: '10px' }}}>
-                    <Stack horizontal>
-                        <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Team</Label></Stack.Item>
-                        <Stack.Item styles={{ root: { width: '60%'}}}><Label style={{ fontSize: '.9rem' }}>Status</Label></Stack.Item>
-                        <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Suspense</Label></Stack.Item>
-                    </Stack>
-                </Stack.Item>
-                <Stack.Item grow styles={{ root: { paddingLeft: '20px' }}}>
-                    {
-                        this.teamModels.map((team: TeamModel) => {
-                            const paneState: ITaskPaneState = this.state.taskPanes.reduce((t, n) => n.teamId === team.id ? n : t, null);
-                            return (
-                                <TeamTaskRowComponent
-                                    key={team.id}
-                                    teamModel={team}
-                                    teamTasks={(this.props.TaskItems || []).filter(f => f.taskedTeamId === team.id)}
-                                    isPaneVisible={paneState.isPaneVisible}
-                                    editing={this.props.isEditing}
-                                    tasksUpdated={this.teamTasksUpdated.bind(this)}
-                                    teamClicked={this.teamClicked.bind(this)}
-                                />
-                            );
-                        })
-                    }
-                </Stack.Item>
-            </Stack>
+                {this.state.isTeamDialogVisible &&
+                    <TeamDialog
+                        key={new Date().getTime()}
+                        teamSelectedCallback={this.teamSelected.bind(this)}
+                        teams={AppService.AppSettings.teams}
+                    />
+                }
+            </>
         );
     }
 
     private addTeamTask(): void {
-
+        console.log('addTeamTask');
+        this.setState({ isTeamDialogVisible: true });
     }
 
-    private createNewTask(): void {
-        /*
-        const newTask = new TaskModel();
-        newTask.taskDescription = 'New Task';
-        newTask.taskGuid = uuidv4();
-        newTask.taskedTeamId = AppService.AppSettings.teams[0].id;
-        newTask.taskState = TaskState.pending;
-        newTask.taskSuspense = new Date(new Date().getTime() + (1000 * 60 * 60 * 7)).toJSON();
-
-        const newTaskPanes = this.state.taskPanes
-            .map(d => { return { isPaneVisible: false, taskId: d.taskId } as ITaskPaneState; })
-            .concat([{ isPaneVisible: true, taskId: newTask.taskGuid } as ITaskPaneState]);
-        this.setState({ taskPanes: newTaskPanes });
-        this.props.onTaskAdded(newTask);
-        */
+    private teamSelected(teamId: string) {
+        const newTask = new TaskModel({
+            taskedTeamId: teamId,
+            taskGuid: uuidv4(),
+            taskDescription: 'New Task',
+            taskState: TaskState.pending,
+            taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON()
+        });
+        const newDrafts = [].concat.apply(this.state.draftTasks, [newTask]);
+        this.props.onUpdated(newDrafts);
     }
 
     /** Called when a user clicks the SAVE or CANCEL button on a Teams task pane */
@@ -120,13 +130,43 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
         this.props.onUpdated(newDrafts);
     }
 
-    private taskEditCancel(taskId: string): void {
-        // const newPanes = this.state.taskPanes.map(d => { return { taskId: d.taskId, isPaneVisible: false } as ITaskPaneState; });
-        // this.setState({ taskPanes: newPanes });
-    }
-
     private teamClicked(teamId: string): void {
         const newPanes = this.state.taskPanes.map(d => { return { teamId: d.teamId, isPaneVisible: (d.teamId === teamId) } as ITaskPaneState; });
         this.setState({ taskPanes: newPanes });
     }
+}
+
+export interface ITeamDialogProps { teamSelectedCallback: (teamId: string) => void; teams: Array<TeamModel>; }
+
+export const TeamDialog: React.FunctionComponent<ITeamDialogProps> = (props) => {
+    const [team, setTeam] = useState('');
+
+    const okClicked = React.useCallback((): void => { props.teamSelectedCallback(team); }, [team]);
+
+    const cancelClicked = React.useCallback((): void => { props.teamSelectedCallback(null); }, []);
+
+    const dropdownOptions: Array<IDropdownOption> = props.teams
+        .map(d => { return { key: d.id, text: d.name } })
+        .sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0));
+
+    return (
+        <>
+            <Dialog
+                hidden={false}
+                modalProps={{ isBlocking: true, isOpen: true }}
+                dialogContentProps={{ type: DialogType.normal, title: 'Team Selector' }}
+                styles={{ main: { width: '400px' } }}
+            >
+                <DialogContent>
+                    <Dropdown options={dropdownOptions} onChange={(e, o, i) => setTeam(o.key.toString())} label={'Select a team'} />
+                </DialogContent>
+                <DialogFooter>
+                    <Stack horizontal styles={{ root: { width: '100%' } }} tokens={{ childrenGap: 20 }}>
+                        <Stack.Item grow><DefaultButton onClick={okClicked} text={'Ok'} /></Stack.Item>
+                        <Stack.Item grow><DefaultButton onClick={cancelClicked} text={'Cancel'} /></Stack.Item>
+                    </Stack>
+                </DialogFooter>
+            </Dialog>
+        </>
+    );
 }

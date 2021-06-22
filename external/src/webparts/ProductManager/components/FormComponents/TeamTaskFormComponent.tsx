@@ -87,8 +87,10 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
         Object.assign(newDraft, this.state.draftTask);
 
         newDraft[fieldRef] = fieldValue;
-        if (fieldRef == 'taskState' && fieldValue === 'Pending') { newDraft.taskStart = startOfDay(new Date()); }
-        if (fieldRef == 'taskState' && fieldValue === 'Complete') { newDraft.taskFinish = startOfDay(new Date()); }
+        console.log('fieldUpdated', fieldRef, fieldValue);
+        if (fieldRef == 'taskState' && fieldValue === 'Pending') { newDraft.taskStart = null; newDraft.taskFinish = null; }
+        if (fieldRef == 'taskState' && fieldValue === 'Working') { newDraft.taskStart = startOfDay(new Date()); newDraft.taskFinish = null; }
+        if (fieldRef == 'taskState' && fieldValue === 'Complete') { newDraft.taskStart = newDraft.taskStart ? newDraft.taskStart : startOfDay(new Date()); newDraft.taskFinish = startOfDay(new Date()); }
 
         this.setState({ draftTask: newDraft });
         this.props.updateCallback(newDraft);

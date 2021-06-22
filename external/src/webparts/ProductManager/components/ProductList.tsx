@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ProductModel } from '../../../models/ProductModel';
 import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, IDetailsRowProps, IFacepilePersona, SelectionMode, TextField } from '@fluentui/react';
+import { DefaultButton, Stack, Dialog, DialogContent, DialogType, DialogFooter } from '@fluentui/react';
 import { format } from 'date-fns';
 import AppService from '../../../services/AppService';
 import { TaskModel } from '../../../models/TaskModel';
