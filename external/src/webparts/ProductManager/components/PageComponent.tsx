@@ -74,8 +74,10 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                                     />
                                 }
                                 {this.state.view === 'RollUp' &&
-                                    <RollupView products={this.state.allProducts}
+                                    <RollupView
+                                        products={this.state.allProducts}
                                         productClicked={this.productClicked.bind(this)}
+                                        defaultMonth={new Date()}
                                     />
                                 }
                             </div>
