@@ -27,6 +27,7 @@ interface CssExports {
   'listDataRow': string;
   'listTable': string;
   'ms-Grid': string;
+  'muted': string;
   'padLeft1': string;
   'padLeft2': string;
   'padLeft3': string;

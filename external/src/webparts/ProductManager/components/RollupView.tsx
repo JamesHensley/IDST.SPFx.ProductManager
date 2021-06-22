@@ -2,7 +2,7 @@ import * as React from 'react';
 // import { ChartControl, ChartType } from '@pnp/spfx-controls-react';
 // import { v4 as uuidv4 } from 'uuid';
 
-import Timeline from 'react-calendar-timeline'
+import Timeline, { defaultItemRenderer } from 'react-calendar-timeline'
 // make sure you include the timeline stylesheet or the timeline will not be styled
 import 'react-calendar-timeline/lib/Timeline.css'
 
@@ -18,6 +18,11 @@ import { MetricModel } from '../../../models/MetricModel';
 export interface IRollupViewProps {
     products: Array<ProductModel>;
     productClicked: (prodId: string) => void;
+}
+
+export interface IRollupViewState {
+    /** Used to control whether multiple tasks for the same team on a single product should be merged */
+    mergeTeamTasks: boolean;
 }
 
 export interface ITimelineGroup {
@@ -41,11 +46,18 @@ export interface ITimelineItem {
 
 export interface IItemProps {
     productGuid: string;
+    teamGuid: string;
+    taskId: string;
     style: any;
 }
 
-export default class RollupView extends React.Component <IRollupViewProps, {}> {
+export default class RollupView extends React.Component <IRollupViewProps, IRollupViewState> {
     private tlRef: Timeline;
+
+    constructor(props: IRollupViewProps) {
+        super(props);
+        this.state = { mergeTeamTasks: false };
+    }
 
     private get calendarGroups(): Array<ITimelineGroup> {
         return AppService.AppSettings.teams
@@ -64,36 +76,42 @@ export default class RollupView extends React.Component <IRollupViewProps, {}> {
     private get calendarItems(): Array<ITimelineItem> {
         const retObj =  this.props.products
         .filter(f => f.status === ProductStatus.closed)
-        .reduce((t: Array<ITimelineItem>, n: ProductModel) => {
-            const prodModel = AppService.AppSettings.productTypes.reduce((t1, n1) => n1.typeId == n.productType ? n1 : t1, null);
-
-            const item: Array<ITimelineItem> = (
-                    (teamIds => teamIds.map(d => MetricService.GetTaskMetrics(n.tasks.filter(f => f.taskedTeamId === d))))
-                    (n.tasks.reduce((t1, n1) => t1.indexOf(n1.taskedTeamId) < 0 ? [].concat.apply(t1, [n1.taskedTeamId]) : t1, []))
-                )
-                .map((d: MetricModel) => {
+        .map(d => {
+            const prodModel = AppService.AppSettings.productTypes.reduce((t1, n1) => n1.typeId == d.productType ? n1 : t1, null);
+            return d.tasks.map(d2 => {
+                const metric = MetricService.GetTaskMetrics([d2]);
                 return {
                     id: 0,
-                    group: this.calendarGroups.reduce((a, b) => b.guid === d.teamIds[0] ? b.id : a, 0),
-                    title: n.title,
-                    start_time: d.earliestStart.getTime(),
-                    end_time: d.latestFinish.getTime(),
+                    group: this.calendarGroups.reduce((a, b) => b.guid === d2.taskedTeamId ? b.id : a, 0),
+                    title: d.title,
+                    start_time: metric.earliestStart.getTime(),
+                    end_time: metric.latestFinish.getTime(),
                     canChangeGroup: false, canMove: false, canResize: false,
                     itemProps: {
-                        productGuid: n.guid,
+                        productGuid: d.guid,
+                        teamGuid: d2.taskedTeamId,
+                        taskId: d2.taskGuid,
                         style: {
                             backgroundColor:  prodModel ? prodModel.colorValue : '',
                             selectedBgColor:  prodModel ? prodModel.colorValue : '',
                             color: prodModel ? ColorService.GetTextColor(prodModel.colorValue) : ''
-                        }
+                        },
+                        'data-product-guid': d.guid
                     }
                 } as ITimelineItem;
-            });
-
-            return [].concat.apply(t, [item]);
+            })
+        })
+        .reduce((t, n) => [].concat.apply(t, n))
+        .reduce((t, n, i, e) => {
+            if (this.state.mergeTeamTasks) {
+                // TODO: Merge the tasks here
+                return [].concat.apply(t, [n]);
+            } else {
+                return [].concat.apply(t, [n]);
+            }
         }, [])
-        .map((d: ITimelineItem, i: number) => { d.id = i; return d; });
-        console.log('Returning: ', retObj);
+        .map((d, i) => { d.id = i; return d; });
+
         return retObj;
     }
 
@@ -103,6 +121,7 @@ export default class RollupView extends React.Component <IRollupViewProps, {}> {
 
         return (
             <Timeline
+                key={new Date().getTime()}
                 ref={r => (this.tlRef = r)}
                 groups={this.calendarGroups}
                 items={this.calendarItems}
@@ -115,6 +134,7 @@ export default class RollupView extends React.Component <IRollupViewProps, {}> {
                 onItemSelect={this.itemClicked.bind(this)}
                 onItemClick={this.itemClicked.bind(this)}
                 timeSteps={{ second: 0, minute: 0, hour: 0, day: 1, month: 1, year: 1 }}
+                itemRenderer={this.itemRenderer.bind(this)}
             />
         );
     }
@@ -140,4 +160,52 @@ export default class RollupView extends React.Component <IRollupViewProps, {}> {
 
         this.props.productClicked(clickedProductGuid);
     }
+
+    private itemRenderer({item, timelineContext, itemContext, getItemProps, getResizeProps}): defaultItemRenderer {
+        const { left: leftResizeProps, right: rightResizeProps } = getResizeProps();
+        const backgroundColor = item.itemProps.style.backgroundColor;
+        const borderColor = item.itemProps.style.color;
+        return (
+          <div
+            {...getItemProps({
+              style: {
+                backgroundColor,
+                color: item.itemProps.style.color,
+                borderColor,
+                borderStyle: "solid",
+                borderWidth: 1,
+                borderRadius: 4,
+                borderLeftWidth: itemContext.selected ? 3 : 1,
+                borderRightWidth: itemContext.selected ? 3 : 1
+              },
+              // onMouseDown: () => { console.log("on item click", item); }
+            })}
+            onMouseEnter={() => {
+                console.log('HoverOn: ', item.itemProps);
+                Array.from(document.querySelectorAll('.rct-item'))
+                    .filter(f => f.getAttribute('dataprodid') != item.itemProps.productGuid )
+                    .forEach(i => i.classList.add(styles.muted));
+            }}
+            onMouseLeave={() => {
+                console.log('HoverOff: ', item.itemProps);
+                Array.from(document.querySelectorAll(`.rct-item.${styles.muted}`))
+                    .forEach(i => i.classList.remove(styles.muted));
+            }}
+            dataprodid={item.itemProps.productGuid}
+            datateamid={item.itemProps.teamGuid}
+          >
+            <div
+              style={{
+                height: itemContext.dimensions.height,
+                overflow: "hidden",
+                paddingLeft: 3,
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap"
+              }}
+            >
+              {itemContext.title}
+            </div>
+          </div>
+        );
+      };
 }
