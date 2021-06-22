@@ -11,6 +11,10 @@ export enum ProductStatus {
 
 export class ProductModel {
     public constructor(init?: Partial<ProductModel>) {
+        this.comments = [];
+        this.attachedDocumentUrls = [];
+        this.attachedDocuments = [];
+        this.tasks = [];
         Object.assign(this, init);
     }
 

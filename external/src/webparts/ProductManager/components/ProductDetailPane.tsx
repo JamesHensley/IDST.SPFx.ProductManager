@@ -31,7 +31,7 @@ export interface IProductDetailPaneProps {
     paneCloseCallBack: () => void;
     /** used to notify the parent that the item was updated */
     // productUpdatedCallBack: (newPanelEditValue: boolean) => void;
-    canMakeEdits: boolean;
+    readOnly: boolean;
 }
 
 export interface IProductDetailPaneState {
@@ -150,6 +150,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                             AttachmentItems={this.state.draftProduct.attachedDocuments}
                             AddAttachmentCallback={this.addAttachment.bind(this)}
                             canAddAttachments={this.state.draftProduct.guid ? true : false}
+                            readOnly={this.props.readOnly}
                         />
                         <Separator />
                         <TaskComponent
@@ -277,14 +278,13 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
-        console.log('getPaneHeader: ', arguments);
-
-        return (<div style={{ width: '100%' }} className='ms-Panel-content content-200'>
-            {this.props.canMakeEdits &&
+        // console.log('getPaneHeader: ', arguments);
+        return (<div className={styles.panelHead}>
             <Stack grow styles={{ root: { display: 'flex' }}}>
                 <Label style={{ fontSize: '1.5rem' }}>
                     {this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
                 </Label>
+                {!this.props.readOnly &&
                 <Stack horizontal>
                     <Stack.Item grow>
                         <Stack horizontal tokens={{ childrenGap: 10 }}>
@@ -297,8 +297,8 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         <DefaultButton onClick={this.showCommentDialog.bind(this)}>Add Comment</DefaultButton>
                     </Stack.Item>
                 </Stack>
+                }
             </Stack>
-            }
         </div>);
     }
 }

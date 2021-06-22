@@ -35,6 +35,7 @@ interface CssExports {
   'padTop2': string;
   'padTop3': string;
   'padTop4': string;
+  'panelHead': string;
   'personaCoin': string;
   'personaText': string;
   'productDetailPane': string;

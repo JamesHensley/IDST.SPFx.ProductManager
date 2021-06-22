@@ -8,6 +8,7 @@ import { AttachmentModel } from '../../../../models/AttachmentModel';
 
 export interface IAttachmentComponentProps {
     canAddAttachments: boolean;
+    readOnly: boolean;
     AttachmentItems: Array<AttachmentModel>;
     AddAttachmentCallback: (files: FileList) => Promise<void>;
 }
@@ -26,11 +27,11 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
             <Stack key={new Date().getTime()}>
                 <Label>
                     Attachments
-                    { !this.props.canAddAttachments &&
+                    { !this.props.canAddAttachments && !this.props.readOnly &&
                         <span style={{ fontSize: '0.7rem', fontWeight: 'normal', paddingLeft: '10px' }}>Attachments can only be added after the first save</span>
                     }
                 </Label>
-                { this.props.canAddAttachments &&
+                { this.props.canAddAttachments && !this.props.readOnly &&
                     <Stack horizontal>
                         <Stack.Item grow styles={{ root: { display: 'flex' } }}><input id='attachment' type='file' multiple accept=".*" /></Stack.Item>
                         <Stack.Item styles={{ root: { display: 'flex' } }}><DefaultButton onClick={this.uploadFiles.bind(this)}>Upload</DefaultButton></Stack.Item>

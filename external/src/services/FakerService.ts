@@ -28,23 +28,22 @@ export class Faker {
         return attachment;
     }
 
-    private static CreateFakeTask(teamId: string): TaskModel {
-        const possibleStates = ['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete'];
-        const baseDate = startOfDay(this.getRandomDate(new Date(), 20));
-        const state = possibleStates[Math.round(Math.random() * (possibleStates.length - 1))];
+    private static CreateFakeTask(teamId: string, desc: string, startDate: Date, baseSuspense: number, state: string): TaskModel {
+        const suspense = addDays(startDate, baseSuspense);
+
         const task: TaskModel = {
             taskedTeamId: teamId,
-            taskDescription: 'Fake Tasking Description',
+            taskDescription: desc,
             taskState: TaskState[state],
             taskGuid: uuidv4(),
-            taskSuspense: addDays(baseDate, 7).toJSON()
+            taskSuspense: suspense.toJSON()
         };
 
         switch(task.taskState) {
             case TaskState.complete:
-                task.taskFinish = addDays(baseDate, 4);
+                task.taskFinish = subDays(suspense, 2);
             case TaskState.working:
-                task.taskStart = baseDate;
+                task.taskStart = subDays(suspense, 4);
                 break;
         }
         return task;
@@ -53,20 +52,10 @@ export class Faker {
     public static CreateFakeItem(title?: string): SpProductItem {
         const newItemGuid = uuidv4();
 
-        // Randomly assign this to a team(s)
-        const teams = AppService.AppSettings.teams
-            .reduce((t: Array<TeamModel>, n: TeamModel) => Math.round(Math.random()) === 1 ? t.concat(n) : t, [])
-            .map(d => d.id);
-
-        const tasks: Array<TaskModel> = (teams.length > 0 ? teams : [AppService.AppSettings.teams[0].id])
-            .map(d => {
-                const teamTasks: Array<TaskModel> = [];
-                for (var x = 0; x < Math.round(Math.random() * 4); x++) {
-                    teamTasks.push(this.CreateFakeTask(d));
-                }
-                return teamTasks;
-            })
-            .reduce((t,n) => [].concat.apply(t, n), []);
+        const prodType = (AppService.AppSettings.productTypes[Math.round(Math.random() * (AppService.AppSettings.productTypes.length - 1))]);
+        const prodSuspense = startOfDay(this.getRandomDate(new Date(), 20));
+        const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete']);
+        const tasks = prodType.defaultTeamTasks.map(d => this.CreateFakeTask(d.teamId, d.taskDescription, prodSuspense, d.taskSuspenseDays, taskState))
 
         const reqDate = new Date().getTime() + (((Math.round(Math.random() === 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24);
         const endDate = new Date().getTime() + ((Math.round(Math.random() * 14) + 1) * 1000 * 60 * 60 * 24);
@@ -81,9 +70,8 @@ export class Faker {
             ReturnDateActual: null,
             Requestor: 'Some Requestor',
             AssignedTeamData: JSON.stringify(tasks),
-            //ProductStatus: ['open', 'closed', 'canceled'][Math.round(Math.random() * 2)],
             ProductStatus: null,
-            ProductType: (AppService.AppSettings.productTypes[Math.round(Math.random() * (AppService.AppSettings.productTypes.length - 1))]).typeId,
+            ProductType: prodType.typeId,
             EventType: (AppService.AppSettings.eventTypes[Math.round(Math.random() * (AppService.AppSettings.eventTypes.length - 1))]).eventTypeId,
             EventDate: new Date(new Date(endDate).getTime() + (1000 * 60 * 60 * 24)).toJSON(),
             ClassificationId: (AppService.AppSettings.classificationModels[Math.round(Math.random() * (AppService.AppSettings.classificationModels.length - 1))]).classificationId,

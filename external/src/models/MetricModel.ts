@@ -1,6 +1,7 @@
 import { TaskState } from "./TaskModel";
 
 export interface MetricModel {
+    teamIds: Array<string>;
     totalTasks: number;
     pendingTasks: number;
     workingTasks: number;
@@ -10,4 +11,5 @@ export interface MetricModel {
     latestFinish: Date;
     bustedSuspenses: boolean;
     overallStatus: TaskState;
+    data?: any;
 }

@@ -12,6 +12,9 @@ import { MetricService } from '../../../services/MetricService';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import ColorService from '../../../services/ColorService';
 
+import * as styles from './ProductManager.module.scss';
+import { MetricModel } from '../../../models/MetricModel';
+
 export interface IRollupViewProps {
     products: Array<ProductModel>;
     productClicked: (prodId: string) => void;
@@ -59,35 +62,39 @@ export default class RollupView extends React.Component <IRollupViewProps, {}> {
     }
 
     private get calendarItems(): Array<ITimelineItem> {
-        const retArray: Array<ITimelineItem> = this.props.products
+        const retObj =  this.props.products
         .filter(f => f.status === ProductStatus.closed)
-        .reduce((t1, n1) => {
-            const metrics = MetricService.GetTaskMetrics(n1.tasks);
-            const xx = n1.tasks.reduce((t2, n2) => {
-                const prodModel = AppService.AppSettings.productTypes.reduce((t, n) => n.typeId == n1.productType ? n : t, null);
-                const retObj: ITimelineItem = {
+        .reduce((t: Array<ITimelineItem>, n: ProductModel) => {
+            const prodModel = AppService.AppSettings.productTypes.reduce((t1, n1) => n1.typeId == n.productType ? n1 : t1, null);
+
+            const item: Array<ITimelineItem> = (
+                    (teamIds => teamIds.map(d => MetricService.GetTaskMetrics(n.tasks.filter(f => f.taskedTeamId === d))))
+                    (n.tasks.reduce((t1, n1) => t1.indexOf(n1.taskedTeamId) < 0 ? [].concat.apply(t1, [n1.taskedTeamId]) : t1, []))
+                )
+                .map((d: MetricModel) => {
+                return {
                     id: 0,
-                    group: this.calendarGroups.reduce((t, n) => n.guid === n2.taskedTeamId ? n.id : t, 0),
-                    title: n1.title,
-                    start_time: metrics.earliestStart.getTime(),
-                    end_time: metrics.latestFinish.getTime(),
+                    group: this.calendarGroups.reduce((a, b) => b.guid === d.teamIds[0] ? b.id : a, 0),
+                    title: n.title,
+                    start_time: d.earliestStart.getTime(),
+                    end_time: d.latestFinish.getTime(),
                     canChangeGroup: false, canMove: false, canResize: false,
                     itemProps: {
-                        productGuid: n1.guid,
+                        productGuid: n.guid,
                         style: {
                             backgroundColor:  prodModel ? prodModel.colorValue : '',
                             selectedBgColor:  prodModel ? prodModel.colorValue : '',
                             color: prodModel ? ColorService.GetTextColor(prodModel.colorValue) : ''
                         }
                     }
-                };
-                return t2.concat([retObj]);
-            }, []);
-            return t1.concat(xx);
+                } as ITimelineItem;
+            });
+
+            return [].concat.apply(t, [item]);
         }, [])
-        .filter((f, i, e) => e.map(m => m.itemProps.productGuid).indexOf(f.itemProps.productGuid) === i)
-        .map((d, i) => { d.id = i; return d; });
-        return retArray;
+        .map((d: ITimelineItem, i: number) => { d.id = i; return d; });
+        console.log('Returning: ', retObj);
+        return retObj;
     }
 
     public render(): React.ReactElement<IRollupViewProps> {

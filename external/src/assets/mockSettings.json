@@ -7,7 +7,7 @@
     "teams": [
         {
             "id": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
-            "name": "Team 1",
+            "name": "Team 1 - BA",
             "description": "Team 1 Description",
             "members": [
                 { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": 3 },
@@ -19,7 +19,7 @@
         },
         {
             "id": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
-            "name": "Team 2",
+            "name": "Team 2 - BS",
             "description": "Team 2 Description",
             "members": [
                 { "spId": "0cfd1d22797b", "name": "Person 4", "email": "person4@email.com", "role": 3 },
@@ -31,7 +31,7 @@
         },
         {
             "id": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
-            "name": "Team 3",
+            "name": "Team 3 - S",
             "description": "Team 3 Description",
             "members": [
                 { "spId": "b4dacb1080c7", "name": "Person 7", "email": "person7@email.com", "role": 3 },
@@ -39,15 +39,27 @@
                 { "spId": "90073312311f", "name": "Person 9", "email": "person9@email.com", "role": 3 }
             ],
             "active": true,
-            "shortName": "T3"
-        }
+            "shortName": "ST"
+        },
+        {
+            "id": "b9563296-df65-4054-916d-ed7f39f90ac6",
+            "name": "Team 4 - F",
+            "description": "Team 4 Description",
+            "members": [
+                { "spId": "b4dacb1080c7", "name": "Person 10", "email": "person10@email.com", "role": 3 },
+                { "spId": "f9ee1234acbd", "name": "Person 11", "email": "person11@email.com", "role": 3 },
+                { "spId": "90073312311f", "name": "Person 12", "email": "person12@email.com", "role": 3 }
+            ],
+            "active": true,
+            "shortName": "F"
+        }        
     ],
     "productTypes": [
         {
             "typeId": "ca0a3b95-0770-4dfb-b358-f1beb2e5290e",
             "typeName": "ProductType 1",
             "colorValue": "rgb(100, 100, 250)",
-            "typeDescription": "This is a detail explaination of the product and could include instructions to the teams.  This one has a 7 day suspense",
+            "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 7 day suspense",
             "defaultSuspenseDays": 7,
             "defaultTemplateDocs": [
                 { "docUrl": "/", "docIcon": "/", "docName": "docType1.txt" }
@@ -55,8 +67,23 @@
             "defaultTeamTasks": [
                 {
                     "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
-                    "taskDescription": "Templated task description for this team",
+                    "taskDescription": "Review 1",
                     "taskSuspenseDays": 2
+                },
+                {
+                    "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
+                    "taskDescription": "Review 2",
+                    "taskSuspenseDays": 4
+                },
+                {
+                    "teamId": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
+                    "taskDescription": "Final Review",
+                    "taskSuspenseDays": 6
+                },
+                {
+                    "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
+                    "taskDescription": "Magic",
+                    "taskSuspenseDays": 8
                 }
             ]
         },
@@ -64,7 +91,7 @@
             "typeId": "a3bca095-b358-fb4d-0770-eb2e5f1be029",
             "typeName": "ProductType 2",
             "colorValue": "rgb(210, 210, 0)",
-            "typeDescription": "This is a detail explaination of the product and could include instructions to the teams.  This one has a 14 day suspense",
+            "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 14 day suspense",
             "defaultSuspenseDays": 14,
             "defaultTemplateDocs": [
                 { "docUrl": "/", "docIcon": "/", "docName": "docType1.txt" },
@@ -73,13 +100,23 @@
             "defaultTeamTasks": [
                 {
                     "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
-                    "taskDescription": "Templated task description for this team",
+                    "taskDescription": "Review 1",
                     "taskSuspenseDays": 2
                 },
                 {
+                    "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
+                    "taskDescription": "Review 2",
+                    "taskSuspenseDays": 4
+                },
+                {
                     "teamId": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
-                    "taskDescription": "Templated task description for this team",
-                    "taskSuspenseDays": 5
+                    "taskDescription": "Final Review",
+                    "taskSuspenseDays": 6
+                },
+                {
+                    "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
+                    "taskDescription": "Magic",
+                    "taskSuspenseDays": 8
                 }
             ]
         },
@@ -87,10 +124,16 @@
             "typeId": "3b95ca0a-0770-4dfb-b358-e5290ef1beb2",
             "typeName": "ProductType 3",
             "colorValue": "rgb(133, 0, 0)",
-            "typeDescription": "This is a detail explaination of the product and could include instructions to the teams.  This one has a 21 day suspense",
+            "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 21 day suspense",
             "defaultSuspenseDays": 21,
             "defaultTemplateDocs": [],
-            "defaultTeamTasks": []
+            "defaultTeamTasks": [
+                {
+                    "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
+                    "taskDescription": "Magic",
+                    "taskSuspenseDays": 8
+                }
+            ]
         }
     ],
     "eventTypes": [

@@ -56,7 +56,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                     currentProduct={this.state.currentProduct}
                     isVisible={this.state.panelVisible}
                     isEditing={this.state.panelEditing}
-                    canMakeEdits={this.state.view !== 'RollUp'}
+                    readOnly={this.state.view === 'RollUp'}
                 />
                 <div className={styles.productManager}>
                     <div className={styles.grid}>
