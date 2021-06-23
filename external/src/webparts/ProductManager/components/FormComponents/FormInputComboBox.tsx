@@ -25,7 +25,7 @@ export class FormInputComboBox extends React.Component<IFormInputProps, IFormInp
         return (
             <div className={`${styles.padTop2} ${styles.fieldValue}`} style={{ width: '100%' }}>
                 <Label>{this.props.labelValue}</Label>
-                { !this.props.editing && 
+                { !this.props.editing &&
                     <Text>{this.props.fieldValue}</Text>
                 }
                 { this.props.editing &&

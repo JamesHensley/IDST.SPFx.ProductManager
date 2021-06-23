@@ -238,7 +238,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         this.setState({ draftProduct: newDraft });
     }
 
-    private tasksUpdated(newVal: Array<TaskModel>) {
+    private tasksUpdated(newVal: Array<TaskModel>): void {
         const newDraft = new ProductModel();
         Object.assign(newDraft, this.state.draftProduct);
         newDraft.tasks = newVal;
@@ -265,23 +265,22 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                     Object.assign(draftProduct, this.props.currentProduct);
                     draftProduct.attachedDocuments = allDocs;
                     this.setState({ draftProduct: draftProduct });
-    
+
                     NotificationService.Notify(NotificationType.AttachAdd, this.state.draftProduct.title, results.map(d => d.Title).join(','));
-                    return Promise.resolve()
+                    return Promise.resolve();
                 })
                 .catch(e => Promise.reject(e));
             })
             .catch(e => Promise.reject(e));
-        }
-        else {
-            return Promise.reject('No Files Selected')
+        } else {
+            return Promise.reject('No Files Selected');
         }
     }
 
     private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
         // console.log('getPaneHeader: ', arguments);
         return (<div className={styles.panelHead}>
-            <Stack grow styles={{ root: { display: 'flex' }}}>
+            <Stack grow styles={{ root: { display: 'flex' } }}>
                 <Label style={{ fontSize: '1.5rem' }}>
                     {this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
                 </Label>

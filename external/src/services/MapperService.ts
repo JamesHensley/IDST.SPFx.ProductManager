@@ -31,7 +31,7 @@ export class MapperService {
     }
 
     public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
-        const product = new ProductModel({
+        return new ProductModel({
             id: item.Id,
             guid: item.Guid,
             title: item.Title,
@@ -48,11 +48,9 @@ export class MapperService {
             eventDate: item.EventDate,
             classificationId: item.ClassificationId,
             requestUrl: item.RequestUrl,
-            comments: JSON.parse(item.Comments || '[]').map(d => new CommentsModel(d)),
+            comments: JSON.parse(item.Comments || '[]').map((d: any) => new CommentsModel(d)),
             customer: item.Customer
         });
-        
-        return product;
     }
 
     public static mapTeam(teamId: string): TeamModel {
@@ -60,7 +58,6 @@ export class MapperService {
     }
 
     public static MapItemsToProducts(items: Array<SpProductItem>, documents: Array<SpListAttachment>): Array<ProductModel> {
-        // const docs = documents.map(d => this.MapItemToAttachments(d));
         return items.map(d => this.MapItemToProduct(d, documents));
     }
 

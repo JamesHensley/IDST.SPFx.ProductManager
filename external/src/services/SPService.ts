@@ -96,7 +96,6 @@ myDiv.appendChild(btn);
 
 bodyDiv.appendChild(myDiv);
 
-
 function btnClick() {
 	var file = inp.files[0];
 
@@ -113,17 +112,17 @@ function btnClick() {
 		var digestVal = document.querySelector('#__REQUESTDIGEST').value;
 
 		var fileName = file.name;
-		var webUrl = _spPageContextInfo.webAbsoluteUrl;  
+		var webUrl = _spPageContextInfo.webAbsoluteUrl;
 		var documentLibrary = "Documents";
 		var targetUrl = _spPageContextInfo.webServerRelativeUrl + "/" + documentLibrary;
 		var url = webUrl + "/_api/Web/GetFolderByServerRelativeUrl(@target)/Files/add(overwrite=true, url='" + fileName + "')?@target='" + targetUrl + "'&$expand=ListItemAllFields";
 
-		uploadFileToFolder(file, url, arrayBuff, function(data) {  
+		uploadFileToFolder(file, url, arrayBuff, function(data) {
 			var file = data.d;
-			DocFileName = file.Name;  
-			var updateObject = {  
-				__metadata: {  
-					type: file.ListItemAllFields.__metadata.type  
+			DocFileName = file.Name;
+			var updateObject = {
+				__metadata: {
+					type: file.ListItemAllFields.__metadata.type
 				},
 				FileLeafRef: DocFileName //FileLeafRef --> Internal Name for Name Column
 			};
@@ -143,5 +142,5 @@ function uploadFileToFolder(fileObj, url, buffData, success, failure) {
 	.then(d => console.log(d));
 }
 
-*/    
+*/
 }

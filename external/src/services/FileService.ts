@@ -3,7 +3,6 @@ export class FileService {
         return new Promise<ArrayBuffer>((resolve, reject) => {
             const reader = new FileReader();
 
-            //reader.onloadend = (e: ProgressEvent<FileReader>) => resolve(e.target.result);
             reader.onloadend = (e: any) => resolve(e.target.result);
             reader.onerror = (e) => reject(e);
             reader.readAsArrayBuffer(file);
@@ -14,6 +13,3 @@ export class FileService {
         return '';
     }
 }
-/*
-
-*/

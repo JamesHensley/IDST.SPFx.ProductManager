@@ -1,4 +1,4 @@
-import { parseISO, toDate } from "date-fns";
+import { parseISO } from 'date-fns';
 
 export enum TaskState {
     pending = 'Pending',

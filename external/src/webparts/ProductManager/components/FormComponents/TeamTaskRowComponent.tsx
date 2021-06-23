@@ -1,12 +1,13 @@
 import * as React from 'react';
 import * as styles from '../ProductManager.module.scss';
-import { TaskModel, TaskState } from '../../../../models/TaskModel';
+import { TaskModel } from '../../../../models/TaskModel';
 import { TeamTasksPaneComponent } from './TeamTasksPaneComponent';
 import AppService from '../../../../services/AppService';
 import { format } from 'date-fns';
 import { TeamModel } from '../../../../models/TeamModel';
 import { Stack } from '@fluentui/react';
 import { MetricService } from '../../../../services/MetricService';
+import { MetricModel } from '../../../../models/MetricModel';
 
 export interface ITeamTaskComponentProps {
     teamModel: TeamModel;
@@ -20,8 +21,8 @@ export interface ITeamTaskComponentProps {
 
 export class TeamTaskRowComponent extends React.Component<ITeamTaskComponentProps, {}> {
     render(): React.ReactElement<ITeamTaskComponentProps> {
-        const metrics = MetricService.GetTaskMetrics(this.props.teamTasks);
-        const teamStatus: string = `${metrics.completedTasks} of ${metrics.totalTasks} complete`
+        const metrics: MetricModel = MetricService.GetTaskMetrics(this.props.teamTasks);
+        const teamStatus = `${metrics.completedTasks} of ${metrics.totalTasks} complete`;
         return(
             <>
                 { this.props.isPaneVisible &&
@@ -34,9 +35,9 @@ export class TeamTaskRowComponent extends React.Component<ITeamTaskComponentProp
                     />
                 }
                 <Stack horizontal onClick={this.teamClicked.bind(this, this.props.teamModel)} styles={{ root: { display: 'flex' } }} className={styles.taskedTeamItem}>
-                    <Stack.Item styles={{ root: { width: '20%'}}}>{this.props.teamModel.name}</Stack.Item>
-                    <Stack.Item styles={{ root: { width: '60%'}}}>{teamStatus}</Stack.Item>
-                    <Stack.Item styles={{ root: { width: '20%'}}}>{format(metrics.latestSuspense, AppService.DateFormatView)}</Stack.Item>
+                    <Stack.Item styles={{ root: { width: '20%' } }}>{this.props.teamModel.name}</Stack.Item>
+                    <Stack.Item styles={{ root: { width: '60%' } }}>{teamStatus}</Stack.Item>
+                    <Stack.Item styles={{ root: { width: '20%' } }}>{format(metrics.latestSuspense, AppService.DateFormatView)}</Stack.Item>
                 </Stack>
             </>
         );

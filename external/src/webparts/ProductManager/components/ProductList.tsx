@@ -2,14 +2,10 @@ import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ProductModel } from '../../../models/ProductModel';
 import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, IDetailsRowProps, IFacepilePersona, SelectionMode, TextField } from '@fluentui/react';
-import { DefaultButton, Stack, Dialog, DialogContent, DialogType, DialogFooter } from '@fluentui/react';
 import { format } from 'date-fns';
 import AppService from '../../../services/AppService';
 import { TaskModel } from '../../../models/TaskModel';
 import { TeamModel } from '../../../models/TeamModel';
-import { RecordService } from '../../../services/RecordService';
-import { MapperService } from '../../../services/MapperService';
-import ProductDetailPane from './ProductDetailPane';
 
 const controlStyles = {
   root: {
@@ -103,7 +99,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         eventType: AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === d.eventType ? n.eventTitle : t, ''),
         eventDate: format(new Date(d.eventDate), AppService.DateFormatValue),
         classification: AppService.AppSettings.classificationModels.reduce((t,n) => n.classificationId === d.classificationId ? n.classificationTitle : t, ''),
-        tasks: d.tasks || [],
+        tasks: d.tasks || []
       } as IDocument;
     })
     .sort((a,b) => {

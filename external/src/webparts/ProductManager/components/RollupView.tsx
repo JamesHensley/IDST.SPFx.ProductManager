@@ -2,9 +2,9 @@ import * as React from 'react';
 // import { ChartControl, ChartType } from '@pnp/spfx-controls-react';
 // import { v4 as uuidv4 } from 'uuid';
 
-import Timeline, { defaultItemRenderer } from 'react-calendar-timeline'
+import Timeline, { defaultItemRenderer } from 'react-calendar-timeline';
 // make sure you include the timeline stylesheet or the timeline will not be styled
-import 'react-calendar-timeline/lib/Timeline.css'
+import 'react-calendar-timeline/lib/Timeline.css';
 
 import { ProductModel, ProductStatus } from '../../../models/ProductModel';
 import AppService from '../../../services/AppService';
@@ -13,7 +13,6 @@ import { startOfMonth, endOfMonth, subMonths, addMonths } from 'date-fns';
 import ColorService from '../../../services/ColorService';
 
 import * as styles from './ProductManager.module.scss';
-import { MetricModel } from '../../../models/MetricModel';
 import { Toggle } from '@fluentui/react';
 
 export interface IRollupViewProps {
@@ -75,16 +74,16 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                     guid: d.id,
                     title: d.name,
                     stackItems: true
-                } as ITimelineGroup
+                } as ITimelineGroup;
             });
     }
 
     private get calendarItems(): Array<ITimelineItem> {
         // Oh man, this is complicated... do something about it!!!!!
-        const retObj =  this.props.products
+        const retObj = this.props.products
         .filter(f => f.status === ProductStatus.closed)
         .map(d => {
-            const prodModel = AppService.AppSettings.productTypes.reduce((t1, n1) => n1.typeId == d.productType ? n1 : t1, null);
+            const prodModel = AppService.AppSettings.productTypes.reduce((t1, n1) => n1.typeId === d.productType ? n1 : t1, null);
             return d.tasks.map(d2 => {
                 const metric = MetricService.GetTaskMetrics([d2]);
                 return {
@@ -106,7 +105,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                         'data-product-guid': d.guid
                     }
                 } as ITimelineItem;
-            })
+            });
         })
         .reduce((t, n) => {
             // Now we have an ArrayOfArrays of calendar items grouped by productId
@@ -115,10 +114,10 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
             if (this.state.mergeTeamTasks) {
                 const groups = n
                     .map(d => d.group)
-                    .filter((f, i, e) => e.indexOf(f) == i)
+                    .filter((f, i, e) => e.indexOf(f) === i)
                     .map(d => {
                         const newItem: any = {};
-                        Object.assign(newItem, n[0]);   //This is kind of gross, but each item in "n" only differs by group and times
+                        Object.assign(newItem, n[0]);   // This is kind of gross, but each item in "n" only differs by group and times
                         newItem.start_time = Math.min(...(n.filter(f => f.group === d).map(d1 => d1.start_time)));
                         newItem.end_time = Math.max(...(n.filter(f => f.group === d).map(d1 => d1.end_time)));
                         newItem.group = d;
@@ -173,15 +172,15 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
     }
 
     public componentDidMount(): void {
-        //The timeline component has problems being rendered within SP (maybe just the workbench), so we force
-        // a recalc/redraw of the component once it's been mounted
+        // The timeline component has problems being rendered within SP (maybe just the workbench), so we force
+        //  a recalc/redraw of the component once it's been mounted
         this.tlRef.resize();
     }
 
     public componentDidUpdate(): void {
-        //The timeline component has problems being rendered within SP (maybe just the workbench), so we force
-        // a recalc/redraw of the component whenever the data changes; a RENDER doesn't force the timeline to
-        // recalculate it's bounding box... maybe we should use the "resizeDetector" bundled with timeline
+        // The timeline component has problems being rendered within SP (maybe just the workbench), so we force
+        //  a recalc/redraw of the component whenever the data changes; a RENDER doesn't force the timeline to
+        //  recalculate it's bounding box... maybe we should use the "resizeDetector" bundled with timeline
         this.tlRef.resize();
     }
 
@@ -194,7 +193,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         this.props.productClicked(clickedProductGuid);
     }
 
-    private itemRenderer({item, timelineContext, itemContext, getItemProps, getResizeProps}): defaultItemRenderer {
+    private itemRenderer({ item, timelineContext, itemContext, getItemProps, getResizeProps }): defaultItemRenderer {
         const { left: leftResizeProps, right: rightResizeProps } = getResizeProps();
         const backgroundColor = item.itemProps.style.backgroundColor;
         const borderColor = item.itemProps.style.color;
@@ -205,7 +204,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                     backgroundColor,
                     color: item.itemProps.style.color,
                     borderColor,
-                    borderStyle: "solid",
+                    borderStyle: 'solid',
                     borderWidth: 1,
                     borderRadius: 4,
                     borderLeftWidth: itemContext.selected ? 3 : 1,
@@ -214,7 +213,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                 })}
                 onMouseEnter={() => {
                     Array.from(document.querySelectorAll('.rct-item'))
-                        .filter(f => f.getAttribute('dataprodid') != item.itemProps.productGuid )
+                        .filter(f => f.getAttribute('dataprodid') !== item.itemProps.productGuid)
                         .forEach(i => i.classList.add(styles.muted));
                 }}
                 onMouseLeave={() => {
@@ -227,15 +226,15 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                 <div
                     style={{
                         height: itemContext.dimensions.height,
-                        overflow: "hidden",
+                        overflow: 'hidden',
                         paddingLeft: 3,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap"
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
                     }}
                 >
                     {itemContext.title}
                 </div>
             </div>
         );
-    };
+    }
 }

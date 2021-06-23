@@ -39,8 +39,6 @@ export class ProductModel {
     public comments: Array<CommentsModel>;
 
     /** Used internally to determine if the loaded product is being created or if it exists in SharePoint already */
-    //public newProduct: boolean;
-
     public get filterString(): string {
         const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === this.productType ? n.typeName : t, '');
         const eventTypeTitle = AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === this.eventType ? n.eventTitle : t, '');

@@ -1,14 +1,11 @@
 import * as React from 'react';
-import * as styles from '../ProductManager.module.scss';
 import { TaskModel, TaskState } from '../../../../models/TaskModel';
 import { FormInputDate } from './FormInputDate';
 import { FormInputText } from './FormInputText';
 import { FormInputDropDown } from './FormInputDropDown';
-import AppService from '../../../../services/AppService';
 import { KeyValPair } from './IFormInputProps';
-import { DefaultButton, IStackItemStyles, Stack } from '@fluentui/react';
+import { IStackItemStyles, Stack } from '@fluentui/react';
 import { startOfDay } from 'date-fns';
-
 
 export interface ITeamTaskFormComponentProps {
     committedTask: TaskModel;
@@ -23,20 +20,10 @@ export interface ITeamTaskFormComponentState {
 export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponentProps, ITeamTaskFormComponentState> {
     constructor(props: ITeamTaskFormComponentProps) {
         super(props);
-        this.state = { draftTask: this.props.committedTask }
+        this.state = { draftTask: this.props.committedTask };
     }
 
     public render(): React.ReactElement<ITeamTaskFormComponentProps> {
-        /*
-            <FormInputDropDown
-                labelValue={'Tasked Team'}
-                fieldValue={this.state.draftTask.taskedTeamId}
-                fieldRef={'taskedTeamId'}
-                onUpdated={this.fieldUpdated.bind(this)}
-                editing={this.props.isEditing}
-                options={AppService.AppSettings.teams.map(d => { return { key: d.id, value: d.name } as KeyValPair; })}
-            />
-        */
         const stackItemStyles: IStackItemStyles = { root: { display: 'flex' } };
         return (
             <Stack>
@@ -88,9 +75,9 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
 
         newDraft[fieldRef] = fieldValue;
         console.log('fieldUpdated', fieldRef, fieldValue);
-        if (fieldRef == 'taskState' && fieldValue === 'Pending') { newDraft.taskStart = null; newDraft.taskFinish = null; }
-        if (fieldRef == 'taskState' && fieldValue === 'Working') { newDraft.taskStart = startOfDay(new Date()); newDraft.taskFinish = null; }
-        if (fieldRef == 'taskState' && fieldValue === 'Complete') { newDraft.taskStart = newDraft.taskStart ? newDraft.taskStart : startOfDay(new Date()); newDraft.taskFinish = startOfDay(new Date()); }
+        if (fieldRef === 'taskState' && fieldValue === 'Pending') { newDraft.taskStart = null; newDraft.taskFinish = null; }
+        if (fieldRef === 'taskState' && fieldValue === 'Working') { newDraft.taskStart = startOfDay(new Date()); newDraft.taskFinish = null; }
+        if (fieldRef === 'taskState' && fieldValue === 'Complete') { newDraft.taskStart = newDraft.taskStart ? newDraft.taskStart : startOfDay(new Date()); newDraft.taskFinish = startOfDay(new Date()); }
 
         this.setState({ draftTask: newDraft });
         this.props.updateCallback(newDraft);

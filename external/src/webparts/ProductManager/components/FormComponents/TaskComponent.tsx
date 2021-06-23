@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState } from 'react';
 import { DefaultButton, Dropdown, IconButton, IDropdownOption, Label, Stack, Dialog, DialogContent, DialogType, DialogFooter } from '@fluentui/react';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -31,8 +30,8 @@ export interface ITaskComponentState {
 export class TaskComponent extends React.Component<ITaskComponentProps, ITaskComponentState> {
     constructor(props: ITaskComponentProps) {
         super(props);
-        
-        const panes = this.props.TaskItems.map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i).map(d => { return { teamId: d, isPaneVisible: false } as ITaskPaneState; });
+
+        const panes = this.props.TaskItems.map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) === i).map(d => { return { teamId: d, isPaneVisible: false } as ITaskPaneState; });
         this.state = {
             taskPanes: panes,
             draftTasks: this.props.TaskItems,
@@ -41,14 +40,14 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
     }
 
     private get teamModels(): Array<TeamModel> {
-        const teamIds = (this.state.draftTasks || this.props.TaskItems || []).map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i);
-        return AppService.AppSettings.teams.reduce((t, n) => (teamIds.indexOf(n.id) >= 0) ? t.concat([n]) : t, [])
+        const teamIds = (this.state.draftTasks || this.props.TaskItems || []).map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) === i);
+        return AppService.AppSettings.teams.reduce((t, n) => (teamIds.indexOf(n.id) >= 0) ? t.concat([n]) : t, []);
     }
 
     render(): React.ReactElement<ITaskComponentProps> {
         return (
             <>
-                <Stack styles={{ root: { display: 'flex' }}}>
+                <Stack styles={{ root: { display: 'flex' } }}>
                     <Stack horizontal>
                         <Stack.Item>
                             <Label>Teams and Tasks</Label>
@@ -59,14 +58,14 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
                             </Stack.Item>
                         }
                     </Stack>
-                    <Stack.Item grow styles={{ root: { paddingLeft: '10px' }}}>
+                    <Stack.Item grow styles={{ root: { paddingLeft: '10px' } }}>
                         <Stack horizontal>
-                            <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Team</Label></Stack.Item>
-                            <Stack.Item styles={{ root: { width: '60%'}}}><Label style={{ fontSize: '.9rem' }}>Status</Label></Stack.Item>
-                            <Stack.Item styles={{ root: { width: '20%'}}}><Label style={{ fontSize: '.9rem' }}>Suspense</Label></Stack.Item>
+                            <Stack.Item styles={{ root: { width: '20%' } }}><Label style={{ fontSize: '.9rem' }}>Team</Label></Stack.Item>
+                            <Stack.Item styles={{ root: { width: '60%' } }}><Label style={{ fontSize: '.9rem' }}>Status</Label></Stack.Item>
+                            <Stack.Item styles={{ root: { width: '20%' } }}><Label style={{ fontSize: '.9rem' }}>Suspense</Label></Stack.Item>
                         </Stack>
                     </Stack.Item>
-                    <Stack.Item grow styles={{ root: { paddingLeft: '20px' }}}>
+                    <Stack.Item grow styles={{ root: { paddingLeft: '20px' } }}>
                         {
                             this.teamModels.map((team: TeamModel) => {
                                 const paneState: ITaskPaneState = this.state.taskPanes.reduce((t, n) => n.teamId === team.id ? n : t, null);
@@ -101,7 +100,7 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
         this.setState({ isTeamDialogVisible: true });
     }
 
-    private teamSelected(teamId: string) {
+    private teamSelected(teamId: string): void {
         const newTask = new TaskModel({
             taskedTeamId: teamId,
             taskGuid: uuidv4(),
@@ -118,11 +117,10 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
         let newDrafts: Array<TaskModel> = [];
         if (newTasks) {
             // Save tasks
-            const teams = newTasks.map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) == i);
+            const teams = newTasks.map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) === i);
             newDrafts = this.state.draftTasks.filter(f => teams.indexOf(f.taskedTeamId) < 0).concat(newTasks);
-        }
-        else {
-            //User canceled
+        } else {
+            // User canceled
             newDrafts = this.props.TaskItems;
         }
         const newPanes = this.state.taskPanes.map(d => { return { teamId: d.teamId, isPaneVisible: false } as ITaskPaneState; });
@@ -139,14 +137,14 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
 export interface ITeamDialogProps { teamSelectedCallback: (teamId: string) => void; teams: Array<TeamModel>; }
 
 export const TeamDialog: React.FunctionComponent<ITeamDialogProps> = (props) => {
-    const [team, setTeam] = useState('');
+    const [team, setTeam] = React.useState('');
 
     const okClicked = React.useCallback((): void => { props.teamSelectedCallback(team); }, [team]);
 
     const cancelClicked = React.useCallback((): void => { props.teamSelectedCallback(null); }, []);
 
     const dropdownOptions: Array<IDropdownOption> = props.teams
-        .map(d => { return { key: d.id, text: d.name } })
+        .map(d => { return { key: d.id, text: d.name }; })
         .sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0));
 
     return (
@@ -169,4 +167,4 @@ export const TeamDialog: React.FunctionComponent<ITeamDialogProps> = (props) => 
             </Dialog>
         </>
     );
-}
+};

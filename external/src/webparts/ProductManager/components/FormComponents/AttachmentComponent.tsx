@@ -33,7 +33,7 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
                 </Label>
                 { this.props.canAddAttachments && !this.props.readOnly &&
                     <Stack horizontal>
-                        <Stack.Item grow styles={{ root: { display: 'flex' } }}><input id='attachment' type='file' multiple accept=".*" /></Stack.Item>
+                        <Stack.Item grow styles={{ root: { display: 'flex' } }}><input id='attachment' type='file' multiple accept='.*' /></Stack.Item>
                         <Stack.Item styles={{ root: { display: 'flex' } }}><DefaultButton onClick={this.uploadFiles.bind(this)}>Upload</DefaultButton></Stack.Item>
                     </Stack>
                 }
@@ -41,7 +41,7 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
                     <Stack.Item grow styles={stackItemStyles}><Label style={{ fontSize: '.9rem', paddingLeft: '25px' }}>Title</Label></Stack.Item>
                     <Stack.Item grow styles={stackItemStyles}><Label style={{ fontSize: '.9rem' }}>Author</Label></Stack.Item>
                 </Stack>
-                <Stack.Item styles={{ root: { paddingLeft: '20px'}}}>
+                <Stack.Item styles={{ root: { paddingLeft: '20px' } }}>
                     {(this.props.AttachmentItems || []).map(a => {
                         const docIcon = getFileTypeIconProps({ extension: (a.Url.split('.').reverse()[0]), size: 16, imageFileType: 'png' });
                         return (
@@ -61,7 +61,6 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
 
     private attachmentClicked(attachment: AttachmentModel): void {
         console.log('Attachment Clicked: ', attachment);
-        
     }
 
     private uploadFiles(): void {
@@ -70,7 +69,7 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
             this.props.AddAttachmentCallback(files)
             .then(() => {
                 console.log('Uploaded: ', files);
-                this.setState({ lastUpdate: new Date().getTime() })
+                this.setState({ lastUpdate: new Date().getTime() });
             })
             .catch(e => Promise.reject(e));
         }

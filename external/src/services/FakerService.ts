@@ -39,7 +39,7 @@ export class Faker {
             taskSuspense: suspense.toJSON()
         };
 
-        switch(task.taskState) {
+        switch (task.taskState) {
             case TaskState.complete:
                 task.taskFinish = subDays(suspense, 2);
             case TaskState.working:
@@ -55,7 +55,7 @@ export class Faker {
         const prodType = (AppService.AppSettings.productTypes[Math.round(Math.random() * (AppService.AppSettings.productTypes.length - 1))]);
         const prodSuspense = startOfDay(this.getRandomDate(new Date(), 20));
         const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete']);
-        const tasks = prodType.defaultTeamTasks.map(d => this.CreateFakeTask(d.teamId, d.taskDescription, prodSuspense, d.taskSuspenseDays, taskState))
+        const tasks = prodType.defaultTeamTasks.map(d => this.CreateFakeTask(d.teamId, d.taskDescription, prodSuspense, d.taskSuspenseDays, taskState));
 
         const reqDate = new Date().getTime() + (((Math.round(Math.random() === 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24);
         const endDate = new Date().getTime() + ((Math.round(Math.random() * 14) + 1) * 1000 * 60 * 60 * 24);
@@ -82,7 +82,7 @@ export class Faker {
         };
 
         item.ProductStatus = tasks.map(d => d.taskState)
-            .reduce((t, n) => t == 'closed' && n == TaskState.complete ? t : 'open', 'closed');
+            .reduce((t, n) => t === 'closed' && n === TaskState.complete ? t : 'open', 'closed');
 
         // Create up to 3 fake attachments for this fake item
         for (let x = 0; x < Math.round(Math.random() * 3); x++) { this.CreateFakeAttachment(item.Guid); }

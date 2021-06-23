@@ -1,6 +1,6 @@
 import { ICommandBarItemProps } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { SPAuthor } from '../models/SpListItem';
+// import { SPAuthor } from '../models/SpListItem';
 import ProductManagerWebPart, { IProductManagerWebPartProps } from '../webparts/ProductManager/ProductManagerWebPart';
 import { NotificationService, NotificationType } from './NotificationService';
 import { SPUser } from '@microsoft/sp-page-context';
@@ -46,7 +46,6 @@ export default class AppService {
         MailService.SendEmail('Update', teamEmails, `A product has been ${notificationType.toString()}`)
         .catch(e => Promise.reject(e));
     }
-    
 
     public static RegisterCmdBarListener(p: ICmdBarListenerProps): void {
         this._cmdBarListeners.push(p);

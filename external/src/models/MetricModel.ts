@@ -1,4 +1,4 @@
-import { TaskState } from "./TaskModel";
+import { TaskState } from './TaskModel';
 
 export interface MetricModel {
     teamIds: Array<string>;

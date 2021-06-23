@@ -27,7 +27,6 @@ export class TeamTasksPaneComponent extends React.Component<ITeamTasksPaneCompon
     }
 
     public render(): React.ReactElement<ITeamTasksPaneComponentProps> {
-        // 
         return (
             <Panel
                 className={styles.productDetailPane}
@@ -80,13 +79,13 @@ export class TeamTasksPaneComponent extends React.Component<ITeamTasksPaneCompon
             taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON()
         });
 
-        const newTasks = this.state.draftTasks.concat([newTask])
-        this.setState({ draftTasks: newTasks })
+        const newTasks = this.state.draftTasks.concat([newTask]);
+        this.setState({ draftTasks: newTasks });
     }
 
     private taskUpdated(task: TaskModel): void {
-        const newTasks = this.state.draftTasks.filter(f => f.taskGuid !== task.taskGuid).concat([task])
-        this.setState({ draftTasks: newTasks })
+        const newTasks = this.state.draftTasks.filter(f => f.taskGuid !== task.taskGuid).concat([task]);
+        this.setState({ draftTasks: newTasks });
     }
 
     private updateTasks(): void {

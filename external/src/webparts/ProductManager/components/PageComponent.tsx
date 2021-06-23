@@ -143,12 +143,8 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     private async productsUpdated(): Promise<void> {
         return RecordService.GetProducts()
         .then(allProducts => {
-            // We're either going to use the GUID of the current product (update) OR find the GUID of the new product (created)
-            // const currProdId = this.state.currentProduct.guid || allProducts
-            //    .map(d => d.guid).reduce((t,n) => ((this.state.allProducts.map(d => d.guid)).indexOf(n) < 0) ? n : t, null);
             this.setState({
                 allProducts: allProducts,
-                //currentProduct: allProducts.reduce((t,n) => n.guid === currProdId ? n : t, null),
                 currentProduct: null,
                 panelEditing: false,
                 panelVisible: false

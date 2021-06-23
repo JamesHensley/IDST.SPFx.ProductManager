@@ -46,18 +46,18 @@ export class RecordService {
         return this.spService.AddAttachment(AppService.AppSettings.documentListUrl, product.guid, files)
         .then(spAttachments => spAttachments.map(d => MapperService.MapSpAttachmentToAttachment(d)))
         .then(attachments => Promise.resolve(attachments))
-        .catch(e => Promise.reject(e))
+        .catch(e => Promise.reject(e));
     }
 
     public static async SaveProduct(product: ProductModel, broadcastChange: boolean): Promise<IResult> {
         const resultStr = product.guid ? 'Updated' : 'Created';
         const newItem = MapperService.MapProductToItem(product);
-        
+
         return (product.guid ? this.spService.UpdateListItem(AppService.AppSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem))
         .then((newItem: SpProductItem) => {
             return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
             .then(attachments => {
-                if(broadcastChange) { AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product); }
+                if (broadcastChange) { AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product); }
                 return Promise.resolve({
                     productModel: MapperService.MapItemToProduct(newItem, attachments),
                     resultStr: resultStr
@@ -74,6 +74,7 @@ export class RecordService {
             const items = await this.GetProducts();
             return Promise.resolve(items);
         })
+        .catch(e => Promise.reject(e));
     }
 
     public static CopyAndSortArray<T>(items: T[], columnKey: string, isSortedDescending?: boolean): T[] {
