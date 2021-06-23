@@ -18,6 +18,8 @@ export class ProductTypeModel {
     public defaultTemplateDocs: Array<DocTemplate>;
     public defaultTeamTasks: Array<TaskTemplate>;
     public colorValue: string;
+    public defaultEventType?: string;
+
     /** Indicates if this product is still active or has been discontinuted */
     public active: boolean;
 }

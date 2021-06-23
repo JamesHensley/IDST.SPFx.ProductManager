@@ -9,5 +9,5 @@ export interface EventModel {
     eventDescription: string;
 
     /** Default number of days from start to finish */
-    defaultEventSuspenseOffset: number;
+    defaultEventSuspenseOffset?: number;
 }

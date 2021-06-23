@@ -21,6 +21,7 @@ import { CommentsModel } from '../../../models/CommentsModel';
 import { v4 as uuidv4 } from 'uuid';
 import { CommentComponent } from './FormComponents/CommentComponent';
 import { NotificationService, NotificationType } from '../../../services/NotificationService';
+import { FormInputDate } from './FormComponents/FormInputDate';
 
 export interface IProductDetailPaneProps {
     isVisible: boolean;
@@ -76,8 +77,8 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                             fieldRef={'title'}
                             onUpdated={this.fieldUpdated.bind(this)}
                         />
-                        <Stack horizontal>
-                            <Stack.Item grow styles={stackItemStyles}>
+                        <Stack horizontal styles={{ root: { display: 'flex' } }} tokens={{ childrenGap: 10 }}>
+                            <Stack.Item grow={1}>
                                 <FormInputComboBox
                                     labelValue={'Customer'}
                                     fieldValue={this.state.draftProduct.customer}
@@ -86,7 +87,17 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     editing={this.state.isEditing}
                                 />
                             </Stack.Item>
-                            <Stack.Item grow styles={stackItemStyles}>
+                            <Stack.Item grow={1}>
+                            <FormInputDropDown
+                                    labelValue={'PIR'}
+                                    fieldValue={this.state.draftProduct.categoryId}
+                                    fieldRef={'categoryId'}
+                                    onUpdated={this.fieldUpdated.bind(this)}
+                                    editing={this.state.isEditing}
+                                    options={AppService.AppSettings.categories.map(d => { return { key: d.categoryId, value: d.categoryText } as KeyValPair; })}
+                                />
+                            </Stack.Item>
+                            <Stack.Item grow={1}>
                                 <FormInputDropDown
                                     labelValue={'Classification'}
                                     fieldValue={this.state.draftProduct.classificationId}
@@ -109,8 +120,8 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                             fieldRef={'requestUrl'}
                             onUpdated={this.fieldUpdated.bind(this)}
                         />
-                        <Stack horizontal>
-                        <Stack.Item grow styles={stackItemStyles}>
+                        <Stack horizontal styles={{ root: { display: 'flex' } }} tokens={{ childrenGap: 10 }}>
+                            <Stack.Item grow styles={stackItemStyles}>
                                 <FormInputDropDown
                                     labelValue={'Product Type'}
                                     fieldValue={this.state.draftProduct.productType}
@@ -134,6 +145,8 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     ]}
                                 />
                             </Stack.Item>
+                        </Stack>
+                        <Stack horizontal styles={{ root: { display: 'flex' } }} tokens={{ childrenGap: 10 }}>
                             <Stack.Item grow styles={stackItemStyles}>
                                 <FormInputDropDown
                                     labelValue={'Event Type'}
@@ -142,6 +155,24 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
                                     options={AppService.AppSettings.eventTypes.map(d => { return { key: d.eventTypeId, value: d.eventTitle } as KeyValPair; })}
+                                />
+                            </Stack.Item>
+                            <Stack.Item grow styles={stackItemStyles}>
+                                <FormInputDate
+                                    labelValue={'Event Start'}
+                                    fieldValue={(this.state.draftProduct.eventDateStart || new Date()).toJSON()}
+                                    fieldRef={'eventDateStart'}
+                                    onUpdated={this.dateFieldUpdated.bind(this)}
+                                    editing={this.state.isEditing}
+                                />
+                            </Stack.Item>
+                            <Stack.Item grow styles={stackItemStyles}>
+                                <FormInputDate
+                                    labelValue={'Event End'}
+                                    fieldValue={(this.state.draftProduct.eventDateEnd || new Date()).toJSON()}
+                                    fieldRef={'eventDateEnd'}
+                                    onUpdated={this.dateFieldUpdated.bind(this)}
+                                    editing={this.state.isEditing}
                                 />
                             </Stack.Item>
                         </Stack>
@@ -215,9 +246,9 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     }
 
     private saveRFI(): void {
-        console.log('Saving record: ', this.state.draftProduct);
         // We let the parent component close this pane.
         RecordService.SaveProduct(this.state.draftProduct, true)
+        .then(d => console.log('saveRFI: ', d))
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
     }
 
@@ -235,6 +266,13 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         const newDraft = new ProductModel();
         Object.assign(newDraft, this.state.draftProduct);
         newDraft[fieldRef] = newVal;
+        this.setState({ draftProduct: newDraft });
+    }
+
+    private dateFieldUpdated(newVal: any, fieldRef: string): void {
+        const newDraft = new ProductModel();
+        Object.assign(newDraft, this.state.draftProduct);
+        newDraft[fieldRef] = new Date(newVal);
         this.setState({ draftProduct: newDraft });
     }
 
@@ -287,7 +325,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 {!this.props.readOnly &&
                 <Stack horizontal>
                     <Stack.Item grow>
-                        <Stack horizontal tokens={{ childrenGap: 10 }}>
+                        <Stack horizontal>
                             <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
                             {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
                             {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}

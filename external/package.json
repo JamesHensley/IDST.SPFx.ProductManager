@@ -43,6 +43,7 @@
     "@types/react-dom": "16.9.8",
     "@types/webpack-env": "1.13.1",
     "@webpack-cli/generators": "^2.1.0",
+    "@types/react-calendar-timeline": "^0.26.3",
     "ajv": "^6.9.1",
     "concurrently": "^4.1.0",
     "css-loader": "^2.1.1",

@@ -11,7 +11,6 @@ export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
     render(): React.ReactElement<IFormInputProps> {
         const options = this.props.options.map(d => { return { key: d.key, text: d.value } as IDropdownOption; });
         const selectedKey = this.props.fieldValue;
-        // const ctrlStyles = { root: { width: '100%' } };
         return(
             <div className={`${styles.padTop2} ${styles.fieldValue}`}
                 style={{ width: '100%' }}
@@ -23,6 +22,7 @@ export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
                 )}
                 {this.props.editing && (
                     <Dropdown
+                        styles={{ root: { width: '100%' } }}
                         multiSelect={false}
                         options={options}
                         defaultSelectedKey={selectedKey}

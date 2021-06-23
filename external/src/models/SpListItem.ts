@@ -1,4 +1,3 @@
-
 export class SPAuthor {
     Name: string;
     Email: string;
@@ -38,8 +37,10 @@ export class SpProductItem {
     public AssignedTeamData: string;
     public ProductStatus: string;
     public ProductType: string;
+    public CategoryId: string;
     public EventType: string;
-    public EventDate: string;
+    public EventDateStart: string;
+    public EventDateEnd: string;
     public ClassificationId: string;
     public RequestUrl: string;
     public Customer: string;

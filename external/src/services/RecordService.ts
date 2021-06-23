@@ -10,6 +10,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { NotificationType } from './NotificationService';
 import { TaskModel, TaskState } from '../models/TaskModel';
 import { CommentsModel } from '../models/CommentsModel';
+import addDays from 'date-fns/addDays';
+import { EventModel } from '../models/EventModel';
 
 export interface IResult {
     productModel: ProductModel;
@@ -92,8 +94,8 @@ export class RecordService {
     public static GetNewProductModel(productType?: string): ProductModel {
         const prod = new ProductModel({
             guid: null,
-            requestDate: new Date().toJSON(),
-            returnDateExpected: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON(),
+            requestDate: new Date(),
+            returnDateExpected: addDays(new Date(), 5),
             status: ProductStatus.open,
             title: 'New Product',
             description: '',
@@ -101,27 +103,26 @@ export class RecordService {
             classificationId: AppService.AppSettings.classificationModels[0] ? AppService.AppSettings.classificationModels[0].classificationId : null
         });
 
-        if (productType) {
-            const temp = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productType ? n : t, undefined);
-            if (temp) {
-                prod.tasks = temp.defaultTeamTasks.map(d => {
-                    return {
-                        taskedTeamId: d.teamId,
-                        taskDescription: d.taskDescription,
-                        taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDays)).toJSON(),
-                        taskState: TaskState.pending,
-                        taskGuid: uuidv4()
-                    } as TaskModel;
-                });
-                prod.productType = temp.typeId;
-                prod.title = `NEW ${temp.typeName}`;
-                prod.returnDateExpected = new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * temp.defaultSuspenseDays)).toJSON();
-                prod.description = temp.typeDescription;
-            }
-        }
-        prod.eventType = AppService.AppSettings.eventTypes[0] ? AppService.AppSettings.eventTypes[0].eventTypeId : null;
-        prod.eventDate = new Date(new Date(prod.returnDateExpected).getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON();
+        const prodTypeModel = productType ? AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productType ? n : t, null) : null;
+        if (prodTypeModel) {
+            prod.tasks = prodTypeModel.defaultTeamTasks.map(d => {
+                return {
+                    taskedTeamId: d.teamId,
+                    taskDescription: d.taskDescription,
+                    taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDays)).toJSON(),
+                    taskState: TaskState.pending,
+                    taskGuid: uuidv4()
+                } as TaskModel;
+            });
+            prod.productType = prodTypeModel.typeId;
+            prod.title = `NEW ${prodTypeModel.typeName}`;
+            prod.returnDateExpected = addDays(new Date(), prodTypeModel.defaultSuspenseDays);
+            prod.description = prodTypeModel.typeDescription;
 
+            const eventModel: EventModel = prodTypeModel.defaultEventType ? AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === prodTypeModel.defaultEventType ? n : t, null) : null;
+            prod.eventDateStart = eventModel ? addDays(prod.returnDateExpected, 3) : null;
+            prod.eventDateEnd = eventModel ? addDays(prod.eventDateStart, (eventModel.defaultEventSuspenseOffset || 1)) : null;
+        }
         return prod;
     }
 }

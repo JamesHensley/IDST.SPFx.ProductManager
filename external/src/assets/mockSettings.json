@@ -4,6 +4,7 @@
     "emailSenderName": "JISE Product Manager Tool",
     "productListUrl": "/dist/mockProductList.json",
     "documentListUrl": "/dist/mockDocumentList.json",
+    "publishingLibraryUrl": "",
     "teams": [
         {
             "id": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
@@ -59,11 +60,12 @@
             "typeId": "ca0a3b95-0770-4dfb-b358-f1beb2e5290e",
             "typeName": "ProductType 1",
             "colorValue": "rgb(100, 100, 250)",
-            "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 7 day suspense",
+            "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 7 day suspense and a default event type of eventType 1",
             "defaultSuspenseDays": 7,
             "defaultTemplateDocs": [
                 { "docUrl": "/", "docIcon": "/", "docName": "docType1.txt" }
             ],
+            "defaultEventType": "1",
             "defaultTeamTasks": [
                 {
                     "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
@@ -91,7 +93,7 @@
             "typeId": "a3bca095-b358-fb4d-0770-eb2e5f1be029",
             "typeName": "ProductType 2",
             "colorValue": "rgb(210, 210, 0)",
-            "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 14 day suspense",
+            "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 14 day suspense and no default event type",
             "defaultSuspenseDays": 14,
             "defaultTemplateDocs": [
                 { "docUrl": "/", "docIcon": "/", "docName": "docType1.txt" },
@@ -124,7 +126,7 @@
             "typeId": "3b95ca0a-0770-4dfb-b358-e5290ef1beb2",
             "typeName": "ProductType 3",
             "colorValue": "rgb(133, 0, 0)",
-            "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 21 day suspense",
+            "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 21 day suspense and no default event type",
             "defaultSuspenseDays": 21,
             "defaultTemplateDocs": [],
             "defaultTeamTasks": [
@@ -135,6 +137,11 @@
                 }
             ]
         }
+    ],
+    "categories": [
+        { "categoryId": "category1Guid", "categoryText": "Cat 1"},
+        { "categoryId": "category2Guid", "categoryText": "Cat 2"},
+        { "categoryId": "category3Guid", "categoryText": "Cat 3"}
     ],
     "eventTypes": [
         {
@@ -152,8 +159,7 @@
         {
             "eventTypeId": "3",
             "eventTitle": "Shooting guns with dad",
-            "eventDescription": "This is a really detail description of event-type 3... enjoy it",
-            "defaultEventSuspenseOffset": 7
+            "eventDescription": "This is a really detail description of event-type 3... enjoy it"
         }
     ],
     "classificationModels": [

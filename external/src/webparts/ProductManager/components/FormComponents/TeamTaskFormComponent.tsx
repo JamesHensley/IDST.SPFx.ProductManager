@@ -6,6 +6,7 @@ import { FormInputDropDown } from './FormInputDropDown';
 import { KeyValPair } from './IFormInputProps';
 import { IStackItemStyles, Stack } from '@fluentui/react';
 import { startOfDay } from 'date-fns';
+import { differenceInHours, subHours } from 'date-fns/esm';
 
 export interface ITeamTaskFormComponentProps {
     committedTask: TaskModel;
@@ -77,7 +78,11 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
         console.log('fieldUpdated', fieldRef, fieldValue);
         if (fieldRef === 'taskState' && fieldValue === 'Pending') { newDraft.taskStart = null; newDraft.taskFinish = null; }
         if (fieldRef === 'taskState' && fieldValue === 'Working') { newDraft.taskStart = startOfDay(new Date()); newDraft.taskFinish = null; }
-        if (fieldRef === 'taskState' && fieldValue === 'Complete') { newDraft.taskStart = newDraft.taskStart ? newDraft.taskStart : startOfDay(new Date()); newDraft.taskFinish = startOfDay(new Date()); }
+        if (fieldRef === 'taskState' && fieldValue === 'Complete') {
+            newDraft.taskFinish = startOfDay(new Date());
+            newDraft.taskStart = newDraft.taskStart ? newDraft.taskStart : subHours(newDraft.taskFinish, 6);
+            if (differenceInHours(newDraft.taskFinish, newDraft.taskStart) < 6) { newDraft.taskStart = subHours(newDraft.taskFinish, 6); }
+        }
 
         this.setState({ draftTask: newDraft });
         this.props.updateCallback(newDraft);

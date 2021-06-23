@@ -31,22 +31,15 @@ export class Faker {
     private static CreateFakeTask(teamId: string, desc: string, startDate: Date, baseSuspense: number, state: string): TaskModel {
         const suspense = addDays(startDate, baseSuspense);
 
-        const task: TaskModel = {
+        return new TaskModel({
             taskedTeamId: teamId,
             taskDescription: desc,
             taskState: TaskState[state],
             taskGuid: uuidv4(),
-            taskSuspense: suspense.toJSON()
-        };
-
-        switch (task.taskState) {
-            case TaskState.complete:
-                task.taskFinish = subDays(suspense, 2);
-            case TaskState.working:
-                task.taskStart = subDays(suspense, 4);
-                break;
-        }
-        return task;
+            taskSuspense: suspense.toJSON(),
+            taskStart: (([TaskState.working, TaskState.complete]).indexOf(TaskState[state]) >= 0) ? subDays(suspense, 4) : null,
+            taskFinish: (TaskState[state] === TaskState.complete) ? subDays(suspense, 2) : null
+        });
     }
 
     public static CreateFakeItem(title?: string): SpProductItem {
@@ -57,29 +50,38 @@ export class Faker {
         const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete']);
         const tasks = prodType.defaultTeamTasks.map(d => this.CreateFakeTask(d.teamId, d.taskDescription, prodSuspense, d.taskSuspenseDays, taskState));
 
-        const reqDate = new Date().getTime() + (((Math.round(Math.random() === 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24);
-        const endDate = new Date().getTime() + ((Math.round(Math.random() * 14) + 1) * 1000 * 60 * 60 * 24);
+        const reqDate = new Date(new Date().getTime() + (((Math.round(Math.random() === 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24));
+        const endDate = addDays(new Date(reqDate), (Math.round(Math.random() * 14) + 1));
 
         const item: SpProductItem = {
             Id: Math.floor(Math.random() * 300),
             Title: (title ? title : this.mockTitles[Math.round(Math.random() * (this.mockTitles.length - 1))]),
             Guid: newItemGuid,
             Description: this.mockSentences[Math.round(Math.random() * (this.mockSentences.length - 1))],
-            RequestDate: new Date(reqDate).toJSON(),
-            ReturnDateExpected: new Date(endDate).toJSON(),
+            RequestDate: reqDate.toJSON(),
+            ReturnDateExpected: endDate.toJSON(),
             ReturnDateActual: null,
             Requestor: 'Some Requestor',
             AssignedTeamData: JSON.stringify(tasks),
             ProductStatus: null,
             ProductType: prodType.typeId,
-            EventType: (AppService.AppSettings.eventTypes[Math.round(Math.random() * (AppService.AppSettings.eventTypes.length - 1))]).eventTypeId,
-            EventDate: new Date(new Date(endDate).getTime() + (1000 * 60 * 60 * 24)).toJSON(),
+            EventType: null,
+            EventDateStart: null,
+            EventDateEnd: null,
+            CategoryId: (AppService.AppSettings.categories[Math.round(Math.random() * (AppService.AppSettings.categories.length - 1))]).categoryId,
             ClassificationId: (AppService.AppSettings.classificationModels[Math.round(Math.random() * (AppService.AppSettings.classificationModels.length - 1))]).classificationId,
             RequestUrl: 'https://www.github.com',
             Customer: this._fakeCustomers[Math.round(Math.random() * (this._fakeCustomers.length - 1))],
             Comments: '',
             Active: true
         };
+
+        const eventModel = prodType.defaultEventType ? AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === prodType.defaultEventType ? n : t, null) : null;
+        if (eventModel) {
+            item.EventType = eventModel.eventTypeId;
+            item.EventDateStart = addDays(new Date(item.ReturnDateExpected), 1).toJSON();
+            item.EventDateEnd = eventModel.defaultEventSuspenseOffset ? addDays(new Date(item.EventDateStart), eventModel.defaultEventSuspenseOffset).toJSON() : null;
+        }
 
         item.ProductStatus = tasks.map(d => d.taskState)
             .reduce((t, n) => t === 'closed' && n === TaskState.complete ? t : 'open', 'closed');

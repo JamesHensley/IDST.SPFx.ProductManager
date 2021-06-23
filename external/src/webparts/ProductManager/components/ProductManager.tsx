@@ -4,12 +4,11 @@ import ToasterComponent from './ToasterComponent';
 
 export class ProductManager extends React.Component <{}, {}> {
     public render(): React.ReactElement<{}> {
-        console.log('ProductManager.render');
         return (
-        <div>
-            <PageComponent />
-            <ToasterComponent />
-        </div>
+            <div>
+                <PageComponent />
+                <ToasterComponent />
+            </div>
         );
     }
 }

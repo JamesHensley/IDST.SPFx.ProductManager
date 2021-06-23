@@ -6,7 +6,7 @@ import { BaseClientSideWebPart, WebPartContext, IPropertyPaneConfiguration, Prop
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 
-import PageComponent, { IPageComponentProps } from './components/PageComponent';
+import { IPageComponentProps } from './components/PageComponent';
 import AppService from '../../services/AppService';
 import { TeamModel } from '../../models/TeamModel';
 import { TeamMemberModel } from '../../models/PeopleModel';
@@ -16,15 +16,18 @@ import { ProductManager } from './components/ProductManager';
 import { ProductTypeModel } from '../../models/ProductTypeModel';
 import { EventModel } from '../../models/EventModel';
 import { ClassificationModel } from '../../models/ClassificationModel';
+import { CategoryModel } from '../../models/CategoryModel';
 
 export interface IProductManagerWebPartProps {
   description: string;
   isDebugging: boolean;
   productListUrl: string;
   documentListUrl: string;
+  publishingLibraryUrl: string;
   teams: Array<TeamModel>;
   emailSenderName: string;
   productTypes: Array<ProductTypeModel>;
+  categories: Array<CategoryModel>;
   eventTypes: Array<EventModel>;
   classificationModels: Array<ClassificationModel>;
 }

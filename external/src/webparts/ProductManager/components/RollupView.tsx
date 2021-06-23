@@ -2,14 +2,14 @@ import * as React from 'react';
 // import { ChartControl, ChartType } from '@pnp/spfx-controls-react';
 // import { v4 as uuidv4 } from 'uuid';
 
-import Timeline, { defaultItemRenderer } from 'react-calendar-timeline';
+import Timeline, { DateHeader, SidebarHeader, TimelineHeaders } from 'react-calendar-timeline';
 // make sure you include the timeline stylesheet or the timeline will not be styled
 import 'react-calendar-timeline/lib/Timeline.css';
 
 import { ProductModel, ProductStatus } from '../../../models/ProductModel';
 import AppService from '../../../services/AppService';
 import { MetricService } from '../../../services/MetricService';
-import { startOfMonth, endOfMonth, subMonths, addMonths } from 'date-fns';
+import { startOfMonth, endOfMonth, subMonths, addMonths, subDays, addDays, startOfDay, endOfDay, areIntervalsOverlapping, getOverlappingDaysInIntervals } from 'date-fns';
 import ColorService from '../../../services/ColorService';
 
 import * as styles from './ProductManager.module.scss';
@@ -50,12 +50,18 @@ export interface IItemProps {
     teamGuid: string;
     taskId: string;
     style: any;
+    eventData?: {
+        eventTitle: string;
+        eventStart: Date;
+        eventEnd: Date;
+    }
 }
 
 export default class RollupView extends React.Component <IRollupViewProps, IRollupViewState> {
-    private tlRef: Timeline;
+    private tlRef: any;
     private calendarStart: Date;
     private calendarEnd: Date;
+    private eventDates: Array<{ start: Date, end: Date }> = [];
 
     constructor(props: IRollupViewProps) {
         super(props);
@@ -102,7 +108,12 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                             selectedBgColor:  prodModel ? prodModel.colorValue : '',
                             color: prodModel ? ColorService.GetTextColor(prodModel.colorValue) : ''
                         },
-                        'data-product-guid': d.guid
+                        'data-product-guid': d.guid,
+                        eventData: !d.eventType ? null : {
+                            eventTitle: AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === d.eventType ? n.eventTitle : t, ''),
+                            eventStart: d.eventDateStart,
+                            eventEnd: d.eventDateEnd
+                        }
                     }
                 } as ITimelineItem;
             });
@@ -136,6 +147,9 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
     public render(): React.ReactElement<IRollupViewProps> {
         const items = this.calendarItems;
         const groups = this.calendarGroups;
+        this.eventDates = this.props.products
+            .filter(f => f.eventType)
+            .map(d => { return { start: d.eventDateStart, end: d.eventDateEnd }; });
 
         return (
             <>
@@ -160,15 +174,11 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                     timeSteps={{ second: 0, minute: 0, hour: 0, day: 1, month: 1, year: 1 }}
                     itemRenderer={this.itemRenderer.bind(this)}
                     onBoundsChange={this.calendarBoundsChanged.bind(this)}
-                />
+                >
+                    {this.timelineHeaders}
+                </Timeline>
             </>
         );
-    }
-
-    private calendarBoundsChanged(): void {
-        console.log('calendarBoundsChanged', arguments);
-        this.calendarStart = addMonths(new Date(arguments[0]), 1);
-        this.calendarEnd = subMonths(new Date(arguments[1]), 1);
     }
 
     public componentDidMount(): void {
@@ -184,6 +194,12 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         this.tlRef.resize();
     }
 
+    private calendarBoundsChanged(): void {
+        console.log('calendarBoundsChanged', arguments);
+        this.calendarStart = addDays(new Date(arguments[0]), 30);
+        this.calendarEnd = subDays(new Date(arguments[1]), 30);
+    }
+
     private itemClicked(itemId: number, e: Event, time: number): void {
         e.cancelBubble = true;
         e.preventDefault();
@@ -193,7 +209,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         this.props.productClicked(clickedProductGuid);
     }
 
-    private itemRenderer({ item, timelineContext, itemContext, getItemProps, getResizeProps }): defaultItemRenderer {
+    private itemRenderer({ item, timelineContext, itemContext, getItemProps, getResizeProps }): JSX.Element {
         const { left: leftResizeProps, right: rightResizeProps } = getResizeProps();
         const backgroundColor = item.itemProps.style.backgroundColor;
         const borderColor = item.itemProps.style.color;
@@ -236,5 +252,39 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                 </div>
             </div>
         );
+    }
+
+    private get timelineHeaders(): JSX.Element {
+        const eventDays = { style: { background: 'yellow', height: '100%', textAlign: 'center' } };
+        const normalDays = { style: { background: 'white', height: '100%', textAlign: 'center' } };
+
+        return (
+            <TimelineHeaders className='sticky'>
+                <SidebarHeader>
+                    {({ getRootProps }) => {
+                        return <div {...getRootProps()}>Left</div>;
+                    }}
+                </SidebarHeader>
+                <DateHeader unit='primaryHeader' />
+                <DateHeader
+                    labelFormat='DD'
+                    style={{ height: 50 }}
+                    intervalRenderer={({ getIntervalProps, intervalContext }) => {
+                        const xx = this.eventDates.filter(f => getOverlappingDaysInIntervals({
+                            start: startOfDay((intervalContext.interval.startTime as any).toDate()),
+                            end: endOfDay((intervalContext.interval.startTime as any).toDate())
+                        }, f) > 0);
+                        console.log(xx, this.eventDates);
+                        const dayStyle = (xx.length > 0 ? eventDays : normalDays);
+
+                        return (
+                            <div {...getIntervalProps(dayStyle)}>
+                                {intervalContext.intervalText}
+                            </div>
+                        );
+                    }}
+                />
+            </TimelineHeaders>
+      );
     }
 }

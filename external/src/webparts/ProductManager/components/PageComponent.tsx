@@ -155,7 +155,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
-        console.log('PageComponent.cmdBarItemClicked: ', item);
+        // console.log('PageComponent.cmdBarItemClicked: ', item);
         switch (item['data-automation-id']) {
             case 'viewRollup':
                 this.setState({ view: 'RollUp' });

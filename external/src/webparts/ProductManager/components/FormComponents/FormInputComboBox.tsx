@@ -21,7 +21,6 @@ export class FormInputComboBox extends React.Component<IFormInputProps, IFormInp
     }
 
     render(): React.ReactElement<IFormInputProps> {
-        const ctrlStyles = { root: { width: '100%' } };
         return (
             <div className={`${styles.padTop2} ${styles.fieldValue}`} style={{ width: '100%' }}>
                 <Label>{this.props.labelValue}</Label>
@@ -35,7 +34,7 @@ export class FormInputComboBox extends React.Component<IFormInputProps, IFormInp
                         onChange={this.fieldUpdated.bind(this)}
                         options={this.comboOptions}
                         allowFreeform={true}
-                        styles={ctrlStyles}
+                        styles={{ root: { width: '100%' } }}
                     />
                 }
             </div>
