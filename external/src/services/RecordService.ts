@@ -106,7 +106,7 @@ export class RecordService {
                     return {
                         taskedTeamId: d.teamId,
                         taskDescription: d.taskDescription,
-                        taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDays)).toJSON(),
+                        taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDaysOffset)).toJSON(),
                         taskState: TaskState.pending,
                         taskGuid: uuidv4()
                     } as TaskModel;

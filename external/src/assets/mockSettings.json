@@ -74,22 +74,22 @@
                 {
                     "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
                     "taskDescription": "Review 1",
-                    "taskSuspenseDays": 2
+                    "taskSuspenseDaysOffset": 2
                 },
                 {
                     "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
                     "taskDescription": "Review 2",
-                    "taskSuspenseDays": 4
+                    "taskSuspenseDaysOffset": 4
                 },
                 {
                     "teamId": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
                     "taskDescription": "Final Review",
-                    "taskSuspenseDays": 6
+                    "taskSuspenseDaysOffset": 6
                 },
                 {
                     "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
                     "taskDescription": "Magic",
-                    "taskSuspenseDays": 8
+                    "taskSuspenseDaysOffset": 8
                 }
             ]
         },
@@ -108,22 +108,22 @@
                 {
                     "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
                     "taskDescription": "Review 1",
-                    "taskSuspenseDays": 2
+                    "taskSuspenseDaysOffset": 2
                 },
                 {
                     "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
                     "taskDescription": "Review 2",
-                    "taskSuspenseDays": 4
+                    "taskSuspenseDaysOffset": 4
                 },
                 {
                     "teamId": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
                     "taskDescription": "Final Review",
-                    "taskSuspenseDays": 6
+                    "taskSuspenseDaysOffset": 6
                 },
                 {
                     "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
                     "taskDescription": "Magic",
-                    "taskSuspenseDays": 8
+                    "taskSuspenseDaysOffset": 8
                 }
             ]
         },
@@ -138,7 +138,7 @@
                 {
                     "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
                     "taskDescription": "Magic",
-                    "taskSuspenseDays": 8
+                    "taskSuspenseDaysOffset": 8
                 }
             ]
         }

@@ -1,10 +1,8 @@
 import { SpListAttachment, SPAuthor, SpProductItem } from '../models/SpListItem';
 import { v4 as uuidv4 } from 'uuid';
 import AppService from './AppService';
-import { TeamModel } from '../models/TeamModel';
 import { TaskModel, TaskState } from '../models/TaskModel';
-import { CommentsModel } from '../models/CommentsModel';
-import { startOfMonth, subDays, addDays, startOfDay } from 'date-fns';
+import { subDays, addDays, startOfDay } from 'date-fns';
 
 export class Faker {
     private static _fakeCustomers = ['Doctor Creep', 'George Washington', 'Daniel Boone'];
@@ -28,20 +26,24 @@ export class Faker {
         return attachment;
     }
 
-    private static CreateFakeTask(teamId: string, desc: string, startDate: Date, baseSuspense: number, state: string): TaskModel {
-        const suspense = addDays(startDate, baseSuspense);
+    private static CreateFakeTask(teamId: string, desc: string, startDate: Date, expectedDaysToWork: number, state: string): TaskModel {
+        // startDate is the (expected) date the first task begins
+        const expectedFinish = addDays(startDate, expectedDaysToWork);
 
         // Gives us about a 30% chance this task will break it's suspense
         const willBustSuspense = (Math.random() * 10) >= 7;
 
+        const expectedStart = (TaskState[state] === TaskState.working || TaskState[state] === TaskState.complete) ? subDays(expectedFinish, expectedDaysToWork) : null;
+        const actualFinish = (TaskState[state] === TaskState.complete) ? (willBustSuspense ? addDays(expectedFinish, 1) : subDays(expectedFinish, 1)) : null;
+        
         return new TaskModel({
             taskedTeamId: teamId,
             taskDescription: desc,
             taskState: TaskState[state],
             taskGuid: uuidv4(),
-            taskSuspense: suspense.toJSON(),
-            taskStart: (([TaskState.working, TaskState.complete]).indexOf(TaskState[state]) >= 0) ? subDays(suspense, 4) : null,
-            taskFinish: (TaskState[state] === TaskState.complete) ? (willBustSuspense ? addDays(suspense, 2) : subDays(suspense, 2)) : null
+            taskSuspense: expectedFinish.toJSON(),
+            taskStart: expectedStart,
+            taskFinish: actualFinish
         });
     }
 
@@ -49,10 +51,6 @@ export class Faker {
         const newItemGuid = uuidv4();
 
         const prodType = (AppService.AppSettings.productTypes[Math.round(Math.random() * (AppService.AppSettings.productTypes.length - 1))]);
-        const prodSuspense = startOfDay(this.getRandomDate(new Date(), 20));
-        const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete']);
-        const tasks = prodType.defaultTeamTasks.map(d => this.CreateFakeTask(d.teamId, d.taskDescription, prodSuspense, d.taskSuspenseDays, taskState));
-
         const reqDate = new Date(new Date().getTime() + (((Math.round(Math.random() === 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24));
         const endDate = addDays(new Date(reqDate), (Math.round(Math.random() * 7) + 1));
 
@@ -65,7 +63,7 @@ export class Faker {
             ReturnDateExpected: endDate.toJSON(),
             ReturnDateActual: null,
             Requestor: 'Some Requestor',
-            AssignedTeamData: JSON.stringify(tasks),
+            AssignedTeamData: null,
             ProductStatus: null,
             ProductType: prodType.typeId,
             EventType: null,
@@ -78,6 +76,13 @@ export class Faker {
             Comments: '',
             Active: true
         };
+
+        const beginWork = startOfDay(reqDate);
+        const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete']);
+        const tasks = prodType.defaultTeamTasks.map(d => {
+            return this.CreateFakeTask(d.teamId, d.taskDescription, beginWork, d.taskSuspenseDaysOffset, taskState)
+        });
+        item.AssignedTeamData = JSON.stringify(tasks);
 
         item.ProductStatus = tasks.map(d => d.taskState)
             .reduce((t, n) => t === 'closed' && n === TaskState.complete ? t : 'open', 'closed');

@@ -7,7 +7,9 @@ export class DocTemplate {
 export class TaskTemplate {
     public teamId: string;
     public taskDescription: string;
-    public taskSuspenseDays: number;
+    
+    /** Typical days offset for this tasks suspense from the start of the product */
+    public taskSuspenseDaysOffset: number;
 }
 
 export class ProductTypeModel {

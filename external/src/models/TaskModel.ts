@@ -18,8 +18,14 @@ export class TaskModel {
     taskedTeamId: string;
     taskDescription: string;
     taskState: TaskState;
+
+    /** Date-String of the tasks suspense */
     taskSuspense: string;
+
+    /** Date of when/if the task went into WORKING status */
     taskStart?: Date;
+
+    /** Date of when/if the task went into COMPLETED status */
     taskFinish?: Date;
 
     public get bustedSuspense(): boolean {
