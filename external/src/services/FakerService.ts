@@ -9,7 +9,7 @@ import { startOfMonth, subDays, addDays, startOfDay } from 'date-fns';
 export class Faker {
     private static _fakeCustomers = ['Doctor Creep', 'George Washington', 'Daniel Boone'];
 
-    public static CreateFakeAttachment(linkedProductGuid: string, fileName?: string): SpListAttachment {
+    public static CreateFakeAttachment(linkedProductGuid: string, fileName: string): SpListAttachment {
         const attachmentName = fileName ? fileName.split('.').reverse()[1] : [ 'File1', 'File2', 'File3', 'File4', 'File5' ][Math.round(Math.random() * 4)];
         const extn = fileName ? fileName.split('.').reverse()[0] : ['docx', 'doc','ppt', 'pptx', 'xls', 'xlsx', 'txt', 'pdf', 'csv', 'json'][Math.round(Math.random() * 7)];
 
@@ -31,6 +31,9 @@ export class Faker {
     private static CreateFakeTask(teamId: string, desc: string, startDate: Date, baseSuspense: number, state: string): TaskModel {
         const suspense = addDays(startDate, baseSuspense);
 
+        // Gives us about a 30% chance this task will break it's suspense
+        const willBustSuspense = (Math.random() * 10) >= 7;
+
         return new TaskModel({
             taskedTeamId: teamId,
             taskDescription: desc,
@@ -38,7 +41,7 @@ export class Faker {
             taskGuid: uuidv4(),
             taskSuspense: suspense.toJSON(),
             taskStart: (([TaskState.working, TaskState.complete]).indexOf(TaskState[state]) >= 0) ? subDays(suspense, 4) : null,
-            taskFinish: (TaskState[state] === TaskState.complete) ? subDays(suspense, 2) : null
+            taskFinish: (TaskState[state] === TaskState.complete) ? (willBustSuspense ? addDays(suspense, 2) : subDays(suspense, 2)) : null
         });
     }
 
@@ -51,7 +54,7 @@ export class Faker {
         const tasks = prodType.defaultTeamTasks.map(d => this.CreateFakeTask(d.teamId, d.taskDescription, prodSuspense, d.taskSuspenseDays, taskState));
 
         const reqDate = new Date(new Date().getTime() + (((Math.round(Math.random() === 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24));
-        const endDate = addDays(new Date(reqDate), (Math.round(Math.random() * 14) + 1));
+        const endDate = addDays(new Date(reqDate), (Math.round(Math.random() * 7) + 1));
 
         const item: SpProductItem = {
             Id: Math.floor(Math.random() * 300),
@@ -76,18 +79,19 @@ export class Faker {
             Active: true
         };
 
-        const eventModel = prodType.defaultEventType ? AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === prodType.defaultEventType ? n : t, null) : null;
-        if (eventModel) {
-            item.EventType = eventModel.eventTypeId;
-            item.EventDateStart = addDays(new Date(item.ReturnDateExpected), 1).toJSON();
-            item.EventDateEnd = eventModel.defaultEventSuspenseOffset ? addDays(new Date(item.EventDateStart), eventModel.defaultEventSuspenseOffset).toJSON() : null;
-        }
-
         item.ProductStatus = tasks.map(d => d.taskState)
             .reduce((t, n) => t === 'closed' && n === TaskState.complete ? t : 'open', 'closed');
 
-        // Create up to 3 fake attachments for this fake item
-        for (let x = 0; x < Math.round(Math.random() * 3); x++) { this.CreateFakeAttachment(item.Guid); }
+        const eventModel = prodType.defaultEventType ? AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === prodType.defaultEventType ? n : t, null) : null;
+        if (eventModel) {
+            const lastCloseDate = item.ProductStatus === 'closed' ? (tasks.map(d => d.taskFinish).sort()[0]) : endDate;
+            item.EventType = eventModel.eventTypeId;
+            item.EventDateStart = addDays(lastCloseDate, 1).toJSON();
+            item.EventDateEnd = eventModel.defaultEventLength ? addDays(new Date(item.EventDateStart), eventModel.defaultEventLength).toJSON() : null;
+        }
+    
+        // Create fake attachments for this fake item
+        prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.Guid, f.docName));
 
         return item;
     }

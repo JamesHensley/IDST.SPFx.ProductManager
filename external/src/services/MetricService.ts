@@ -15,7 +15,7 @@ export class MetricService {
                 .filter(f => f.taskState !== TaskState.complete)
                 .filter(f => new Date().getTime() > new Date(f.taskSuspense).getTime())
                 .length > 0,
-            data: { team: taskModels.map(d => AppService.AppSettings.teams.reduce((t, n) => n.id === d.taskedTeamId ? n.name : t, null)).filter((f, i, e) => e.indexOf(f) === i) }
+            data: { team: taskModels.map(d => AppService.AppSettings.teams.reduce((t, n) => n.teamId === d.taskedTeamId ? n.name : t, null)).filter((f, i, e) => e.indexOf(f) === i) }
             } as MetricModel;
 
             retObj.earliestStart = ((inVal) => inVal ? new Date(inVal) : null)(taskModels

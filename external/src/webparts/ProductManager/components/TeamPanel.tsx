@@ -29,7 +29,7 @@ export default class TeamPanel extends React.Component <ITeamPanelProps, ITeamPa
                 {
                     this.state.teams.map(t => {
                         return(
-                            <Accordion title={t.name} defaultCollapsed={true} key={t.id}>
+                            <Accordion title={t.name} defaultCollapsed={true} key={t.teamId}>
                                 {t.members.map(m => {
                                     return <div key={m.memberNum}>{m.name} - {m.role}</div>;
                                 })}

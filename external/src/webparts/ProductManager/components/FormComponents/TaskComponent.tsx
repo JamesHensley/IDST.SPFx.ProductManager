@@ -41,7 +41,7 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
 
     private get teamModels(): Array<TeamModel> {
         const teamIds = (this.state.draftTasks || this.props.TaskItems || []).map(d => d.taskedTeamId).filter((f, i, e) => e.indexOf(f) === i);
-        return AppService.AppSettings.teams.reduce((t, n) => (teamIds.indexOf(n.id) >= 0) ? t.concat([n]) : t, []);
+        return AppService.AppSettings.teams.reduce((t, n) => (teamIds.indexOf(n.teamId) >= 0) ? t.concat([n]) : t, []);
     }
 
     render(): React.ReactElement<ITaskComponentProps> {
@@ -68,12 +68,12 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
                     <Stack.Item grow styles={{ root: { paddingLeft: '20px' } }}>
                         {
                             this.teamModels.map((team: TeamModel) => {
-                                const paneState: ITaskPaneState = this.state.taskPanes.reduce((t, n) => n.teamId === team.id ? n : t, null);
+                                const paneState: ITaskPaneState = this.state.taskPanes.reduce((t, n) => n.teamId === team.teamId ? n : t, null);
                                 return (
                                     <TeamTaskRowComponent
-                                        key={team.id}
+                                        key={team.teamId}
                                         teamModel={team}
-                                        teamTasks={(this.props.TaskItems || []).filter(f => f.taskedTeamId === team.id)}
+                                        teamTasks={(this.props.TaskItems || []).filter(f => f.taskedTeamId === team.teamId)}
                                         isPaneVisible={paneState.isPaneVisible}
                                         editing={this.props.isEditing}
                                         tasksUpdated={this.teamTasksUpdated.bind(this)}
@@ -144,7 +144,7 @@ export const TeamDialog: React.FunctionComponent<ITeamDialogProps> = (props) => 
     const cancelClicked = React.useCallback((): void => { props.teamSelectedCallback(null); }, []);
 
     const dropdownOptions: Array<IDropdownOption> = props.teams
-        .map(d => { return { key: d.id, text: d.name }; })
+        .map(d => { return { key: d.teamId, text: d.name }; })
         .sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0));
 
     return (

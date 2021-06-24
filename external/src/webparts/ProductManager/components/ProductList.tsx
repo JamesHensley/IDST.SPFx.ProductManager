@@ -65,7 +65,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         switch (col.fieldName) {
             case 'tasks':
             const tasks: Array<string> = (i.tasks as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
-            const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.id) >= 0 ? t.concat(n) : t, [])
+            const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.teamId) >= 0 ? t.concat(n) : t, [])
               .map(d => { return { imageInitials: d.shortName, personaName: d.name } as IFacepilePersona; });
             return <Facepile personas={personas} />;
           default:

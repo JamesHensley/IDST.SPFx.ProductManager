@@ -13,8 +13,8 @@ import AppService from '../../../services/AppService';
 import { TaskComponent } from './FormComponents/TaskComponent';
 import { AttachmentComponent } from './FormComponents/AttachmentComponent';
 import { TaskModel } from '../../../models/TaskModel';
-import { FormInputDropDown } from './FormComponents/FormInputDropDown';
-import { KeyValPair } from './FormComponents/IFormInputProps';
+import { FormInputDropDown, KeyValPair } from './FormComponents/FormInputDropDown';
+// import { KeyValPair } from './FormComponents/IFormInputProps';
 import { FormInputComboBox } from './FormComponents/FormInputComboBox';
 import { FormInputDialog } from './FormComponents/FormInputDialog';
 import { CommentsModel } from '../../../models/CommentsModel';
@@ -95,6 +95,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
                                     options={AppService.AppSettings.categories.map(d => { return { key: d.categoryId, value: d.categoryText } as KeyValPair; })}
+                                    allowNull={true}
                                 />
                             </Stack.Item>
                             <Stack.Item grow={1}>
@@ -105,6 +106,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
                                     options={AppService.AppSettings.classificationModels.map(d => { return { key: d.classificationId, value: d.classificationTitle } as KeyValPair; })}
+                                    allowNull={true}
                                 />
                             </Stack.Item>
                         </Stack>
@@ -129,6 +131,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
                                     options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
+                                    allowNull={true}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={stackItemStyles}>
@@ -143,6 +146,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                         { key: ProductStatus.closed, value: 'Closed' } as KeyValPair,
                                         { key: ProductStatus.canceled, value: 'Canceled' } as KeyValPair
                                     ]}
+                                    allowNull={true}
                                 />
                             </Stack.Item>
                         </Stack>
@@ -155,26 +159,31 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
                                     options={AppService.AppSettings.eventTypes.map(d => { return { key: d.eventTypeId, value: d.eventTitle } as KeyValPair; })}
+                                    allowNull={true}
                                 />
                             </Stack.Item>
-                            <Stack.Item grow styles={stackItemStyles}>
-                                <FormInputDate
-                                    labelValue={'Event Start'}
-                                    fieldValue={(this.state.draftProduct.eventDateStart || new Date()).toJSON()}
-                                    fieldRef={'eventDateStart'}
-                                    onUpdated={this.dateFieldUpdated.bind(this)}
-                                    editing={this.state.isEditing}
-                                />
-                            </Stack.Item>
-                            <Stack.Item grow styles={stackItemStyles}>
-                                <FormInputDate
-                                    labelValue={'Event End'}
-                                    fieldValue={(this.state.draftProduct.eventDateEnd || new Date()).toJSON()}
-                                    fieldRef={'eventDateEnd'}
-                                    onUpdated={this.dateFieldUpdated.bind(this)}
-                                    editing={this.state.isEditing}
-                                />
-                            </Stack.Item>
+                            {this.state.draftProduct.eventType &&
+                                <>
+                                    <Stack.Item grow styles={stackItemStyles}>
+                                        <FormInputDate
+                                            labelValue={'Event Start'}
+                                            fieldValue={(this.state.draftProduct.eventDateStart || new Date()).toJSON()}
+                                            fieldRef={'eventDateStart'}
+                                            onUpdated={this.dateFieldUpdated.bind(this)}
+                                            editing={this.state.isEditing}
+                                        />
+                                    </Stack.Item>
+                                    <Stack.Item grow styles={stackItemStyles}>
+                                        <FormInputDate
+                                            labelValue={'Event End'}
+                                            fieldValue={(this.state.draftProduct.eventDateEnd || new Date()).toJSON()}
+                                            fieldRef={'eventDateEnd'}
+                                            onUpdated={this.dateFieldUpdated.bind(this)}
+                                            editing={this.state.isEditing}
+                                        />
+                                    </Stack.Item>
+                                </>
+                            }
                         </Stack>
                         <Separator />
                         <AttachmentComponent
@@ -248,7 +257,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     private saveRFI(): void {
         // We let the parent component close this pane.
         RecordService.SaveProduct(this.state.draftProduct, true)
-        .then(d => console.log('saveRFI: ', d))
+        .then(d => console.log('Saved RFI: ', this.state.draftProduct, 'and received: ', d))
         .catch(e => console.log('Update failed for: ', this.state.draftProduct));
     }
 

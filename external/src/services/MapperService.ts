@@ -1,4 +1,3 @@
-import { parseISO } from 'date-fns';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { CommentsModel } from '../models/CommentsModel';
 import { ProductModel, ProductStatus } from '../models/ProductModel';
@@ -23,8 +22,8 @@ export class MapperService {
             ProductType: prod.productType,
             CategoryId: JSON.stringify(prod.categoryId),
             EventType: prod.eventType,
-            EventDateStart: prod.eventDateStart ? prod.eventDateStart.toJSON() : null,
-            EventDateEnd: prod.eventDateEnd ? prod.eventDateEnd.toJSON() : null,
+            EventDateStart: (prod.eventType && prod.eventDateStart) ? prod.eventDateStart.toJSON() : null,
+            EventDateEnd: (prod.eventType && prod.eventDateEnd) ? prod.eventDateEnd.toJSON() : null,
             ClassificationId: prod.classificationId,
             RequestUrl: prod.requestUrl,
             Customer: prod.customer,
@@ -59,7 +58,7 @@ export class MapperService {
     }
 
     public static mapTeam(teamId: string): TeamModel {
-        return AppService.AppSettings.teams.reduce((t: TeamModel, n: TeamModel) => n.id === teamId ? n : t, null);
+        return AppService.AppSettings.teams.reduce((t: TeamModel, n: TeamModel) => n.teamId === teamId ? n : t, null);
     }
 
     public static MapItemsToProducts(items: Array<SpProductItem>, documents: Array<SpListAttachment>): Array<ProductModel> {

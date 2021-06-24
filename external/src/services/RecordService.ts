@@ -91,38 +91,36 @@ export class RecordService {
     }
 
     /** Creates a new empty product model but does not commit it to SharePoint */
-    public static GetNewProductModel(productType?: string): ProductModel {
-        const prod = new ProductModel({
-            guid: null,
-            requestDate: new Date(),
-            returnDateExpected: addDays(new Date(), 5),
-            status: ProductStatus.open,
-            title: 'New Product',
-            description: '',
-            tasks: [],
-            classificationId: AppService.AppSettings.classificationModels[0] ? AppService.AppSettings.classificationModels[0].classificationId : null
-        });
-
+    public static GetNewProductModel(productType: string): ProductModel {
         const prodTypeModel = productType ? AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productType ? n : t, null) : null;
         if (prodTypeModel) {
-            prod.tasks = prodTypeModel.defaultTeamTasks.map(d => {
-                return {
-                    taskedTeamId: d.teamId,
-                    taskDescription: d.taskDescription,
-                    taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDays)).toJSON(),
-                    taskState: TaskState.pending,
-                    taskGuid: uuidv4()
-                } as TaskModel;
+            const prod = new ProductModel({
+                productType: prodTypeModel.typeId,
+                guid: null,
+                requestDate: new Date(),
+                returnDateExpected: addDays(new Date(), prodTypeModel.defaultSuspenseDays),
+                status: ProductStatus.open,
+                title: `NEW ${prodTypeModel.typeName}`,
+                description: prodTypeModel.typeDescription,
+                tasks: prodTypeModel.defaultTeamTasks.map(d => {
+                    return {
+                        taskedTeamId: d.teamId,
+                        taskDescription: d.taskDescription,
+                        taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDays)).toJSON(),
+                        taskState: TaskState.pending,
+                        taskGuid: uuidv4()
+                    } as TaskModel;
+                }),
+                classificationId: AppService.AppSettings.classificationModels[0] ? AppService.AppSettings.classificationModels[0].classificationId : null,
+                eventType: prodTypeModel.defaultEventType
             });
-            prod.productType = prodTypeModel.typeId;
-            prod.title = `NEW ${prodTypeModel.typeName}`;
-            prod.returnDateExpected = addDays(new Date(), prodTypeModel.defaultSuspenseDays);
-            prod.description = prodTypeModel.typeDescription;
 
             const eventModel: EventModel = prodTypeModel.defaultEventType ? AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === prodTypeModel.defaultEventType ? n : t, null) : null;
-            prod.eventDateStart = eventModel ? addDays(prod.returnDateExpected, 3) : null;
-            prod.eventDateEnd = eventModel ? addDays(prod.eventDateStart, (eventModel.defaultEventSuspenseOffset || 1)) : null;
+            prod.eventDateStart = eventModel ? addDays(prod.returnDateExpected, 2) : null;
+            prod.eventDateEnd = eventModel ? addDays(prod.eventDateStart, eventModel.defaultEventLength) : null;
+
+            return prod;
         }
-        return prod;
+        return null;
     }
 }

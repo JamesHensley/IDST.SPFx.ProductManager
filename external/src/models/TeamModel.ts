@@ -1,7 +1,8 @@
 import { TeamMemberModel } from './PeopleModel';
 
 export class TeamModel {
-    id: string;
+    id: number;
+    teamId: string;
     name: string;
     description: string;
     members: Array<TeamMemberModel>;

@@ -1,34 +1,50 @@
 import * as React from 'react';
-
 import { Label, Text, Dropdown, IDropdownOption } from '@fluentui/react';
-
 import * as styles from '../ProductManager.module.scss';
 
-import { IFormInputProps, KeyValPair } from './IFormInputProps';
+export interface KeyValPair {
+    key: string;
+    value: any;
+    data?: any;
+    selected: boolean;
+}
 
-export class FormInputDropDown extends React.Component<IFormInputProps, {}> {
+export class IFormInputDropDownProps {
+    labelValue: string;
+    fieldValue: string;
+    fieldRef: string;
+    editing: boolean;
+    options: Array<KeyValPair>;
+    allowNull: boolean;
+    onUpdated: (newVal: string, fieldRef: string) => void;
+    toolTip?: string;
+}
 
-    render(): React.ReactElement<IFormInputProps> {
-        const options = this.props.options.map(d => { return { key: d.key, text: d.value } as IDropdownOption; });
-        const selectedKey = this.props.fieldValue;
+export class FormInputDropDown extends React.Component<IFormInputDropDownProps, {}> {
+    render(): React.ReactElement<IFormInputDropDownProps> {
+        const givenOptions = this.props.options.map(d => { return { key: d.key, text: d.value } as IDropdownOption; }).sort((a, b) => a.key > b.key ? 1 : (a.key < b.key ? -1 : 0));
+        const options = this.props.allowNull ? [{ key: null, text: 'None' }].concat(givenOptions) : givenOptions;
+        const nullOption = this.props.allowNull ? { key: null, text: 'None' } : { key: null, text: '' };
+        const selectedKVP = options.reduce((t,n) => n.key === this.props.fieldValue ? n : t, nullOption);
+
         return(
             <div className={`${styles.padTop2} ${styles.fieldValue}`}
                 style={{ width: '100%' }}
                 title={this.props.toolTip ? this.props.toolTip : ''}
             >
                 <Label>{this.props.labelValue}</Label>
-                {!this.props.editing && (
-                    <Text>{this.props.options.reduce((t,n) => n.key === this.props.fieldValue ? n.value : t, '')}</Text>
-                )}
-                {this.props.editing && (
+                {!this.props.editing &&
+                    <Text>{selectedKVP.text}</Text>
+                }
+                {this.props.editing &&
                     <Dropdown
                         styles={{ root: { width: '100%' } }}
                         multiSelect={false}
                         options={options}
-                        defaultSelectedKey={selectedKey}
+                        defaultSelectedKey={selectedKVP.key}
                         onChange={this.fieldUpdated.bind(this)}
                     />
-                )}
+                }
             </div>
         );
     }

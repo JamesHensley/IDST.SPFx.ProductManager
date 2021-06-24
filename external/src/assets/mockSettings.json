@@ -7,7 +7,8 @@
     "publishingLibraryUrl": "",
     "teams": [
         {
-            "id": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
+            "id": 1,
+            "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
             "name": "Team 1 - BA",
             "description": "Team 1 Description",
             "members": [
@@ -19,7 +20,8 @@
             "shortName": "T1"
         },
         {
-            "id": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
+            "id": 2,
+            "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
             "name": "Team 2 - BS",
             "description": "Team 2 Description",
             "members": [
@@ -31,7 +33,8 @@
             "shortName": "T2"
         },
         {
-            "id": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
+            "id": 3,
+            "teamId": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
             "name": "Team 3 - S",
             "description": "Team 3 Description",
             "members": [
@@ -43,7 +46,8 @@
             "shortName": "ST"
         },
         {
-            "id": "b9563296-df65-4054-916d-ed7f39f90ac6",
+            "id": 4,
+            "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
             "name": "Team 4 - F",
             "description": "Team 4 Description",
             "members": [
@@ -99,6 +103,7 @@
                 { "docUrl": "/", "docIcon": "/", "docName": "docType1.txt" },
                 { "docUrl": "/", "docIcon": "/", "docName": "docType2.txt" }
             ],
+            "defaultEventType": "2",
             "defaultTeamTasks": [
                 {
                     "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
@@ -147,19 +152,23 @@
         {
             "eventTypeId": "1",
             "eventTitle": "Hot Rod Show",
-            "eventDescription": "This is a really detail description of event-type 1... enjoy it",
-            "defaultEventSuspenseOffset": 5
+            "eventDescription": "This is typically a 5 day event",
+            "eventBackgroundColor": "rgba(255, 127, 39, 0.5)",
+            "defaultEventLength": 5
         },
         {
             "eventTypeId": "2",
             "eventTitle": "Camping Trip",
-            "eventDescription": "This is a really detail description of event-type 2... enjoy it",
-            "defaultEventSuspenseOffset": 3
+            "eventDescription": "This is typically a 3 day event",
+            "eventBackgroundColor": "rgba(89, 172, 204, 0.5)",
+            "defaultEventLength": 3
         },
         {
             "eventTypeId": "3",
             "eventTitle": "Shooting guns with dad",
-            "eventDescription": "This is a really detail description of event-type 3... enjoy it"
+            "eventDescription": "This is typically a same-day event",
+            "eventBackgroundColor": "rgba(112, 190, 103, 0.5)",
+            "defaultEventLength": 0
         }
     ],
     "classificationModels": [

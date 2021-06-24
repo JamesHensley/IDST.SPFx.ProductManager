@@ -72,7 +72,7 @@ export class TeamTasksPaneComponent extends React.Component<ITeamTasksPaneCompon
 
     private addTask(): void {
         const newTask: TaskModel = new TaskModel({
-            taskedTeamId: this.props.teamModel.id,
+            taskedTeamId: this.props.teamModel.teamId,
             taskGuid: uuidv4(),
             taskDescription: 'New Task',
             taskState: TaskState.pending,

@@ -44,7 +44,7 @@ export class TeamTaskRowComponent extends React.Component<ITeamTaskComponentProp
     }
 
     private teamClicked(team: TeamModel): void {
-        this.props.teamClicked(team.id);
+        this.props.teamClicked(team.teamId);
     }
 
     private teamTasksUpdated(newTasks: Array<TaskModel>): void {

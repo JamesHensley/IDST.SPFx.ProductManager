@@ -1,4 +1,5 @@
 import { parseISO } from 'date-fns';
+import addDays from 'date-fns/addDays';
 
 export enum TaskState {
     pending = 'Pending',
@@ -20,4 +21,15 @@ export class TaskModel {
     taskSuspense: string;
     taskStart?: Date;
     taskFinish?: Date;
+
+    public get bustedSuspense(): boolean {
+        switch (this.taskState) {
+            case TaskState.complete:
+                return this.taskFinish > new Date(this.taskSuspense);
+            case TaskState.working:
+                return new Date() >= new Date(this.taskSuspense);
+            case TaskState.pending:
+                return addDays(new Date(), 1) >= new Date(this.taskSuspense);
+        }
+    }
 }

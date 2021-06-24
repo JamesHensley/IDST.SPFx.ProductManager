@@ -1,6 +1,5 @@
 import AppService from '../services/AppService';
 import { AttachmentModel } from './AttachmentModel';
-import { CategoryModel } from './CategoryModel';
 import { CommentsModel } from './CommentsModel';
 import { TaskModel } from './TaskModel';
 
@@ -12,11 +11,10 @@ export enum ProductStatus {
 
 export class ProductModel {
     public constructor(init?: Partial<ProductModel>) {
-        this.comments = [];
-        this.attachedDocumentUrls = [];
-        this.attachedDocuments = [];
-        this.tasks = [];
         Object.assign(this, init);
+        this.comments = init && init.comments ? init.comments.map(d => new CommentsModel(d)) : [];
+        this.attachedDocuments = init && init.attachedDocuments ? init.attachedDocuments.map(d => new AttachmentModel(d)) : [];
+        this.tasks = init && init.tasks ? init.tasks.map(d => new TaskModel(d)) : [];
     }
 
     public id: number;
@@ -29,7 +27,6 @@ export class ProductModel {
     public returnDateExpected: Date;
     public status: ProductStatus;
     public tasks?: Array<TaskModel>;
-    public attachedDocumentUrls?: Array<string>;
     public attachedDocuments: Array<AttachmentModel>;
     public productType: string;
     public categoryId: string;
@@ -45,7 +42,7 @@ export class ProductModel {
     public get filterString(): string {
         const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === this.productType ? n.typeName : t, '');
         const eventTypeTitle = AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === this.eventType ? n.eventTitle : t, '');
-        const teamNames = AppService.AppSettings.teams.reduce((t, n) => this.tasks.map(d => d.taskedTeamId).indexOf(n.id) >= 0 ? t + n.name : t, '');
+        const teamNames = AppService.AppSettings.teams.reduce((t, n) => this.tasks.map(d => d.taskedTeamId).indexOf(n.teamId) >= 0 ? t + n.name : t, '');
         const category = AppService.AppSettings.categories.reduce((t, n) => n.categoryId === this.categoryId ? n.categoryText : t, '');
 
         return `${this.title} ${this.description} ${prodTypeTitle} ${eventTypeTitle} ${teamNames} ${category}`;

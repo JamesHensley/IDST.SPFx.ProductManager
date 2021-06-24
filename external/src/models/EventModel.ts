@@ -8,6 +8,9 @@ export interface EventModel {
     /** Description of event */
     eventDescription: string;
 
-    /** Default number of days from start to finish */
-    defaultEventSuspenseOffset?: number;
+    /** Background color of event on rollup view */
+    eventBackgroundColor: string;
+
+    /** Typical number of days from event-start to event-end */
+    defaultEventLength: number;
 }

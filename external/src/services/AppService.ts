@@ -42,7 +42,7 @@ export default class AppService {
         NotificationService.Notify(notificationType, product.title);
 
         const teamIds = (product.tasks || []).map(d => d.taskedTeamId);
-        const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.id) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
+        const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.teamId) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
         MailService.SendEmail('Update', teamEmails, `A product has been ${notificationType.toString()}`)
         .catch(e => Promise.reject(e));
     }
