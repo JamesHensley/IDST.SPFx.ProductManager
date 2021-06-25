@@ -1,8 +1,10 @@
-import { addDays, subDays } from "date-fns";
-import { ProductModel } from "../models/ProductModel";
-import { TaskState } from "../models/TaskModel";
-import { ITimelineItem, TimelineProductItem } from "../models/TimelineModels";
-import AppService from "./AppService";
+import { addDays, subDays } from 'date-fns';
+import { EventModel } from '../models/EventModel';
+import { ProductModel } from '../models/ProductModel';
+import { TaskState } from '../models/TaskModel';
+import { ITimelineItem, TimelineEventItem, TimelineProductItem } from '../models/TimelineModels';
+import { TeamDialog } from '../webparts/ProductManager/components/FormComponents/TaskComponent';
+import AppService from './AppService';
 
 /** Provides methods to make working with tasks and teams earlier */
 export default class TaskService {
@@ -10,8 +12,7 @@ export default class TaskService {
     public static BreakProductsToTasks(products: Array<ProductModel>, mergeTeamTasks: boolean): Array<ITimelineItem> {
         return products
             .map((d: ProductModel) => this.tasksToProducts(d, mergeTeamTasks))
-            .reduce((t: Array<ITimelineItem>, n: Array<ITimelineItem>) => [].concat.apply(t, n), new Array<ITimelineItem>())
-            .map((d: ITimelineItem, i: number) => { d.id = i; return d; });
+            .reduce((t: Array<ITimelineItem>, n: Array<ITimelineItem>) => [].concat.apply(t, n), new Array<ITimelineItem>());
     }
 
     /**
@@ -32,11 +33,12 @@ export default class TaskService {
             }
 
             return new TimelineProductItem({
-                group: AppService.AppSettings.teams.reduce((t, n) => n.teamId === d.taskedTeamId ? n.id : t, 0),
                 title: product.title,
                 start_time: d.taskStart.getTime(),
                 end_time: d.taskFinish.getTime(),
                 bustedSuspense: d.bustedSuspense,
+                productType: product.productType,
+                teamGuid: d.taskedTeamId,
                 itemProps: {
                     productGuid: product.guid,
                     teamGuid: d.taskedTeamId,
@@ -47,25 +49,25 @@ export default class TaskService {
                         color: 'rgba(0, 0, 0, 1)'
                     }
                 }
-            })
-        })
+            });
+        });
         if (!mergeTeamTasks) { return retObj; }
 
-        const grouped = Object.values(this.GroupBy(retObj, 'group'))
+        const grouped = Object.values(this.GroupBy(retObj, 'teamGuid'))
         .map((d: Array<ITimelineItem>) => {
             const newItem = new TimelineProductItem(d[0]);
             const teamTimes = d.reduce((t, n) => {
                 return {
                     start_time: (t.start_time ? (n.start_time < t.start_time ? n.start_time : t.start_time) : n.start_time),
                     end_time: (t.end_time ? (n.end_time > t.end_time ? n.end_time : t.end_time) : n.end_time)
-                }
+                };
             }, { start_time: undefined, end_time: undefined });
 
             newItem.start_time = teamTimes.start_time;
             newItem.end_time = teamTimes.end_time;
-            newItem.bustedSuspense = d.reduce((t, n) => t || n.bustedSuspense, false)
+            newItem.bustedSuspense = d.reduce((t, n) => t || n.bustedSuspense, false);
             return newItem;
-        })
+        });
         return grouped;
     }
 
@@ -74,5 +76,26 @@ export default class TaskService {
             t[n[groupField]] = (t[n[groupField]] || []).concat([n]);
             return t;
         }, {});
+    }
+
+    public static BreakProductsToEvents(products: Array<ProductModel>, teamId: string): Array<ITimelineItem> {
+        return products.filter(f => f.eventType).map((d: ProductModel) => {
+            const eModel: EventModel = AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === d.eventType ? n : t, null);
+            return new TimelineEventItem({
+                title: eModel.eventTitle,
+                start_time: d.eventDateStart.getTime(),
+                end_time: d.eventDateEnd.getTime(),
+                productType: d.productType,
+                bustedSuspense: false,
+                teamGuid: teamId,
+                itemProps: {
+                    productGuid: d.guid,
+                    style: {
+                        backgroundColor: eModel.eventBackgroundColor,
+                        selectedBgColor: eModel.eventBackgroundColor
+                    }
+                }
+            });
+        });
     }
 }

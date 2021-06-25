@@ -1,5 +1,23 @@
-import { isToastIdValid } from "react-toastify/dist/utils";
-import { TaskState } from "./TaskModel";
+import { TaskState } from './TaskModel';
+
+export interface ITimelineTeamGroup {
+    id: number;
+    teamGuid: string;
+    title: string;
+    stackItems: boolean;
+}
+
+export class TimelineTeamGroup implements ITimelineTeamGroup {
+    public constructor(init?: Partial<ITimelineTeamGroup>) {
+        Object.assign(this, init);
+        this.stackItems = true;
+    }
+
+    id: number;
+    teamGuid: string;
+    title: string;
+    stackItems: boolean;
+}
 
 export interface ITimelineItem {
     id: number;
@@ -11,6 +29,8 @@ export interface ITimelineItem {
     isEvent: boolean;
     bustedSuspense: boolean;
     status: TaskState;
+    productType: string;
+    teamGuid: string;
 }
 
 export interface IItemProps {
@@ -25,8 +45,8 @@ export class TimelineProductItem implements ITimelineItem {
         init.id = init.id || 0;
         init.group = init.group || 0;
         init.itemProps = init.itemProps || {} as IItemProps;
-        init.isEvent = false;
         Object.assign(this, init);
+        this.isEvent = false;
     }
 
     id: number;
@@ -38,6 +58,8 @@ export class TimelineProductItem implements ITimelineItem {
     isEvent: boolean;
     bustedSuspense: boolean;
     status: TaskState;
+    productType: string;
+    teamGuid: string;
 }
 
 export class TimelineEventItem implements ITimelineItem {
@@ -45,8 +67,8 @@ export class TimelineEventItem implements ITimelineItem {
         init.id = init.id || 0;
         init.group = init.group || 0;
         init.itemProps = init.itemProps || {} as IItemProps;
-        init.isEvent = true;
         Object.assign(this, init);
+        this.isEvent = true;
     }
 
     id: number;
@@ -58,4 +80,6 @@ export class TimelineEventItem implements ITimelineItem {
     isEvent: boolean;
     bustedSuspense: boolean;
     status: TaskState;
+    productType: string;
+    teamGuid: string;
 }

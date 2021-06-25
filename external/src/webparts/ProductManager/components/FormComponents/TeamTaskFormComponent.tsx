@@ -2,8 +2,7 @@ import * as React from 'react';
 import { TaskModel, TaskState } from '../../../../models/TaskModel';
 import { FormInputDate } from './FormInputDate';
 import { FormInputText } from './FormInputText';
-import { FormInputDropDown } from './FormInputDropDown';
-import { KeyValPair } from './IFormInputProps';
+import { FormInputDropDown, KeyValPair } from './FormInputDropDown';
 import { IStackItemStyles, Stack } from '@fluentui/react';
 import { startOfDay } from 'date-fns';
 import { differenceInHours, subHours } from 'date-fns/esm';
@@ -42,6 +41,7 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
                                 { key: TaskState.complete, value: 'Complete' } as KeyValPair
                             ] }
                             toolTip={`${this.state.draftTask.taskStart} - ${this.state.draftTask.taskFinish}`}
+                            allowNull={false}
                         />
                     </Stack.Item>
                     <Stack.Item grow styles={stackItemStyles}>

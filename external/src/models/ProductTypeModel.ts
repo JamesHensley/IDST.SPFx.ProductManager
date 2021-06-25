@@ -10,6 +10,7 @@ export class TaskTemplate {
     
     /** Typical days offset for this tasks suspense from the start of the product */
     public taskSuspenseDaysOffset: number;
+    public typicalTaskLength: number;
 }
 
 export class ProductTypeModel {

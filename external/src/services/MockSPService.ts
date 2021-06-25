@@ -11,7 +11,7 @@ export class MockSPService implements ISPService {
 
     private get mockedProductItems(): Array<SpProductItem> {
         if (this._mockedProductItems.length === 0) {
-            for (let x = 0; x < 3; x++) {
+            for (let x = 0; x < 10; x++) {
                 this._mockedProductItems.push(Faker.CreateFakeItem());
             }
         }
@@ -24,7 +24,7 @@ export class MockSPService implements ISPService {
 
     private get mockedAttachmentItems(): Array<SpListAttachment> {
         if (this._mockedAttachmentItems.length === 0) {
-            this._mockedAttachmentItems = []
+            this._mockedAttachmentItems = [];
         }
 
         return this._mockedAttachmentItems;
@@ -61,7 +61,6 @@ export class MockSPService implements ISPService {
     }
 
     GetListItems(listUrl: string): Promise<Array<SpProductItem>> {
-        // console.log('MockSPService.GetListItems: ', this.mockedProductItems, this.mockedAttachmentItems);
         return Promise.resolve(this.mockedProductItems);
     }
 

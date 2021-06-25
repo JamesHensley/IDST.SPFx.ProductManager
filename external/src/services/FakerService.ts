@@ -35,7 +35,7 @@ export class Faker {
 
         const expectedStart = (TaskState[state] === TaskState.working || TaskState[state] === TaskState.complete) ? subDays(expectedFinish, expectedDaysToWork) : null;
         const actualFinish = (TaskState[state] === TaskState.complete) ? (willBustSuspense ? addDays(expectedFinish, 1) : subDays(expectedFinish, 1)) : null;
-        
+
         return new TaskModel({
             taskedTeamId: teamId,
             taskDescription: desc,
@@ -51,15 +51,15 @@ export class Faker {
         const newItemGuid = uuidv4();
 
         const prodType = (AppService.AppSettings.productTypes[Math.round(Math.random() * (AppService.AppSettings.productTypes.length - 1))]);
-        const reqDate = new Date(new Date().getTime() + (((Math.round(Math.random() === 0 ? -1 : 1)) * Math.round(Math.random() * 30)) * 1000 * 60 * 60 * 24));
-        const endDate = addDays(new Date(reqDate), (Math.round(Math.random() * 7) + 1));
+        const beginWork = startOfDay(subDays(new Date(), Math.round(Math.random() * 60)));
+        const endDate = addDays(beginWork, (Math.round(Math.random() * 13) + 1));
 
         const item: SpProductItem = {
             Id: Math.floor(Math.random() * 300),
             Title: (title ? title : this.mockTitles[Math.round(Math.random() * (this.mockTitles.length - 1))]),
             Guid: newItemGuid,
             Description: this.mockSentences[Math.round(Math.random() * (this.mockSentences.length - 1))],
-            RequestDate: reqDate.toJSON(),
+            RequestDate: beginWork.toJSON(),
             ReturnDateExpected: endDate.toJSON(),
             ReturnDateActual: null,
             Requestor: 'Some Requestor',
@@ -77,10 +77,10 @@ export class Faker {
             Active: true
         };
 
-        const beginWork = startOfDay(reqDate);
+        // const beginWork = startOfDay(reqDate);
         const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete']);
         const tasks = prodType.defaultTeamTasks.map(d => {
-            return this.CreateFakeTask(d.teamId, d.taskDescription, beginWork, d.taskSuspenseDaysOffset, taskState)
+            return this.CreateFakeTask(d.teamId, d.taskDescription, addDays(beginWork, d.taskSuspenseDaysOffset), d.typicalTaskLength, taskState);
         });
         item.AssignedTeamData = JSON.stringify(tasks);
 
@@ -91,10 +91,10 @@ export class Faker {
         if (eventModel) {
             const lastCloseDate = item.ProductStatus === 'closed' ? (tasks.map(d => d.taskFinish).sort()[0]) : endDate;
             item.EventType = eventModel.eventTypeId;
-            item.EventDateStart = addDays(lastCloseDate, 1).toJSON();
+            item.EventDateStart = addDays(lastCloseDate, 2).toJSON();
             item.EventDateEnd = eventModel.defaultEventLength ? addDays(new Date(item.EventDateStart), eventModel.defaultEventLength).toJSON() : null;
         }
-    
+
         // Create fake attachments for this fake item
         prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.Guid, f.docName));
 
