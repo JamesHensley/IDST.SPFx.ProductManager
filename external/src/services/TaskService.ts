@@ -3,7 +3,6 @@ import { EventModel } from '../models/EventModel';
 import { ProductModel } from '../models/ProductModel';
 import { TaskState } from '../models/TaskModel';
 import { ITimelineItem, TimelineEventItem, TimelineProductItem } from '../models/TimelineModels';
-import { TeamDialog } from '../webparts/ProductManager/components/FormComponents/TaskComponent';
 import AppService from './AppService';
 
 /** Provides methods to make working with tasks and teams earlier */
@@ -44,8 +43,7 @@ export default class TaskService {
                     teamGuid: d.taskedTeamId,
                     taskId: d.taskGuid,
                     style: {
-                        backgroundColor: d.bustedSuspense ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 255, 0, 0.5)',
-                        selectedBgColor: d.bustedSuspense ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 255, 0, 0.5)',
+                        backgroundColor: d.bustedSuspense ? 'rgba(180, 40, 40, 1)' : 'rgba(40, 180, 40, 1)',
                         color: 'rgba(0, 0, 0, 1)'
                     }
                 }
@@ -53,7 +51,7 @@ export default class TaskService {
         });
         if (!mergeTeamTasks) { return retObj; }
 
-        const grouped = Object.values(this.GroupBy(retObj, 'teamGuid'))
+        return Object.values(this.GroupBy(retObj, 'teamGuid'))
         .map((d: Array<ITimelineItem>) => {
             const newItem = new TimelineProductItem(d[0]);
             const teamTimes = d.reduce((t, n) => {
@@ -66,9 +64,12 @@ export default class TaskService {
             newItem.start_time = teamTimes.start_time;
             newItem.end_time = teamTimes.end_time;
             newItem.bustedSuspense = d.reduce((t, n) => t || n.bustedSuspense, false);
+            newItem.itemProps.style = {
+                backgroundColor: newItem.bustedSuspense ? 'rgba(180, 40, 40, 1)' : 'rgba(40, 180, 40, 1)',
+                color: 'rgba(0, 0, 0, 1)'
+            };
             return newItem;
         });
-        return grouped;
     }
 
     private static GroupBy<T>(items: T[], groupField: string): any {

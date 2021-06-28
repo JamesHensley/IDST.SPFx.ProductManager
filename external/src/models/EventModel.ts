@@ -1,4 +1,8 @@
-export interface EventModel {
+export class EventModel {
+    public constructor(init?: Partial<EventModel>) {
+        Object.assign(this, init);
+    }
+
     /** GUID of the event type */
     eventTypeId: string;
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
-import { BaseClientSideWebPart, WebPartContext, IPropertyPaneConfiguration, PropertyPaneTextField } from '@microsoft/sp-webpart-base';
+import { BaseClientSideWebPart, WebPartContext, IPropertyPaneConfiguration, PropertyPaneTextField, IPropertyPaneCustomFieldProps } from '@microsoft/sp-webpart-base';
 
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
@@ -17,6 +17,7 @@ import { ProductTypeModel } from '../../models/ProductTypeModel';
 import { EventModel } from '../../models/EventModel';
 import { ClassificationModel } from '../../models/ClassificationModel';
 import { CategoryModel } from '../../models/CategoryModel';
+import PropertyPaneManagerComponent from './components/propertypane/PropertyPaneComponentManager';
 
 export interface IProductManagerWebPartProps {
   description: string;
@@ -79,7 +80,8 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
               groupFields: [
                 PropertyPaneTextField('description', {
                    label: this.properties.description
-                })
+                }),
+                // new PropertyPaneTeamManager
               ]
             }
           ]
@@ -97,33 +99,24 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   }
 
   private getMockAppSettings(): Promise<void> {
-    if (window.location.host.toLowerCase().indexOf('localhost') === 0) {
-      return new Promise<void>((resolve, reject) => {
-        fetch('/dist/mockSettings.json')
-        .then(data => data.json())
-        .then((data: IProductManagerWebPartProps) => {
-          this.mockSettings = data;
-          this.mockSettings.teams = data.teams.map((m1: TeamModel, i1: number) => {
-            m1.members = m1.members.map((m2: TeamMemberModel, i2: number) => {
-              m2.memberNum = `${i1}-${i2}`;
-              return m2;
-            });
-            return m1;
-          });
-        })
-        .then(() => {
-          resolve();
-        })
-        .catch(e => {
-          console.log(e);
-          reject();
-        });
+    debugger;
+    // We can't really use any SP libraries here yet, so we'll just guess at the siteUrl
+    const settingsLoc = window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig)[1] || '/dist/mockSettings.json';
+
+    return new Promise<void>((resolve, reject) => {
+      fetch(settingsLoc)
+      .then(data => data.json())
+      .then((data: IProductManagerWebPartProps) => {
+        Object.assign(this.mockSettings, data);
+        this.mockSettings.teams = data.teams.map((d: TeamModel) => new TeamModel(d));
+        this.mockSettings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
+        this.mockSettings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
+        this.mockSettings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
+        return resolve();
       })
-      .catch(e => {
-        console.log(e);
-      });
-    } else {
-      return Promise.resolve();
-    }
+      .catch(e => reject(e));
+    })
+    .then(() => Promise.resolve())
+    .catch(e => Promise.reject(e));
   }
 }

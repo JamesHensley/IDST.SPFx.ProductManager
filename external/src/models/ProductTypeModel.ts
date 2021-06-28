@@ -14,6 +14,10 @@ export class TaskTemplate {
 }
 
 export class ProductTypeModel {
+    public constructor(init?: Partial<ProductTypeModel>) {
+        Object.assign(this, init);
+    }
+
     public typeId: string;
     public typeName: string;
     public typeDescription: string;

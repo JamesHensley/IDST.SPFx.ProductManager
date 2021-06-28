@@ -23,10 +23,9 @@ export interface IRollupViewProps {
 }
 
 export interface IRollupViewState {
-    /** Used to control whether multiple tasks for the same team on a single product should be merged */
     mergeTeamTasks: boolean;
-    colorize: boolean;
-    hideOpen: boolean;
+    colorBySuspense: boolean;
+    hideOpenProducts: boolean;
     showEventsRow: boolean;
 }
 
@@ -39,7 +38,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         super(props);
         this.calendarStart = startOfMonth(this.props.defaultMonth);
         this.calendarEnd = endOfMonth(this.props.defaultMonth);
-        this.state = { mergeTeamTasks: true, colorize: true, hideOpen: true, showEventsRow: false };
+        this.state = { mergeTeamTasks: true, colorBySuspense: true, hideOpenProducts: true, showEventsRow: false };
     }
 
     private get calendarGroups(): Array<ITimelineTeamGroup> {
@@ -54,25 +53,19 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
             });
         });
 
-        // return [].concat.apply(teamGroups)
         return [].concat.apply((this.state.showEventsRow ? [{ guid: 'noGuid', title: 'Events', stackItems: true }] : []), teamGroups)
         .map((d, i) => { d.id = i; return d; });
     }
 
     private get calendarItems(): Array<ITimelineItem> {
-        const productList = this.props.products.filter(f => this.state.hideOpen ? f.status === ProductStatus.closed : true);
+        const productList = this.props.products.filter(f => this.state.hideOpenProducts ? f.status === ProductStatus.closed : true);
 
-        // return [].concat.apply(TaskService.BreakProductsToTasks(productList, this.state.mergeTeamTasks))
         return [].concat.apply((this.state.showEventsRow ? TaskService.BreakProductsToEvents(productList, 'noGuid') : []), (TaskService.BreakProductsToTasks(productList, this.state.mergeTeamTasks)))
         .map((d: ITimelineItem) => { d.group = this.calendarGroups.reduce((t, n) => n.teamGuid == d.teamGuid ? n.id : t, 0); return d; })
         .map((d, i) => { d.id = i; return d; });
     }
 
     public render(): React.ReactElement<IRollupViewProps> {
-        const x1 = this.calendarItems;
-        const x2 = this.calendarGroups;
-        console.log('Render 1: ', x1);
-        console.log('Render 2: ', x2);
         return (
             <Stack>
                 <Stack horizontal tokens={{ childrenGap: 30 }}>
@@ -83,8 +76,8 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                     />
                     <Toggle
                         label={'Only show completed Products'}
-                        checked={this.state.hideOpen}
-                        onChange={() => this.setState({ hideOpen: !this.state.hideOpen })}
+                        checked={this.state.hideOpenProducts}
+                        onChange={() => this.setState({ hideOpenProducts: !this.state.hideOpenProducts })}
                     />
                     <Toggle
                         label={'Merge tasks from same team'}
@@ -92,9 +85,9 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                         onChange={() => this.setState({ mergeTeamTasks: !this.state.mergeTeamTasks })}
                     />
                     <Toggle
-                        label={'Color by risk'}
-                        checked={this.state.colorize}
-                        onChange={() => this.setState({ colorize: !this.state.colorize })}
+                        label={'Color by broken suspenses'}
+                        checked={this.state.colorBySuspense}
+                        onChange={() => this.setState({ colorBySuspense: !this.state.colorBySuspense })}
                     />
                 </Stack>
                 <Timeline
@@ -164,11 +157,10 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
 
     private itemRenderer({ item, timelineContext, itemContext, getItemProps, getResizeProps }): JSX.Element {
         const { left: leftResizeProps, right: rightResizeProps } = getResizeProps();
-        // const backgroundColor = item.itemProps.style.backgroundColor;
-        const backgroundColor = (this.state.colorize || item.isEvent) ? item.itemProps.style.backgroundColor : AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === item.productType ? n.colorValue : t, '');
+        const backgroundColor = (this.state.colorBySuspense || item.isEvent) ? item.itemProps.style.backgroundColor : AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === item.productType ? n.colorValue : t, '');
+        const textColor = item.isEvent ? 'rgb(0, 0, 0)' : ColorService.GetTextColor(backgroundColor);
         const borderColor = 'rgb(0, 0, 0)';
-        const textColor = (this.state.colorize && !item.isEvent) ? 'rgb(0, 0, 0)' : ColorService.GetTextColor(backgroundColor);
-console.log(item);
+
         return (
             <div
                 dataprodid={item.itemProps.productGuid}
@@ -177,6 +169,7 @@ console.log(item);
                     style: {
                         color: textColor,
                         backgroundColor,
+                        selectedBgColor: backgroundColor,
                         borderColor,
                         borderStyle: 'solid',
                         borderWidth: 1,
