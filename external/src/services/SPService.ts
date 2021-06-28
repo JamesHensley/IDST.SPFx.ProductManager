@@ -1,8 +1,7 @@
 import { SPAuthor, SpListAttachment, SpProductItem } from '../models/SpListItem';
 import { ISPService } from './ISPService';
-
-import { SPHttpClient, SPHttpClientConfiguration } from '@microsoft/sp-http';
-import { IODataList, IODataListItem, IODataWeb } from '@microsoft/sp-odata-types';
+// import { SPHttpClient, SPHttpClientConfiguration } from '@microsoft/sp-http';
+// import { IODataList, IODataListItem, IODataWeb } from '@microsoft/sp-odata-types';
 import AppService from './AppService';
 import { FileService } from './FileService';
 
@@ -51,6 +50,43 @@ export class SPService implements ISPService {
         return new Promise<Array<SpProductItem>>((resolve, reject) => {
             resolve([]);
         });
+    }
+
+    /** Copies a file from one document library to another in the same site-collection */
+    CopyFile(srcUrl: string, destUrl: string, suffix: string): Promise<boolean> {
+        return this.getDigestValue(srcUrl)
+        .then(digestVal => {
+            const fetchParams = {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json;odata=verbose',
+                    'content-type': 'application/json;odata=verbose',
+                    'X-RequestDigest': digestVal
+                }
+            };
+            const site: string = (window as any).SP.PageContextInfo.get_siteServerRelativeUrl();
+            const dest: string = destUrl.split('.').map((d, i, e) => (i == e.length - 2) ? d += suffix : d).join('.');
+            const urlStr = `${site}/getfilebyserverrelativeurl('${srcUrl}')/copyto(strnewurl='${dest}',boverwrite=false)`;
+
+            return fetch(urlStr, fetchParams)
+            .then(data => data.json())
+            .then(data => Promise.resolve(data.d['CopyTo'] === null))
+            .catch(e => Promise.resolve(e));
+        })
+        .catch(e => Promise.reject(e));
+    }
+
+    private getDigestValue(url: string): Promise<string> {
+        const payload = { method: 'POST', headers: { 'accept': 'application/json;odata=verbose' } };
+
+        return new Promise<string>((resolve, reject) => {
+            return fetch(`${url}/_api/contextinfo`, payload)
+            .then(c => c.json())
+            .then(c => c.d.GetContextWebInformation.FormDigestValue)
+            .then((digestVal: string) => resolve(digestVal))
+            .catch(e => reject(e));
+        })
+        .catch(e => Promise.reject(e));
     }
 
     private executeUpload(listUrl: string, productGuid: string, fileName: string, arrayBuffer: ArrayBuffer): Promise<SpListAttachment> {

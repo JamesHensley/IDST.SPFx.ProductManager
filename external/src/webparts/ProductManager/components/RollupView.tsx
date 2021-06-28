@@ -61,7 +61,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         const productList = this.props.products.filter(f => this.state.hideOpenProducts ? f.status === ProductStatus.closed : true);
 
         return [].concat.apply((this.state.showEventsRow ? TaskService.BreakProductsToEvents(productList, 'noGuid') : []), (TaskService.BreakProductsToTasks(productList, this.state.mergeTeamTasks)))
-        .map((d: ITimelineItem) => { d.group = this.calendarGroups.reduce((t, n) => n.teamGuid == d.teamGuid ? n.id : t, 0); return d; })
+        .map((d: ITimelineItem) => { d.group = this.calendarGroups.reduce((t, n) => n.teamGuid === d.teamGuid ? n.id : t, 0); return d; })
         .map((d, i) => { d.id = i; return d; });
     }
 

@@ -9,7 +9,6 @@ import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 import { IPageComponentProps } from './components/PageComponent';
 import AppService from '../../services/AppService';
 import { TeamModel } from '../../models/TeamModel';
-import { TeamMemberModel } from '../../models/PeopleModel';
 
 import PnPTelemetry from '@pnp/telemetry-js';
 import { ProductManager } from './components/ProductManager';
@@ -17,7 +16,6 @@ import { ProductTypeModel } from '../../models/ProductTypeModel';
 import { EventModel } from '../../models/EventModel';
 import { ClassificationModel } from '../../models/ClassificationModel';
 import { CategoryModel } from '../../models/CategoryModel';
-import PropertyPaneManagerComponent from './components/propertypane/PropertyPaneComponentManager';
 
 export interface IProductManagerWebPartProps {
   description: string;
@@ -34,7 +32,7 @@ export interface IProductManagerWebPartProps {
 }
 
 export default class ProductManagerWebPart extends BaseClientSideWebPart<IProductManagerWebPartProps> {
-  private mockSettings: IProductManagerWebPartProps;
+  private appSettings: IProductManagerWebPartProps;
 
   public render(): void {
     const element: React.ReactElement<IPageComponentProps> = React.createElement(
@@ -58,7 +56,20 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
 
     AppService.Init(this);
 
-    await this.getMockAppSettings();
+    this.appSettings = {
+      description: '',
+      isDebugging: false,
+      productListUrl: '',
+      documentListUrl: '',
+      publishingLibraryUrl: '',
+      teams: [],
+      emailSenderName: '',
+      productTypes: [],
+      categories: [],
+      eventTypes: [],
+      classificationModels: []
+    } as IProductManagerWebPartProps;
+    await this.getAppSettings();
 
     return Promise.resolve();
   }
@@ -80,8 +91,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
               groupFields: [
                 PropertyPaneTextField('description', {
                    label: this.properties.description
-                }),
-                // new PropertyPaneTeamManager
+                })
               ]
             }
           ]
@@ -91,27 +101,31 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   }
 
   public get AppProps(): IProductManagerWebPartProps {
-    return this.properties.isDebugging ? this.mockSettings : this.properties;
+    return this.properties.isDebugging ? this.appSettings : this.properties;
   }
 
   public get AppContext(): WebPartContext {
     return this.context;
   }
 
-  private getMockAppSettings(): Promise<void> {
-    debugger;
+  private getAppSettings(): Promise<void> {
+    console.log('Getting application settings');
+
     // We can't really use any SP libraries here yet, so we'll just guess at the siteUrl
-    const settingsLoc = window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig)[1] || '/dist/mockSettings.json';
+    const siteUrl = window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig);
+    const settingsLoc = siteUrl ? `${siteUrl[1]}JiseProdMgr-Config/Items?$orderby=Modified&$top=1` : '/dist/mockSettings.json';
 
     return new Promise<void>((resolve, reject) => {
-      fetch(settingsLoc)
+      fetch(settingsLoc, { headers : { accept: 'application/json;odata=verbose' } })
       .then(data => data.json())
+      .then(data => siteUrl ? data.d.results[0].configData : data)
       .then((data: IProductManagerWebPartProps) => {
-        Object.assign(this.mockSettings, data);
-        this.mockSettings.teams = data.teams.map((d: TeamModel) => new TeamModel(d));
-        this.mockSettings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
-        this.mockSettings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
-        this.mockSettings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
+        Object.assign(this.appSettings, data);
+        this.appSettings.teams = data.teams.map((d: TeamModel) => new TeamModel(d));
+        this.appSettings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
+        this.appSettings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
+        this.appSettings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
+        this.appSettings.classificationModels = data.classificationModels.map(d => new ClassificationModel(d));
         return resolve();
       })
       .catch(e => reject(e));

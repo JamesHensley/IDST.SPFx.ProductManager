@@ -57,6 +57,9 @@ export class RecordService {
 
         return (product.guid ? this.spService.UpdateListItem(AppService.AppSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem))
         .then((newItem: SpProductItem) => {
+            // When we create a NEW item, we need to upload template documents here
+            // newItem.Guid
+
             return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
             .then(attachments => {
                 if (broadcastChange) { AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product); }

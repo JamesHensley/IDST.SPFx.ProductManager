@@ -26,4 +26,6 @@ export interface ISPService {
 
     /** Returns a single field for all the products in SharePoint */
     GetSingleFieldValues(listUrl: string, fieldName: string): Promise<Array<string>>;
+
+    CopyFile(srcUrl: string, destUrl: string, suffix: string): Promise<boolean>;
 }

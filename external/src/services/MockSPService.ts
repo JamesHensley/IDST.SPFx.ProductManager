@@ -90,6 +90,22 @@ export class MockSPService implements ISPService {
         });
     }
 
+    CopyFile(srcUrl: string, destUrl: string, suffix: string): Promise<boolean> {
+        console.log('MockSPService.CopyFile: ', srcUrl, destUrl, suffix);
+        const dest: string = destUrl.split('.').map((d, i, e) => (i == e.length - 2) ? d += suffix : d).join('.');
+
+        this._mockedAttachmentItems.push(new SpListAttachment({
+            Id: '',
+            Title: '',
+            Updated: new Date(),
+            Author: SPAuthor,
+            Url: dest,
+            Version: 1,
+            LinkedProductGuid: suffix
+        }));
+        return Promise.resolve(true);
+    }
+
     private executeUpload(listUrl: string, productGuid: string, fileName: string, buff: ArrayBuffer): Promise<SpListAttachment> {
         /*
         var result: any = {
