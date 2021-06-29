@@ -1,8 +1,4 @@
-export class DocTemplate {
-    public docUrl: string;
-    public docIcon: string;
-    public docName: string;
-}
+import { TemplateDocumentModel } from "./TemplateDocumentModel";
 
 export class TaskTemplate {
     public teamId: string;
@@ -22,7 +18,7 @@ export class ProductTypeModel {
     public typeName: string;
     public typeDescription: string;
     public defaultSuspenseDays: number;
-    public defaultTemplateDocs: Array<DocTemplate>;
+    public defaultTemplateDocs: Array<TemplateDocumentModel>;
     public defaultTeamTasks: Array<TaskTemplate>;
     public colorValue: string;
     public defaultEventType?: string;

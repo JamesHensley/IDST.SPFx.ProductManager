@@ -1,4 +1,4 @@
-export enum Roles {
+export enum TeamMemberRole {
     Manager = 1,
     Lead = 2,
     Default = 3
@@ -9,10 +9,9 @@ export class TeamMemberModel {
         Object.assign(this, init);
     }
 
-    public memberNum: string;
     public name: string;
     public email: string;
-    public role: Roles;
+    public role: TeamMemberRole;
     public spId: string;
     public active: boolean;
 }
@@ -20,6 +19,7 @@ export class TeamMemberModel {
 export class TeamModel {
     public constructor(init?: Partial<TeamModel>) {
         Object.assign(this, init);
+        this.members = init ? (init.members ? init.members.map(d => new TeamMemberModel(d)) : []) : [];
     }
 
     id: number;

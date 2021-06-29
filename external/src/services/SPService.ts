@@ -65,7 +65,7 @@ export class SPService implements ISPService {
                 }
             };
             const site: string = (window as any).SP.PageContextInfo.get_siteServerRelativeUrl();
-            const dest: string = destUrl.split('.').map((d, i, e) => (i == e.length - 2) ? d += suffix : d).join('.');
+            const dest: string = destUrl.split('.').map((d, i, e) => (i === e.length - 2) ? d += suffix : d).join('.');
             const urlStr = `${site}/getfilebyserverrelativeurl('${srcUrl}')/copyto(strnewurl='${dest}',boverwrite=false)`;
 
             return fetch(urlStr, fetchParams)

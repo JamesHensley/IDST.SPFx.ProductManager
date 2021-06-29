@@ -96,7 +96,7 @@ export class Faker {
         }
 
         // Create fake attachments for this fake item
-        prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.Guid, f.docName));
+        prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.Guid, f.documentName));
 
         return item;
     }

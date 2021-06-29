@@ -1,4 +1,8 @@
 export class SPAuthor {
+    public constructor(init?: Partial<SPAuthor>) {
+        Object.assign(this, init);
+    }
+
     Name: string;
     Email: string;
 }

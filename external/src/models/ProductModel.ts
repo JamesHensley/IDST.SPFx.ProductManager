@@ -23,8 +23,7 @@ export class ProductModel {
     public description: string;
     public requestor: string;
     public requestDate: Date;
-    public returnDateActual?: Date;
-    public returnDateExpected: Date;
+    public publishedDate?: Date;
     public status: ProductStatus;
     public tasks?: Array<TaskModel>;
     public attachedDocuments: Array<AttachmentModel>;

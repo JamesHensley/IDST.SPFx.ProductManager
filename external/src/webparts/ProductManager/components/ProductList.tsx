@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ProductModel } from '../../../models/ProductModel';
 import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, IDetailsRowProps, IFacepilePersona, Label, SelectionMode, Stack, TextField } from '@fluentui/react';
-import { format } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import AppService from '../../../services/AppService';
 import { TaskModel } from '../../../models/TaskModel';
 import { TeamModel } from '../../../models/TeamModel';
@@ -35,6 +35,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
     return (this.props.allProducts || [])
     .filter(i => (i.filterString.toLowerCase().indexOf(FilterService.FilterText.toLowerCase()) >= 0))
     .map(d => {
+      const lastSuspense = d.tasks.reduce((t: Date, n) => new Date(n.taskSuspense) > t ? new Date(n.taskSuspense) : t, new Date(null));
       return {
         key: d.guid,
         title: d.title,
@@ -44,8 +45,8 @@ export default class ProductList extends React.Component<IProductListProps, IPro
         productType: AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === d.productType ? n.typeName : t, ''),
         productStatus: d.status,
         openDate: d.requestDate ? format(d.requestDate, AppService.DateFormatValue) : '',
-        expectedReturnDate: d.returnDateExpected ? format(d.returnDateExpected, AppService.DateFormatValue) : '',
-        closeDate: d.returnDateActual ? format(d.returnDateActual, AppService.DateFormatValue) : '',
+        expectedReturnDate: format(lastSuspense, AppService.DateFormatValue),
+        closeDate: d.publishedDate ? format(d.publishedDate, AppService.DateFormatValue) : '',
         eventType: AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === d.eventType ? n.eventTitle : t, ''),
         eventDate: d.eventDateStart ? format(d.eventDateStart, AppService.DateFormatValue) : '',
         classification: AppService.AppSettings.classificationModels.reduce((t,n) => n.classificationId === d.classificationId ? n.classificationTitle : t, ''),

@@ -1,4 +1,4 @@
-import { SpListAttachment, SpProductItem } from '../models/SpListItem';
+import { SPAuthor, SpListAttachment, SpProductItem } from '../models/SpListItem';
 import AppService from './AppService';
 import { Faker } from './FakerService';
 import { FileService } from './FileService';
@@ -10,11 +10,11 @@ export class MockSPService implements ISPService {
     private _mockedAttachmentItems: Array<SpListAttachment> = [];
 
     private get mockedProductItems(): Array<SpProductItem> {
-        if (this._mockedProductItems.length === 0) {
-            for (let x = 0; x < 10; x++) {
-                this._mockedProductItems.push(Faker.CreateFakeItem());
-            }
-        }
+        //  if (this._mockedProductItems.length === 0) {
+        //    for (let x = 0; x < 10; x++) {
+        //        this._mockedProductItems.push(Faker.CreateFakeItem());
+        //    }
+        //  }
         return this._mockedProductItems.filter(f => f.Active);
     }
 
@@ -24,7 +24,7 @@ export class MockSPService implements ISPService {
 
     private get mockedAttachmentItems(): Array<SpListAttachment> {
         if (this._mockedAttachmentItems.length === 0) {
-            this._mockedAttachmentItems = [];
+            // this._mockedAttachmentItems = [];
         }
 
         return this._mockedAttachmentItems;
@@ -52,6 +52,9 @@ export class MockSPService implements ISPService {
 
     UpdateListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
         this.mockedProductItems = this.mockedProductItems.reduce((t, n) => n.Guid === item.Guid ? t.concat([item]) : t.concat([n]), []);
+console.log('---------------------------------------');
+console.log(JSON.stringify(this.mockedProductItems, null, '    '));
+console.log('---------------------------------------');
         return Promise.resolve(item);
     }
 
@@ -61,7 +64,18 @@ export class MockSPService implements ISPService {
     }
 
     GetListItems(listUrl: string): Promise<Array<SpProductItem>> {
-        return Promise.resolve(this.mockedProductItems);
+        if (this.mockedProductItems.length === 0) {
+            return fetch('/dist/mockProductData.json')
+            .then(d => d.json())
+            .then(d => d.map(p => new SpProductItem(p)))
+            .then(d => {
+                this._mockedProductItems = d;
+                return Promise.resolve(this.mockedProductItems);
+            })
+            .catch(e => Promise.reject(e));
+        } else {
+            return Promise.resolve(this.mockedProductItems);
+        }
     }
 
     AddAttachment(listUrl: string, productGuid: string, fileList: FileList): Promise<Array<SpListAttachment>> {
@@ -92,13 +106,13 @@ export class MockSPService implements ISPService {
 
     CopyFile(srcUrl: string, destUrl: string, suffix: string): Promise<boolean> {
         console.log('MockSPService.CopyFile: ', srcUrl, destUrl, suffix);
-        const dest: string = destUrl.split('.').map((d, i, e) => (i == e.length - 2) ? d += suffix : d).join('.');
+        const dest: string = destUrl.split('.').map((d, i, e) => (i === e.length - 2) ? d += suffix : d).join('.');
 
         this._mockedAttachmentItems.push(new SpListAttachment({
             Id: '',
             Title: '',
             Updated: new Date(),
-            Author: SPAuthor,
+            Author: new SPAuthor({ Name: AppService.CurrentSpUser.displayName, Email: AppService.CurrentSpUser.email }),
             Url: dest,
             Version: 1,
             LinkedProductGuid: suffix

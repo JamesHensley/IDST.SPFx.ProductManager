@@ -10,6 +10,7 @@ import { RecordService } from '../../../services/RecordService';
 import ProductManagerCmdBar from './ProductManagerCmdBar';
 import { ICommandBarItemProps } from '@fluentui/react';
 import RollupView from './RollupView';
+import TeamView from './TeamView';
 
 export interface IPageComponentProps { }
 
@@ -19,6 +20,7 @@ export interface IPageComponentState {
     currentProduct: ProductModel;
     allProducts: Array<ProductModel>;
     view: string;
+    chosenTeamId: string;
 }
 
 export default class PageComponent extends React.Component <IPageComponentProps, IPageComponentState> {
@@ -35,7 +37,8 @@ export default class PageComponent extends React.Component <IPageComponentProps,
             panelEditing: false,
             currentProduct: null,
             allProducts: [],
-            view: 'ProductList'
+            view: 'ProductList',
+            chosenTeamId: null
         };
 
         RecordService.GetProducts()
@@ -52,7 +55,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                     // Adding key here causes the component to be destroyed/rebuilt on each render
                     key={new Date().getTime()}
                     paneCloseCallBack={this.eventPaneClose.bind(this)}
-                    // productUpdatedCallBack={this.eventPaneUpdated.bind(this)}
                     currentProduct={this.state.currentProduct}
                     isVisible={this.state.panelVisible}
                     isEditing={this.state.panelEditing}
@@ -61,7 +63,9 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                 <div className={styles.productManager}>
                     <div className={styles.grid}>
                         <div className={styles.gridRow}>
-                            <ProductManagerCmdBar />
+                            <ProductManagerCmdBar
+                                appView={this.state.view}
+                            />
                         </div>
                         <div className={styles.gridRow}>
                             <div className={styles.gridCol12}>
@@ -78,6 +82,12 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                                         products={this.state.allProducts}
                                         productClicked={this.productClicked.bind(this)}
                                         defaultMonth={new Date()}
+                                    />
+                                }
+                                {this.state.view === 'TeamView' &&
+                                    <TeamView
+                                        key={new Date().getTime()}
+                                        teamId={this.state.chosenTeamId}
                                     />
                                 }
                             </div>
@@ -155,10 +165,13 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
-        // console.log('PageComponent.cmdBarItemClicked: ', item);
+        console.log('PageComponent.cmdBarItemClicked: ', item);
         switch (item['data-automation-id']) {
             case 'viewRollup':
                 this.setState({ view: 'RollUp' });
+                break;
+            case 'teamView':
+                this.setState({ view: 'TeamView', chosenTeamId: item.data.id });
                 break;
             case 'viewList':
                 this.setState({ view: 'ProductList' });

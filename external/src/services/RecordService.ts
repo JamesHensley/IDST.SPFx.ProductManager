@@ -101,7 +101,7 @@ export class RecordService {
                 productType: prodTypeModel.typeId,
                 guid: null,
                 requestDate: new Date(),
-                returnDateExpected: addDays(new Date(), prodTypeModel.defaultSuspenseDays),
+                // returnDateExpected: addDays(new Date(), prodTypeModel.defaultSuspenseDays),
                 status: ProductStatus.open,
                 title: `NEW ${prodTypeModel.typeName}`,
                 description: prodTypeModel.typeDescription,
@@ -119,7 +119,8 @@ export class RecordService {
             });
 
             const eventModel: EventModel = prodTypeModel.defaultEventType ? AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === prodTypeModel.defaultEventType ? n : t, null) : null;
-            prod.eventDateStart = eventModel ? addDays(prod.returnDateExpected, 2) : null;
+            // prod.eventDateStart = eventModel ? addDays(prod.returnDateExpected, 2) : null;
+            prod.eventDateStart = eventModel ? addDays(new Date(), 14) : null;
             prod.eventDateEnd = eventModel ? addDays(prod.eventDateStart, eventModel.defaultEventLength) : null;
 
             return prod;
