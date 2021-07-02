@@ -11,6 +11,7 @@ import ProductManagerCmdBar from './ProductManagerCmdBar';
 import { ICommandBarItemProps } from '@fluentui/react';
 import RollupView from './RollupView';
 import TeamView from './TeamView';
+import { TeamMemberModel } from '../../../models/TeamModel';
 
 export interface IPageComponentProps { }
 
@@ -183,6 +184,14 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                     panelVisible: true,
                     panelEditing: true
                 });
+                break;
+            case 'newTeamMember':
+                console.log('Should be adding a new team member here: ', this.props, this.state);
+                const teamId: string = this.state.chosenTeamId;
+                AppService.AppSettings.teams
+                    .reduce((t, n) => n.teamId === this.state.chosenTeamId ? n : t)
+                    .members.push(RecordService.GetNewTeamMmeberModel(teamId));
+                this.setState({ view: 'TeamView', chosenTeamId: teamId });
                 break;
         }
         return Promise.resolve();

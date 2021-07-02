@@ -34,6 +34,8 @@ export interface IProductManagerWebPartProps {
 export default class ProductManagerWebPart extends BaseClientSideWebPart<IProductManagerWebPartProps> {
   private appSettings: IProductManagerWebPartProps;
 
+  // protected get isRenderAsync () { return true; }
+
   public render(): void {
     const element: React.ReactElement<IPageComponentProps> = React.createElement(
       ProductManager, { }
@@ -56,21 +58,8 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
 
     AppService.Init(this);
 
-    this.appSettings = {
-      description: '',
-      isDebugging: false,
-      productListUrl: '',
-      documentListUrl: '',
-      publishingLibraryUrl: '',
-      teams: [],
-      emailSenderName: '',
-      productTypes: [],
-      categories: [],
-      eventTypes: [],
-      classificationModels: []
-    } as IProductManagerWebPartProps;
-    await this.getAppSettings();
-
+    this.appSettings = await this.getAppSettings();
+console.log('onInit: ', this.appSettings);
     return Promise.resolve();
   }
 
@@ -101,36 +90,43 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   }
 
   public get AppProps(): IProductManagerWebPartProps {
-    return this.properties.isDebugging ? this.appSettings : this.properties;
+    // return this.properties.isDebugging ? this.appSettings : this.properties;
+    return this.appSettings;
+  }
+
+  public set AppProps(val: IProductManagerWebPartProps) {
+    this.appSettings = val;
   }
 
   public get AppContext(): WebPartContext {
     return this.context;
   }
 
-  private getAppSettings(): Promise<void> {
+  private getAppSettings(): Promise<IProductManagerWebPartProps> {
     console.log('Getting application settings');
 
     // We can't really use any SP libraries here yet, so we'll just guess at the siteUrl
     const siteUrl = window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig);
     const settingsLoc = siteUrl ? `${siteUrl[1]}JiseProdMgr-Config/Items?$orderby=Modified&$top=1` : '/dist/mockSettings.json';
 
-    return new Promise<void>((resolve, reject) => {
-      fetch(settingsLoc, { headers : { accept: 'application/json;odata=verbose' } })
+    return new Promise<IProductManagerWebPartProps>((resolve, reject) => {
+      return fetch(settingsLoc, { headers : { accept: 'application/json;odata=verbose' } })
       .then(data => data.json())
       .then(data => siteUrl ? data.d.results[0].configData : data)
       .then((data: IProductManagerWebPartProps) => {
-        Object.assign(this.appSettings, data);
-        this.appSettings.teams = data.teams.map((d: TeamModel) => new TeamModel(d));
-        this.appSettings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
-        this.appSettings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
-        this.appSettings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
-        this.appSettings.classificationModels = data.classificationModels.map(d => new ClassificationModel(d));
-        return resolve();
+        const settings: IProductManagerWebPartProps = Object.assign({}, data);
+        settings.isDebugging = siteUrl ? false : true;
+
+        settings.teams = data.teams.map((d: TeamModel) => new TeamModel(d));
+        settings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
+        settings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
+        settings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
+        settings.classificationModels = data.classificationModels.map(d => new ClassificationModel(d));
+        return resolve(settings);
       })
       .catch(e => reject(e));
     })
-    .then(() => Promise.resolve())
+    .then((settings: IProductManagerWebPartProps) => Promise.resolve(settings))
     .catch(e => Promise.reject(e));
   }
 }

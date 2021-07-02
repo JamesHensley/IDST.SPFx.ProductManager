@@ -30,7 +30,7 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
                         key: 'newTeamMember',
                         text: 'Team Member',
                         iconProps: { iconName: 'AddFriend' },
-                        ['data-automation-id']: 'newTeamMmeber',
+                        ['data-automation-id']: 'newTeamMember',
                         onClick: this.itemClicked.bind(this)
                     } as IContextualMenuItem
                 ];

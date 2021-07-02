@@ -12,6 +12,7 @@ import { TaskModel, TaskState } from '../models/TaskModel';
 import { CommentsModel } from '../models/CommentsModel';
 import addDays from 'date-fns/addDays';
 import { EventModel } from '../models/EventModel';
+import { TeamMemberModel, TeamMemberRole } from '../models/TeamModel';
 
 export interface IResult {
     productModel: ProductModel;
@@ -126,5 +127,14 @@ export class RecordService {
             return prod;
         }
         return null;
+    }
+
+    public static GetNewTeamMmeberModel(teamId: string): TeamMemberModel {
+        return new TeamMemberModel({
+            name: 'New Team Member',
+            email: 'Member Email',
+            role: TeamMemberRole.default,
+            active: true
+        });
     }
 }

@@ -1,7 +1,7 @@
 export enum TeamMemberRole {
-    Manager = 1,
-    Lead = 2,
-    Default = 3
+    manager = 'Manager',
+    lead = 'Lead',
+    default = 'Member'
 }
 
 export class TeamMemberModel {

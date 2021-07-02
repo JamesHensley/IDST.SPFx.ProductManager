@@ -12,9 +12,9 @@
             "name": "Team 1 - BA",
             "description": "Team 1 Description",
             "members": [
-                { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": 2, "active": true },
-                { "spId": "47dc2f4da49d", "name": "Person 2", "email": "person2@email.com", "role": 3, "active": true },
-                { "spId": "8f68befdbf8c", "name": "Person 3", "email": "person3@email.com", "role": 3, "active": true }
+                { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": "lead", "active": true },
+                { "spId": "47dc2f4da49d", "name": "Person 2", "email": "person2@email.com", "role": "default", "active": true },
+                { "spId": "8f68befdbf8c", "name": "Person 3", "email": "person3@email.com", "role": "default", "active": true }
             ],
             "active": true,
             "shortName": "T1"
@@ -25,9 +25,9 @@
             "name": "Team 2 - BS",
             "description": "Team 2 Description",
             "members": [
-                { "spId": "0cfd1d22797b", "name": "Person 4", "email": "person4@email.com", "role": 2, "active": true },
-                { "spId": "970f0495d8b6", "name": "Person 5", "email": "person5@email.com", "role": 3, "active": true },
-                { "spId": "9face56f210c", "name": "Person 6", "email": "person6@email.com", "role": 3, "active": true }
+                { "spId": "0cfd1d22797b", "name": "Person 4", "email": "person4@email.com", "role": "lead", "active": true },
+                { "spId": "970f0495d8b6", "name": "Person 5", "email": "person5@email.com", "role": "default", "active": true },
+                { "spId": "9face56f210c", "name": "Person 6", "email": "person6@email.com", "role": "default", "active": true }
             ],
             "active": true,
             "shortName": "T2"
@@ -38,9 +38,9 @@
             "name": "Team 3 - S",
             "description": "Team 3 Description",
             "members": [
-                { "spId": "b4dacb1080c7", "name": "Person 7", "email": "person7@email.com", "role": 2, "active": true },
-                { "spId": "f9ee1234acbd", "name": "Person 8", "email": "person8@email.com", "role": 3, "active": true },
-                { "spId": "90073312311f", "name": "Person 9", "email": "person9@email.com", "role": 3, "active": true }
+                { "spId": "b4dacb1080c7", "name": "Person 7", "email": "person7@email.com", "role": "lead", "active": true },
+                { "spId": "f9ee1234acbd", "name": "Person 8", "email": "person8@email.com", "role": "default", "active": true },
+                { "spId": "90073312311f", "name": "Person 9", "email": "person9@email.com", "role": "default", "active": true }
             ],
             "active": true,
             "shortName": "ST"
@@ -51,9 +51,9 @@
             "name": "Team 4 - F",
             "description": "Team 4 Description",
             "members": [
-                { "spId": "b4dacb1080c7", "name": "Person 10", "email": "person10@email.com", "role": 2, "active": true },
-                { "spId": "f9ee1234acbd", "name": "Person 11", "email": "person11@email.com", "role": 3, "active": true },
-                { "spId": "90073312311f", "name": "Person 12", "email": "person12@email.com", "role": 3, "active": true }
+                { "spId": "b4dacb1080c7", "name": "Person 10", "email": "person10@email.com", "role": "lead", "active": true },
+                { "spId": "f9ee1234acbd", "name": "Person 11", "email": "person11@email.com", "role": "default", "active": true },
+                { "spId": "90073312311f", "name": "Person 12", "email": "person12@email.com", "role": "default", "active": true }
             ],
             "active": true,
             "shortName": "F"

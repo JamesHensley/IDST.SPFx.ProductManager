@@ -22,6 +22,7 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
     public render(): React.ReactElement<ITeamViewProps> {
         return (
             <>
+                <h1>Not all Team View Features Are Available Yet</h1>
                 <div>Team View For {this.state.teamModel.name}</div>
                 {
                     this.state.teamModel.members.map(d => {
@@ -34,7 +35,6 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
                 }
                 { this.state.selectedMember &&
                     <TeamMemberDetailPane
-                        key={new Date().getTime()}
                         teamMemberModel={this.state.selectedMember}
                         closePaneCallBack={this.closeDetailPane.bind(this)}
                         updateMemberCallBack={this.updateMember.bind(this)}
