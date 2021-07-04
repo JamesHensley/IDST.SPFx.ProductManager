@@ -11,7 +11,7 @@ import ProductManagerCmdBar from './ProductManagerCmdBar';
 import { ICommandBarItemProps } from '@fluentui/react';
 import RollupView from './RollupView';
 import TeamView from './TeamView';
-import { TeamMemberModel } from '../../../models/TeamModel';
+import { TeamMemberModel, TeamModel } from '../../../models/TeamModel';
 
 export interface IPageComponentProps { }
 
@@ -21,7 +21,8 @@ export interface IPageComponentState {
     currentProduct: ProductModel;
     allProducts: Array<ProductModel>;
     view: string;
-    chosenTeamId: string;
+    chosenTeam: TeamModel;
+    lastUpdated: number;
 }
 
 export default class PageComponent extends React.Component <IPageComponentProps, IPageComponentState> {
@@ -39,7 +40,8 @@ export default class PageComponent extends React.Component <IPageComponentProps,
             currentProduct: null,
             allProducts: [],
             view: 'ProductList',
-            chosenTeamId: null
+            chosenTeam: null,
+            lastUpdated: new Date().getTime()
         };
 
         RecordService.GetProducts()
@@ -88,7 +90,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                                 {this.state.view === 'TeamView' &&
                                     <TeamView
                                         key={new Date().getTime()}
-                                        teamId={this.state.chosenTeamId}
+                                        teamModel={this.state.chosenTeam}
                                     />
                                 }
                             </div>
@@ -172,7 +174,11 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                 this.setState({ view: 'RollUp' });
                 break;
             case 'teamView':
-                this.setState({ view: 'TeamView', chosenTeamId: item.data.id });
+                this.setState({
+                    view: 'TeamView',
+                    chosenTeam: AppService.AppSettings.teams
+                        .reduce((t, n) => n.teamId === item.data.id ? n : t)
+                    });
                 break;
             case 'viewList':
                 this.setState({ view: 'ProductList' });
@@ -186,12 +192,16 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                 });
                 break;
             case 'newTeamMember':
-                console.log('Should be adding a new team member here: ', this.props, this.state);
-                const teamId: string = this.state.chosenTeamId;
-                AppService.AppSettings.teams
-                    .reduce((t, n) => n.teamId === this.state.chosenTeamId ? n : t)
-                    .members.push(RecordService.GetNewTeamMmeberModel(teamId));
-                this.setState({ view: 'TeamView', chosenTeamId: teamId });
+                console.log('Should be adding a new team member here: ', this.state);
+                const teamId: string = this.state.chosenTeam.teamId;
+                const team = AppService.AppSettings.teams
+                    .reduce((t, n) => n.teamId === this.state.chosenTeam.teamId ? n : t);
+                team.members.push(RecordService.GetNewTeamMmeberModel(teamId));
+                this.setState({
+                    view: 'TeamView',
+                    chosenTeam: team,
+                    lastUpdated: new Date().getTime()
+                });
                 break;
         }
         return Promise.resolve();

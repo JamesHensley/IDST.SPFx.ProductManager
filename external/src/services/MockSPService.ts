@@ -121,7 +121,7 @@ console.log('---------------------------------------');
     }
 
     SaveNewListRecord(listUrl: string, listRecord: string): Promise<string> {
-        throw new Error('Method not implemented.');
+        return Promise.resolve(listRecord);
     }
 
     private executeUpload(listUrl: string, productGuid: string, fileName: string, buff: ArrayBuffer): Promise<SpListAttachment> {

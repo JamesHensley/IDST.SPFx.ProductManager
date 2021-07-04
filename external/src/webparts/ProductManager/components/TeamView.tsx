@@ -7,7 +7,7 @@ import { FormInputToggle } from './FormComponents/FormInputToggle';
 import TeamMemberDetailPane from './TeamMemberDetailPane';
 
 export interface ITeamViewProps {
-    teamId: string;
+    teamModel: TeamModel;
 }
 
 export interface ITeamViewState {
@@ -20,9 +20,9 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
     constructor(props: ITeamViewProps) {
         super(props);
         this.state = {
-            teamModel: AppService.AppSettings.teams.reduce((t, n) => n.teamId === this.props.teamId ? n : t, null),
-            selectedMember: null,
-            showInActive: false
+            teamModel: this.props.teamModel,
+            showInActive: false,
+            selectedMember: null
         };
     }
 
@@ -41,7 +41,7 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
                     .filter(f => this.state.showInActive ? true : f.active)
                     .map(d => {
                         return (
-                            <div key={d.spId} onClick={this.showTeamMemberDetail.bind(this, d)}>
+                            <div key={d.memberId} onClick={this.showTeamMemberDetail.bind(this, d)}>
                                 {d.name} {TeamMemberRole[d.role]}
                             </div>
                         );
@@ -67,11 +67,11 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
     }
 
     private updateTeam(newTeam: TeamModel): void {
-        console.log('Should save new member: ', newTeam);
+        console.log('updateTeam: ', newTeam);
     }
 
     private updateMember(newModel: TeamMemberModel): void {
-        console.log('Should save new member: ', newModel);
+        console.log('updateMember: ', newModel);
 
         const newTeam = Object.assign({}, this.state.teamModel);
         newTeam.members = this.state.teamModel.members

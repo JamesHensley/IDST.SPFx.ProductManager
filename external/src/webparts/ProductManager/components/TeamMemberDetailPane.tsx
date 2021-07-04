@@ -34,7 +34,9 @@ export default class TeamView extends React.Component <ITeamMemberDetailPaneProp
                 type={PanelType.medium}
             >
                 <Stack>
-                    <DefaultButton label='Save Member' onClick={this.saveMemberDetails.bind(this)} />
+                    <DefaultButton onClick={this.saveMemberDetails.bind(this)}>
+                        Save Member
+                    </DefaultButton>
                     <FormInputToggle
                         labelValue={'Active Member'}
                         fieldValue={this.state.draftMember.active}
