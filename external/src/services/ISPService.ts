@@ -28,4 +28,6 @@ export interface ISPService {
     GetSingleFieldValues(listUrl: string, fieldName: string): Promise<Array<string>>;
 
     CopyFile(srcUrl: string, destUrl: string, suffix: string): Promise<boolean>;
+
+    SaveNewListRecord(listUrl: string, listRecord: string): Promise<string>;
 }

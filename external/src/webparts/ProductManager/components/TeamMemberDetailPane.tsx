@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 
 import { TeamMemberModel, TeamMemberRole, TeamModel } from '../../../models/TeamModel';
-import { Panel, PanelType, Stack, Toggle } from '@fluentui/react';
+import { DefaultButton, Panel, PanelType, Stack, Toggle } from '@fluentui/react';
 import { FormInputText } from './FormComponents/FormInputText';
 import { FormInputDropDown, KeyValPair } from './FormComponents/FormInputDropDown';
 import { FormInputToggle } from './FormComponents/FormInputToggle';
@@ -34,6 +34,7 @@ export default class TeamView extends React.Component <ITeamMemberDetailPaneProp
                 type={PanelType.medium}
             >
                 <Stack>
+                    <DefaultButton label='Save Member' onClick={this.saveMemberDetails.bind(this)} />
                     <FormInputToggle
                         labelValue={'Active Member'}
                         fieldValue={this.state.draftMember.active}
@@ -75,14 +76,14 @@ export default class TeamView extends React.Component <ITeamMemberDetailPaneProp
         const newDraft = new TeamMemberModel(this.state.draftMember);
         newDraft[fieldRef] = fieldVal;
         this.setState({ draftMember: newDraft });
-        this.props.updateMemberCallBack(newDraft);
+        
+    }
+
+    private saveMemberDetails(): void {
+        this.props.updateMemberCallBack(this.state.draftMember);
     }
 
     private closePane(): void {
         this.props.closePaneCallBack();
     }
 }
-function KeyValPair(arg0: (d: string) => void, as: any, KeyValPair: any): import("./FormComponents/FormInputDropDown").KeyValPair[] {
-    throw new Error('Function not implemented.');
-}
-

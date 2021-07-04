@@ -16,8 +16,11 @@ import { ProductTypeModel } from '../../models/ProductTypeModel';
 import { EventModel } from '../../models/EventModel';
 import { ClassificationModel } from '../../models/ClassificationModel';
 import { CategoryModel } from '../../models/CategoryModel';
+import { NotificationService, NotificationType } from '../../services/NotificationService';
+import { RecordService } from '../../services/RecordService';
 
 export interface IProductManagerWebPartProps {
+  settingsListName: string;
   description: string;
   isDebugging: boolean;
   productListUrl: string;
@@ -33,7 +36,6 @@ export interface IProductManagerWebPartProps {
 
 export default class ProductManagerWebPart extends BaseClientSideWebPart<IProductManagerWebPartProps> {
   private appSettings: IProductManagerWebPartProps;
-
   // protected get isRenderAsync () { return true; }
 
   public render(): void {
@@ -57,9 +59,8 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     initializeFileTypeIcons();
 
     AppService.Init(this);
-
     this.appSettings = await this.getAppSettings();
-console.log('onInit: ', this.appSettings);
+
     return Promise.resolve();
   }
 
@@ -107,7 +108,7 @@ console.log('onInit: ', this.appSettings);
 
     // We can't really use any SP libraries here yet, so we'll just guess at the siteUrl
     const siteUrl = window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig);
-    const settingsLoc = siteUrl ? `${siteUrl[1]}JiseProdMgr-Config/Items?$orderby=Modified&$top=1` : '/dist/mockSettings.json';
+    const settingsLoc = siteUrl ? `${siteUrl[1]}${this.properties.settingsListName}/Items?$orderby=Modified&$top=1` : '/dist/mockSettings.json';
 
     return new Promise<IProductManagerWebPartProps>((resolve, reject) => {
       return fetch(settingsLoc, { headers : { accept: 'application/json;odata=verbose' } })
@@ -127,6 +128,20 @@ console.log('onInit: ', this.appSettings);
       .catch(e => reject(e));
     })
     .then((settings: IProductManagerWebPartProps) => Promise.resolve(settings))
+    .catch(e => Promise.reject(e));
+  }
+
+  /** Updates one or more settings in the application */
+  public UpdateAppSettings(newSettings: Partial<IProductManagerWebPartProps>): Promise<IProductManagerWebPartProps> {
+    const newRecord = Object.assign({}, this.properties);
+
+    return RecordService.AddListRecord(this.properties.settingsListName, newRecord)
+    .then(d => JSON.parse(d))
+    .then(d => {
+      Object.keys(d).forEach(p => this.properties[p] = d[p]);
+      this.render();
+      return Promise.resolve(d);
+    })
     .catch(e => Promise.reject(e));
   }
 }

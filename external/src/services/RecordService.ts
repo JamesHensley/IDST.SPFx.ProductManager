@@ -7,9 +7,8 @@ import { MockSPService } from './MockSPService';
 import { SPService } from './SPService';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { v4 as uuidv4 } from 'uuid';
-import { NotificationType } from './NotificationService';
+import { NotificationService, NotificationType } from './NotificationService';
 import { TaskModel, TaskState } from '../models/TaskModel';
-import { CommentsModel } from '../models/CommentsModel';
 import addDays from 'date-fns/addDays';
 import { EventModel } from '../models/EventModel';
 import { TeamMemberModel, TeamMemberRole } from '../models/TeamModel';
@@ -18,6 +17,9 @@ export interface IResult {
     productModel: ProductModel;
     resultStr: string;
 }
+
+
+
 export class RecordService {
     private static _prodService = new SPService();
     private static _mockService = new MockSPService();
@@ -134,7 +136,14 @@ export class RecordService {
             name: 'New Team Member',
             email: 'Member Email',
             role: TeamMemberRole.default,
-            active: true
+            active: true,
+            memberId: uuidv4()
         });
+    }
+
+    public static AddListRecord(listName: string, record: any): Promise<any> {
+        const saveStr = JSON.stringify(record);
+
+        return this.spService.SaveNewListRecord(listName, saveStr);
     }
 }

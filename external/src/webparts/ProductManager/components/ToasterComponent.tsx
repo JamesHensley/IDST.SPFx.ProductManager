@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { NotificationService } from '../../../services/NotificationService';
+import { NotificationService, NotificationType } from '../../../services/NotificationService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ProductModel } from '../../../models/ProductModel';
@@ -21,7 +21,8 @@ export default class ToasterComponent extends React.Component<IToasterComponentP
 
     componentWillUnmount(): void { NotificationService.UnRegisterProductListener(this.receiver); }
 
-    private notificationFired(title: string, msg?: string, extraMsg?: string): void {
+    private notificationFired(notType: NotificationType, msg?: string, extraMsg?: string): void {
+        const title = notType.toString();
         const toastMsg = (
             <>
                 <div>{title}</div>

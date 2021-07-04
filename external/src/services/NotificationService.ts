@@ -4,7 +4,8 @@ export enum NotificationType {
     Update = 'Updated',
     Delete = 'Deleted',
     AttachAdd = 'Attachment Added',
-    CommentAdd = 'Comment Added'
+    CommentAdd = 'Comment Added',
+    AppSettingsChanged = 'Application Settings Changed'
 }
 
 export class NotificationService {
@@ -21,4 +22,5 @@ export class NotificationService {
     public static Notify(notificationType: NotificationType, message?: string, extraMsg?: string): void {
         this.listeners.forEach(l => l.call(l, notificationType.toString(), message, extraMsg));
     }
+    
 }

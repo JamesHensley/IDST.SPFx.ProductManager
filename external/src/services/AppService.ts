@@ -6,6 +6,7 @@ import { NotificationService, NotificationType } from './NotificationService';
 import { SPUser } from '@microsoft/sp-page-context';
 import { ProductModel } from '../models/ProductModel';
 import { MailService } from './MailService';
+import { RecordService } from './RecordService';
 export interface ICmdBarListenerProps {
     callback: () => Promise<void>;
     btnKeys?: Array<string>;
@@ -15,6 +16,10 @@ export default class AppService {
     private static _webpart: ProductManagerWebPart;
     private static _productListeners: Array<() => Promise<void>> = [];
     private static _cmdBarListeners: Array<ICmdBarListenerProps> = [];
+    private static _appSettingsListName
+    public static get AppSettingsListName(): string {
+        return 'JiseProdMgr-Config';
+    }
 
     public static Init(webpart: ProductManagerWebPart): void {
         this._webpart = webpart;
@@ -26,6 +31,11 @@ export default class AppService {
 
     public static get AppContext(): WebPartContext {
         return this._webpart.context;
+    }
+
+    public static async UpdateAppSetting(val: Partial<IProductManagerWebPartProps>): Promise<IProductManagerWebPartProps> {
+        const settings = await this._webpart.UpdateAppSettings(val);
+        return Promise.resolve(settings);
     }
 
     //#region Emitters

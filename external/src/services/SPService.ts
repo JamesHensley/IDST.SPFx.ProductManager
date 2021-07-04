@@ -6,6 +6,10 @@ import AppService from './AppService';
 import { FileService } from './FileService';
 
 export class SPService implements ISPService {
+    SaveNewListRecord(listUrl: string, listRecord: string): Promise<string> {
+        throw new Error('Method not implemented.');
+    }
+
     GetSingleFieldValues(listUrl: string, fieldName: string): Promise<string[]> {
         throw new Error('Method not implemented.');
     }

@@ -14,6 +14,7 @@ export class TeamMemberModel {
     public role: TeamMemberRole;
     public spId: string;
     public active: boolean;
+    public memberId: string;
 }
 
 export class TeamModel {
