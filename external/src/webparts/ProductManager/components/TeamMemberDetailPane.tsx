@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 
 import { TeamMemberModel, TeamMemberRole, TeamModel } from '../../../models/TeamModel';
-import { DefaultButton, Panel, PanelType, Stack, Toggle } from '@fluentui/react';
+import { DefaultButton, Panel, PanelType, Separator, Stack, Toggle } from '@fluentui/react';
 import { FormInputText } from './FormComponents/FormInputText';
 import { FormInputDropDown, KeyValPair } from './FormComponents/FormInputDropDown';
 import { FormInputToggle } from './FormComponents/FormInputToggle';
@@ -33,10 +33,9 @@ export default class TeamView extends React.Component <ITeamMemberDetailPaneProp
                 closeButtonAriaLabel='Close'
                 type={PanelType.medium}
             >
+                <DefaultButton onClick={this.saveMemberDetails.bind(this)}>Save Member</DefaultButton>
+                <Separator />
                 <Stack>
-                    <DefaultButton onClick={this.saveMemberDetails.bind(this)}>
-                        Save Member
-                    </DefaultButton>
                     <FormInputToggle
                         labelValue={'Active Member'}
                         fieldValue={this.state.draftMember.active}

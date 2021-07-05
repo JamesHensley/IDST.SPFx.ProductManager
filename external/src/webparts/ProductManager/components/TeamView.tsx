@@ -83,10 +83,10 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
         AppService.UpdateAppSetting({ teams: teams })
         .then(newSettings => {
             console.log('TeamView.UpdateMember: ', newSettings);
-            this.setState({
-                teamModel: newSettings.teams
-                .reduce((t, n) => n.teamId === this.state.teamModel.teamId ? n : t, null)
-            });
+            // this.setState({
+            //     teamModel: newSettings.teams
+            //     .reduce((t, n) => n.teamId === this.state.teamModel.teamId ? n : t, null)
+            // });
         });
     }
 

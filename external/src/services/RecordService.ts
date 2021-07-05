@@ -133,6 +133,7 @@ export class RecordService {
 
     public static GetNewTeamMmeberModel(teamId: string): TeamMemberModel {
         return new TeamMemberModel({
+            spId: '',
             name: 'New Team Member',
             email: 'Member Email',
             role: TeamMemberRole.default,
