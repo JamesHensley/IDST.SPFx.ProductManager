@@ -2,9 +2,9 @@
 // Please do not change this file!
 interface CssExports {
   'appIcon': string;
-  'attachmentItem': string;
   'attachmentManager': string;
   'bordered': string;
+  'clickableItem': string;
   'fieldHead': string;
   'fieldValue': string;
   'formStyles': string;

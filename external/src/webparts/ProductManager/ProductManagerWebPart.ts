@@ -134,13 +134,15 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   /** Updates one or more settings in the application */
   public UpdateAppSettings(newSettings: Partial<IProductManagerWebPartProps>): Promise<IProductManagerWebPartProps> {
     const newRecord = Object.assign(Object.assign(Object.assign({}, this.appSettings), this.properties), newSettings);
-console.log('Attempting to update SPList with: ', newRecord);
+console.log('UpdateAppSettings 1: ', newRecord);
     return RecordService.AddListRecord(this.properties.settingsListName, newRecord)
     .then(d => JSON.parse(d))
     .then(d => {
-      Object.keys(d).forEach(p => this.properties[p] = d[p]);
+      this.appSettings = d;
+      //Object.keys(d).forEach(p => this.properties[p] = d[p]);
       this.render();
-      return Promise.resolve(this.properties);
+console.log('UpdateAppSettings 2: ', this.appSettings);
+      return Promise.resolve(this.appSettings);
     })
     .catch(e => Promise.reject(e));
   }

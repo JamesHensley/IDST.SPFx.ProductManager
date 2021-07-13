@@ -131,7 +131,7 @@ export class RecordService {
         return null;
     }
 
-    public static GetNewTeamMmeberModel(teamId: string): TeamMemberModel {
+    public static GetNewTeamMemberModel(teamId: string): TeamMemberModel {
         return new TeamMemberModel({
             spId: '',
             name: 'New Team Member',

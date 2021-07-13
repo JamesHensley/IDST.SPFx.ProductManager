@@ -12,9 +12,9 @@
             "name": "Team 1 - BA",
             "description": "Team 1 Description",
             "members": [
-                { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": "lead", "active": true, "memberId": "232fe7d0-a1b5-4c0d-98dc-17eb7c804b86" },
-                { "spId": "47dc2f4da49d", "name": "Person 2", "email": "person2@email.com", "role": "default", "active": true, "memberId": "6e3ce2d8-73cc-42e1-b542-93f0a388956f" },
-                { "spId": "8f68befdbf8c", "name": "Person 3", "email": "person3@email.com", "role": "default", "active": true, "memberId": "b566d1b5-3377-4dd5-80e2-b959b58f9f65" }
+                { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": "Lead", "active": true, "memberId": "232fe7d0-a1b5-4c0d-98dc-17eb7c804b86" },
+                { "spId": "47dc2f4da49d", "name": "Person 2", "email": "person2@email.com", "role": "Member", "active": true, "memberId": "6e3ce2d8-73cc-42e1-b542-93f0a388956f" },
+                { "spId": "8f68befdbf8c", "name": "Person 3", "email": "person3@email.com", "role": "Member", "active": true, "memberId": "b566d1b5-3377-4dd5-80e2-b959b58f9f65" }
             ],
             "active": true,
             "shortName": "T1"
@@ -25,9 +25,9 @@
             "name": "Team 2 - BS",
             "description": "Team 2 Description",
             "members": [
-                { "spId": "0cfd1d22797b", "name": "Person 4", "email": "person4@email.com", "role": "lead", "active": true, "memberId": "c5912c2b-12fd-460e-9de6-321f9b440486" },
-                { "spId": "970f0495d8b6", "name": "Person 5", "email": "person5@email.com", "role": "default", "active": true, "memberId": "aa98bf56-e7a2-42b0-86b5-74d2e7a41f48" },
-                { "spId": "9face56f210c", "name": "Person 6", "email": "person6@email.com", "role": "default", "active": true, "memberId": "fb3ba70b-5f29-4bcb-ab96-fc7434c230a8" }
+                { "spId": "0cfd1d22797b", "name": "Person 4", "email": "person4@email.com", "role": "Lead", "active": true, "memberId": "c5912c2b-12fd-460e-9de6-321f9b440486" },
+                { "spId": "970f0495d8b6", "name": "Person 5", "email": "person5@email.com", "role": "Member", "active": true, "memberId": "aa98bf56-e7a2-42b0-86b5-74d2e7a41f48" },
+                { "spId": "9face56f210c", "name": "Person 6", "email": "person6@email.com", "role": "Member", "active": true, "memberId": "fb3ba70b-5f29-4bcb-ab96-fc7434c230a8" }
             ],
             "active": true,
             "shortName": "T2"
@@ -38,9 +38,9 @@
             "name": "Team 3 - S",
             "description": "Team 3 Description",
             "members": [
-                { "spId": "b4dacb1080c7", "name": "Person 7", "email": "person7@email.com", "role": "lead", "active": true, "memberId": "54b40ef7-b489-4a3b-9266-6c44da4bbe09" },
-                { "spId": "f9ee1234acbd", "name": "Person 8", "email": "person8@email.com", "role": "default", "active": true, "memberId": "a62460e5-43c7-4e11-8d2e-7b402d17c65f" },
-                { "spId": "90073312311f", "name": "Person 9", "email": "person9@email.com", "role": "default", "active": true, "memberId": "c744ae48-ab42-4f1a-acab-cff7d5fd5bac" }
+                { "spId": "b4dacb1080c7", "name": "Person 7", "email": "person7@email.com", "role": "Lead", "active": true, "memberId": "54b40ef7-b489-4a3b-9266-6c44da4bbe09" },
+                { "spId": "f9ee1234acbd", "name": "Person 8", "email": "person8@email.com", "role": "Member", "active": true, "memberId": "a62460e5-43c7-4e11-8d2e-7b402d17c65f" },
+                { "spId": "90073312311f", "name": "Person 9", "email": "person9@email.com", "role": "Member", "active": true, "memberId": "c744ae48-ab42-4f1a-acab-cff7d5fd5bac" }
             ],
             "active": true,
             "shortName": "ST"
@@ -51,9 +51,9 @@
             "name": "Team 4 - F",
             "description": "Team 4 Description",
             "members": [
-                { "spId": "b4dacb1080c7", "name": "Person 10", "email": "person10@email.com", "role": "lead", "active": true, "memberId": "77541b09-6b08-4cf7-ab5e-28f5042546eb" },
-                { "spId": "f9ee1234acbd", "name": "Person 11", "email": "person11@email.com", "role": "default", "active": true, "memberId": "28eedcd1-8f87-4163-a329-9eb43f4643ea" },
-                { "spId": "90073312311f", "name": "Person 12", "email": "person12@email.com", "role": "default", "active": true, "memberId": "c35f9fda-6f5c-44cd-8fbb-8799a660c3fb" }
+                { "spId": "b4dacb1080c7", "name": "Person 10", "email": "person10@email.com", "role": "Lead", "active": true, "memberId": "77541b09-6b08-4cf7-ab5e-28f5042546eb" },
+                { "spId": "f9ee1234acbd", "name": "Person 11", "email": "person11@email.com", "role": "Member", "active": true, "memberId": "28eedcd1-8f87-4163-a329-9eb43f4643ea" },
+                { "spId": "90073312311f", "name": "Person 12", "email": "person12@email.com", "role": "Member", "active": true, "memberId": "c35f9fda-6f5c-44cd-8fbb-8799a660c3fb" }
             ],
             "active": true,
             "shortName": "F"

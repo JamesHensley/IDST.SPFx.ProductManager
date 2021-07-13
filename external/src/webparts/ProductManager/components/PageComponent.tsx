@@ -21,7 +21,7 @@ export interface IPageComponentState {
     currentProduct: ProductModel;
     allProducts: Array<ProductModel>;
     view: string;
-    chosenTeam: TeamModel;
+    chosenTeamId: string;
     lastUpdated: number;
 }
 
@@ -33,14 +33,13 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 
     constructor(props: IPageComponentProps) {
         super(props);
-
         this.state = {
             panelVisible: false,
             panelEditing: false,
             currentProduct: null,
             allProducts: [],
             view: 'ProductList',
-            chosenTeam: null,
+            chosenTeamId: null,
             lastUpdated: new Date().getTime()
         };
 
@@ -52,6 +51,8 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     public render(): React.ReactElement<{}> {
+        console.log('PageComponent.render: ', this.props, this.state);
+
         return(
             <>
                 <ProductDetailPane
@@ -90,7 +91,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                                 {this.state.view === 'TeamView' &&
                                     <TeamView
                                         key={new Date().getTime()}
-                                        teamModel={this.state.chosenTeam}
+                                        teamModel={AppService.AppSettings.teams.reduce((t,n) => n.teamId == this.state.chosenTeamId ? n : t, null)}
                                     />
                                 }
                             </div>
@@ -102,6 +103,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     public componentDidMount(): void {
+        console.log('PageComponent.componentDidMount: ', this.props, this.state);
         this.receivers = {
             productEvents: this.productsUpdated.bind(this),
             cmdbarEvents: this.cmdBarItemClicked.bind(this)
@@ -176,9 +178,8 @@ export default class PageComponent extends React.Component <IPageComponentProps,
             case 'teamView':
                 this.setState({
                     view: 'TeamView',
-                    chosenTeam: AppService.AppSettings.teams
-                        .reduce((t, n) => n.teamId === item.data.id ? n : t)
-                    });
+                    chosenTeamId: item.data.id
+                });
                 break;
             case 'viewList':
                 this.setState({ view: 'ProductList' });
@@ -193,13 +194,13 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                 break;
             case 'newTeamMember':
                 console.log('Should be adding a new team member here: ', this.state);
-                const teamId: string = this.state.chosenTeam.teamId;
+                const teamId: string = this.state.chosenTeamId;
                 const team = AppService.AppSettings.teams
-                    .reduce((t, n) => n.teamId === this.state.chosenTeam.teamId ? n : t);
-                team.members.push(RecordService.GetNewTeamMmeberModel(teamId));
+                    .reduce((t, n) => n.teamId === this.state.chosenTeamId ? n : t);
+                team.members.push(RecordService.GetNewTeamMemberModel(teamId));
                 this.setState({
                     view: 'TeamView',
-                    chosenTeam: team,
+                    // chosenTeamId: team,
                     lastUpdated: new Date().getTime()
                 });
                 break;

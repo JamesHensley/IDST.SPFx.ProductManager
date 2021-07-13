@@ -127,11 +127,11 @@ div[class*="pageContent"] {
   font-size: .9rem;
 }
 
-.attachmentItem:hover {
+.clickableItem:hover {
   background-color: rgba(0, 0, 0, 0.07);
 }
 
-.attachmentItem {
+.clickableItem {
   cursor: pointer;
 }
 

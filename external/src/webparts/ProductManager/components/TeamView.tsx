@@ -1,5 +1,6 @@
-import { Toggle } from '@fluentui/react';
+import { Stack, Toggle } from '@fluentui/react';
 import * as React from 'react';
+import * as styles from './ProductManager.module.scss';
 
 import { TeamMemberModel, TeamMemberRole, TeamModel } from '../../../models/TeamModel';
 import AppService from '../../../services/AppService';
@@ -19,16 +20,17 @@ export interface ITeamViewState {
 export default class TeamView extends React.Component <ITeamViewProps, ITeamViewState> {
     constructor(props: ITeamViewProps) {
         super(props);
+        console.log('TeamView.constructor: ', props);
         this.state = {
             teamModel: this.props.teamModel,
-            showInActive: false,
+            showInActive: true,
             selectedMember: null
         };
     }
 
     public render(): React.ReactElement<ITeamViewProps> {
         return (
-            <>
+            <Stack>
                 <h1>Not all Team View Features Are Available Yet</h1>
                 <h2>Team View For {this.state.teamModel.name}</h2>
                 <Toggle
@@ -41,9 +43,11 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
                     .filter(f => this.state.showInActive ? true : f.active)
                     .map(d => {
                         return (
-                            <div key={d.memberId} onClick={this.showTeamMemberDetail.bind(this, d)}>
-                                {d.name} {TeamMemberRole[d.role]}
-                            </div>
+                            <Stack horizontal key={d.memberId}>
+                                <div className={styles.clickableItem} key={d.memberId} onClick={this.showTeamMemberDetail.bind(this, d)}>
+                                    {d.name} - {d.role}
+                                </div>
+                            </Stack>
                         );
                     })
                 }
@@ -54,7 +58,7 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
                         updateMemberCallBack={this.updateMember.bind(this)}
                     />
                 }
-            </>
+            </Stack>
         );
     }
 
@@ -67,13 +71,13 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
     }
 
     private updateTeam(newTeam: TeamModel): void {
-        console.log('updateTeam: ', newTeam);
+        console.log('TeamView.updateTeam: ', newTeam);
     }
 
     private updateMember(newModel: TeamMemberModel): void {
-        console.log('updateMember: ', newModel);
+        console.log('TeamView.updateMember 1: ', newModel);
 
-        const newTeam = Object.assign({}, this.state.teamModel);
+        const newTeam = Object.assign(new TeamModel(), this.state.teamModel);
         newTeam.members = this.state.teamModel.members
             .filter(f => f.memberId !== newModel.memberId)
             .concat([newModel]);
@@ -82,15 +86,24 @@ export default class TeamView extends React.Component <ITeamViewProps, ITeamView
 
         AppService.UpdateAppSetting({ teams: teams })
         .then(newSettings => {
-            console.log('TeamView.UpdateMember: ', newSettings);
-            // this.setState({
-            //     teamModel: newSettings.teams
-            //     .reduce((t, n) => n.teamId === this.state.teamModel.teamId ? n : t, null)
-            // });
+            console.log('TeamView.updateMember 2: ', newSettings);
+            /*
+            this.setState({
+                teamModel: newSettings.teams
+                .reduce((t, n) => n.teamId === this.state.teamModel.teamId ? n : t, null)
+            });
+            */
         });
     }
 
     private toggleActiveMembers(): void {
         this.setState({ showInActive: !this.state.showInActive });
     }
+
+    private toggleMemberActive(member: TeamMemberModel): void {
+        member.active = !member.active;
+        this.updateMember(member);
+    }
+
+    public componentDidMount(): void { console.log('TeamView.componentDidMount: ', this.props, this.state); }
 }

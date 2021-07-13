@@ -17,13 +17,14 @@ export interface ITeamMemberDetailPaneState {
     draftMember: TeamMemberModel;
 }
 
-export default class TeamView extends React.Component <ITeamMemberDetailPaneProps, ITeamMemberDetailPaneState> {
+export default class TeamMemberDetailPane extends React.Component <ITeamMemberDetailPaneProps, ITeamMemberDetailPaneState> {
     constructor(props: ITeamMemberDetailPaneProps) {
         super(props);
         this.state = { draftMember: new TeamMemberModel(this.props.teamMemberModel) };
     }
 
     public render(): React.ReactElement<ITeamMemberDetailPaneProps> {
+        console.log('TeamMemberDetailPane.render');
         return (
             <Panel
                 className={styles.productDetailPane}
@@ -58,13 +59,13 @@ export default class TeamView extends React.Component <ITeamMemberDetailPaneProp
                         labelValue='Team Member Role'
                         editing={true}
                         fieldRef={'role'}
-                        fieldValue={this.state.draftMember.role}
-                        onUpdated={this.updateMember.bind(this)}
+                        fieldValue={TeamMemberRole[this.state.draftMember.role]}
+                        onUpdated={this.updateRole.bind(this)}
                         allowNull={false}
                         options={Object.keys(TeamMemberRole).map(d => ({
                             key: d,
                             value: TeamMemberRole[d],
-                            selected: this.state.draftMember.role === d
+                            selected: this.state.draftMember.role === TeamMemberRole[d]
                             } as KeyValPair)
                         )}
                     />
@@ -73,11 +74,17 @@ export default class TeamView extends React.Component <ITeamMemberDetailPaneProp
         );
     }
 
+    private updateRole(roleVal: string): void {
+        console.log('TeamMemberDetailPane.updateRole: ', roleVal);
+        const newDraft = new TeamMemberModel(this.state.draftMember);
+        newDraft.role = TeamMemberRole[roleVal];
+        this.setState({ draftMember: newDraft });
+    }
+
     private updateMember(fieldVal: any, fieldRef: string): void {
         const newDraft = new TeamMemberModel(this.state.draftMember);
         newDraft[fieldRef] = fieldVal;
         this.setState({ draftMember: newDraft });
-        
     }
 
     private saveMemberDetails(): void {

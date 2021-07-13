@@ -19,7 +19,7 @@ export interface IAttachmentComponentState {
 
 export class AttachmentComponent extends React.Component<IAttachmentComponentProps, IAttachmentComponentState> {
     private grid = `${styles.grid} ${styles.attachmentManager}`;
-    private row = `${styles.gridRow} ${styles.attachmentItem} ${styles.bordered}`;
+    private row = `${styles.gridRow} ${styles.clickableItem} ${styles.bordered}`;
 
     public render(): React.ReactElement<IAttachmentComponentProps> {
         const stackItemStyles = { root: { display: 'flex', minWidth: '50%', cursor: 'pointer' } };
@@ -45,7 +45,7 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
                     {(this.props.AttachmentItems || []).map(a => {
                         const docIcon = getFileTypeIconProps({ extension: (a.Url.split('.').reverse()[0]), size: 16, imageFileType: 'png' });
                         return (
-                            <Stack horizontal key={a.Id} onClick={this.attachmentClicked.bind(this, a)} className={styles.attachmentItem}>
+                            <Stack horizontal key={a.Id} onClick={this.attachmentClicked.bind(this, a)} className={styles.clickableItem}>
                                 <Stack.Item grow styles={stackItemStyles}>
                                     <span style={{ minWidth: '25px' }}><Icon {...docIcon}/></span>
                                     {a.Title}

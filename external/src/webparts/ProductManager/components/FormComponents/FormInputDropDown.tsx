@@ -5,7 +5,7 @@ import * as styles from '../ProductManager.module.scss';
 export interface KeyValPair {
     key: string;
     value: any;
-    data?: any;
+    // data?: any;
     selected: boolean;
 }
 
@@ -22,10 +22,16 @@ export class IFormInputDropDownProps {
 
 export class FormInputDropDown extends React.Component<IFormInputDropDownProps, {}> {
     render(): React.ReactElement<IFormInputDropDownProps> {
-        const givenOptions = this.props.options.map(d => { return { key: d.key, text: d.value } as IDropdownOption; }).sort((a, b) => a.key > b.key ? 1 : (a.key < b.key ? -1 : 0));
-        const options = this.props.allowNull ? [{ key: null, text: 'None' }].concat(givenOptions) : givenOptions;
+        const givenOptions = this.props.options.map(d => {
+            return {
+                key: d.key,
+                text: d.value,
+                selected: d.selected
+            } as IDropdownOption;
+        }).sort((a, b) => a.key > b.key ? 1 : (a.key < b.key ? -1 : 0));
+        const options: Array<IDropdownOption> = this.props.allowNull ? [{ key: null, text: 'None' }].concat(givenOptions) : givenOptions;
         const nullOption = this.props.allowNull ? { key: null, text: 'None' } : { key: null, text: '' };
-        const selectedKVP = options.reduce((t,n) => n.key === this.props.fieldValue ? n : t, nullOption);
+        const selectedKVP = options.reduce((t,n) => n.selected ? n : t, nullOption);
 
         return(
             <div className={`${styles.padTop2} ${styles.fieldValue}`}
@@ -41,7 +47,7 @@ export class FormInputDropDown extends React.Component<IFormInputDropDownProps, 
                         styles={{ root: { width: '100%' } }}
                         multiSelect={false}
                         options={options}
-                        defaultSelectedKey={selectedKVP.key}
+                        // defaultSelectedKey={selectedKVP.key}
                         onChange={this.fieldUpdated.bind(this)}
                     />
                 }
