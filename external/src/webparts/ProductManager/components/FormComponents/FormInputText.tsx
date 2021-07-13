@@ -1,16 +1,14 @@
 import * as React from 'react';
-
-import { Label, TextField, Text } from '@fluentui/react';
-
 import * as styles from '../ProductManager.module.scss';
 
+import { Label, TextField, Text } from '@fluentui/react';
 import { IFormInputProps } from './IFormInputProps';
 
 export class FormInputText extends React.Component<IFormInputProps, {}> {
 
     render(): React.ReactElement<IFormInputProps> {
         const ctrlStyles = { root: { width: '100%' } };
-        return(
+        return (
             <div className={`${styles.padTop2} ${styles.fieldValue}`} style={{ width: '100%' }}>
                 <Label>{this.props.labelValue}</Label>
                 { !this.props.editing &&
@@ -23,7 +21,7 @@ export class FormInputText extends React.Component<IFormInputProps, {}> {
                         rows={this.props.editLines ? this.props.editLines : 1}
                         onChange={this.fieldUpdated.bind(this)}
                         styles={ctrlStyles}
-                        onGetErrorMessage={this.props.onGetErrorMessage ? this.props.onGetErrorMessage.bind(this) : undefined}
+                        onGetErrorMessage={this.props.onGetErrorMessage}
                     />
                 }
             </div>
