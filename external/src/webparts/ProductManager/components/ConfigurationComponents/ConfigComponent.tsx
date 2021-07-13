@@ -1,4 +1,4 @@
-import { Stack, Toggle } from '@fluentui/react';
+import { Label, Stack, Toggle } from '@fluentui/react';
 import * as React from 'react';
 import { TeamMemberModel, TeamModel } from '../../../../models/TeamModel';
 import AppService from '../../../../services/AppService';
@@ -10,19 +10,25 @@ export interface IConfigComponentState {}
 
 export default class ConfigComponent extends React.Component <IConfigComponentProps, IConfigComponentState> {
     public render(): React.ReactElement<IConfigComponentProps> {
+
         return (
-            <Stack horizontal key={new Date().getTime()}>
-                {
-                    AppService.AppSettings.teams
-                    .sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0))
-                    .map(d => {
-                        return (
-                            <Stack.Item grow key={d.teamId}>
-                                <TeamConfig teamId={d.teamId} saveTeam={this.updateTeam.bind(this)} />
-                            </Stack.Item>
-                        );
-                    })
-                }
+            <Stack>
+                <Stack.Item className={styles.configZone}>
+                    <Label style={{ fontSize: '1.5rem' }}>Teams</Label>
+                    <Stack horizontal key={new Date().getTime()}>
+                        {
+                            AppService.AppSettings.teams
+                            .sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0))
+                            .map(d => {
+                                return (
+                                    <Stack.Item grow key={d.teamId}>
+                                        <TeamConfig teamId={d.teamId} saveTeam={this.updateTeam.bind(this)} />
+                                    </Stack.Item>
+                                );
+                            })
+                        }
+                    </Stack>
+                </Stack.Item>
             </Stack>
         );
     }

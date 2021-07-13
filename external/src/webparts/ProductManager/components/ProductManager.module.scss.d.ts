@@ -6,6 +6,7 @@ interface CssExports {
   'bordered': string;
   'card': string;
   'clickableItem': string;
+  'configZone': string;
   'fieldHead': string;
   'fieldValue': string;
   'formStyles': string;

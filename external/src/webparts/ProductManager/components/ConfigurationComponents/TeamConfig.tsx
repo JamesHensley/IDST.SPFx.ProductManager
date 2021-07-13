@@ -1,4 +1,4 @@
-import { Label, Panel, PanelType, Stack } from '@fluentui/react';
+import { Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import * as React from 'react';
 import { TeamMemberModel, TeamModel } from '../../../../models/TeamModel';
 import AppService from '../../../../services/AppService';
@@ -56,11 +56,11 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                 <Panel
                     className={styles.productDetailPane}
                     isHiddenOnDismiss={false}
+                    isLightDismiss={true}
                     isOpen={this.state.showPane}
                     onDismiss={this.closePane.bind(this)}
                     closeButtonAriaLabel='Close'
                     type={PanelType.medium}
-                    isLightDismiss={false}
                     headerText={`${this.state.draftTeam.name} [${this.state.draftTeam.active ? 'Active' : 'InActive'}]`}
                 >
                     <Stack>
@@ -73,6 +73,7 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                                 oneRow={true}
                             />
                         </Stack.Item>
+                        <Separator />
                         <Stack horizontal tokens={{ childrenGap: 10 }}>
                             <Stack.Item grow={4}>
                                 <FormInputText
