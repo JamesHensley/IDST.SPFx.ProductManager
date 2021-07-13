@@ -52,8 +52,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     public render(): React.ReactElement<{}> {
-        console.log('PageComponent.render: ', this.props, this.state);
-
         return(
             <>
                 <ProductDetailPane
@@ -107,7 +105,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     public componentDidMount(): void {
-        console.log('PageComponent.componentDidMount: ', this.props, this.state);
         this.receivers = {
             productEvents: this.productsUpdated.bind(this),
             cmdbarEvents: this.cmdBarItemClicked.bind(this)
@@ -128,26 +125,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
             currentProduct: this.state.allProducts.reduce((t,n) => n.guid === prodId ? n : t, null)
         });
     }
-
-    /*
-    private eventPaneUpdated(continueEditing: boolean): void {
-        RecordService.GetProducts()
-        .then(allProducts => {
-            // We're either going to use the GUID of the current product (update) OR find the GUID of the new product (created)
-            const currProdId = this.state.currentProduct.guid || this.state.allProducts
-                .map(d => d.guid).reduce((t,n) => ((allProducts.map(d => d.guid)).indexOf(n) < 0) ? n : t, null)
-
-            this.setState({
-                allProducts: allProducts,
-                panelEditing: continueEditing,
-                panelVisible: true,
-                currentProduct: allProducts.reduce((t,n) => n.guid === this.state.currentProduct.guid ? n : t, null)
-            });
-        })
-        .then(() => Promise.resolve())
-        .catch(e => Promise.reject(e));
-    }
-    */
 
     private eventPaneClose(): void {
         this.setState({
@@ -174,7 +151,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
     }
 
     private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
-        console.log('PageComponent.cmdBarItemClicked: ', item);
+        // console.log('PageComponent.cmdBarItemClicked: ', item);
         switch (item['data-automation-id']) {
             case 'viewRollup':
                 this.setState({ view: 'RollUp' });

@@ -23,6 +23,7 @@ export class FormInputText extends React.Component<IFormInputProps, {}> {
                         rows={this.props.editLines ? this.props.editLines : 1}
                         onChange={this.fieldUpdated.bind(this)}
                         styles={ctrlStyles}
+                        onGetErrorMessage={this.props.onGetErrorMessage ? this.props.onGetErrorMessage.bind(this) : undefined}
                     />
                 }
             </div>

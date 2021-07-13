@@ -29,8 +29,6 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
     }
 
     public render(): React.ReactElement<ITeamConfigProps> {
-        console.log('TeamConfig.render: ', this.props, this.state);
-
         return (
             <>
                 <Stack className={styles.card} style={{ opacity: this.state.draftTeam.active ? 1 : 0.4 }}>
@@ -85,10 +83,11 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                             </Stack.Item>
                             <Stack.Item grow={1}>
                                 <FormInputText
-                                    labelValue={'Team Initials (1 or 2 Characters)'} editing={true}
+                                    labelValue={'Team Initials'} editing={true}
                                     fieldValue={this.state.draftTeam.shortName}
                                     fieldRef={'shortName'}
                                     onUpdated={this.updateTeamField.bind(this)}
+                                    onGetErrorMessage={((val: string) => (val.length < 1 || val.length > 2) ? 'Should only be 1 or 2 characters' : '').bind(this)}
                                 />
                             </Stack.Item>
                         </Stack>
