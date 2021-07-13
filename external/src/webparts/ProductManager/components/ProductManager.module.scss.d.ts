@@ -4,6 +4,7 @@ interface CssExports {
   'appIcon': string;
   'attachmentManager': string;
   'bordered': string;
+  'card': string;
   'clickableItem': string;
   'fieldHead': string;
   'fieldValue': string;
@@ -39,6 +40,7 @@ interface CssExports {
   'panelHead': string;
   'personaCoin': string;
   'personaText': string;
+  'pointer': string;
   'productDetailPane': string;
   'productList': string;
   'productManager': string;

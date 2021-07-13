@@ -159,3 +159,15 @@ div[class*="pageContent"] {
 .padLeft2 { padding-left: 10px; }
 .padLeft3 { padding-left: 15px; }
 .padLeft4 { padding-left: 20px; }
+
+.card {
+  margin: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #f0f0f0;
+  border-color: #ddd;
+}
+
+.pointer {
+  cursor: pointer;
+}

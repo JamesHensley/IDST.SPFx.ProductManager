@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import AppService from '../../../services/AppService';
 import { CommandBar, ICommandBarItemProps, IContextualMenuItem } from '@fluentui/react';
+import { RecordService } from '../../../services/RecordService';
 
 export interface IProductManagerCmdBarProps {
     appView: string;
@@ -32,6 +33,16 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
                         iconProps: { iconName: 'AddFriend' },
                         ['data-automation-id']: 'newTeamMember',
                         onClick: this.itemClicked.bind(this)
+                    } as IContextualMenuItem
+                ];
+            case 'ConfigView':
+                return [
+                    {
+                        key: 'newTeam',
+                        text: 'Team',
+                        iconProps: { iconName: 'AddGroup' },
+                        ['data-automation-id']: 'newTeam',
+                        onClick: this.newTeamClicked.bind(this)
                     } as IContextualMenuItem
                 ];
         }
@@ -86,6 +97,13 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
                                             } as IContextualMenuItem;
                                         })
                                     }
+                                },
+                                {
+                                    key: 'configView',
+                                    text: 'Configuration',
+                                    iconProps: { iconName: 'Settings' },
+                                    ['data-automation-id']: 'configView',
+                                    onClick: this.itemClicked.bind(this)                                    
                                 }
                             ]
                         }
@@ -97,5 +115,11 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
 
     private itemClicked(ev: any, item: ICommandBarItemProps): void {
         AppService.MenuItemClicked(item);
+    }
+
+    private newTeamClicked(): void {
+        const newTeam = RecordService.GetNewTeamModel();
+        const teams = [].concat.apply(AppService.AppSettings.teams, [newTeam]);
+        AppService.UpdateAppSetting({ teams: teams });
     }
 }

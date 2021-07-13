@@ -12,6 +12,7 @@ import { ICommandBarItemProps } from '@fluentui/react';
 import RollupView from './RollupView';
 import TeamView from './TeamView';
 import { TeamMemberModel, TeamModel } from '../../../models/TeamModel';
+import ConfigComponent from './ConfigurationComponents/ConfigComponent';
 
 export interface IPageComponentProps { }
 
@@ -93,6 +94,9 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                                         key={new Date().getTime()}
                                         teamModel={AppService.AppSettings.teams.reduce((t,n) => n.teamId == this.state.chosenTeamId ? n : t, null)}
                                     />
+                                }
+                                {this.state.view === 'ConfigView' &&
+                                    <ConfigComponent />
                                 }
                             </div>
                         </div>
@@ -184,6 +188,9 @@ export default class PageComponent extends React.Component <IPageComponentProps,
             case 'viewList':
                 this.setState({ view: 'ProductList' });
                 break;
+            case 'configView':
+                this.setState({ view: 'ConfigView' });
+                break;
             case 'newProduct':
                 const newRecord = RecordService.GetNewProductModel(item.data.id);
                 this.setState({
@@ -203,7 +210,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                     // chosenTeamId: team,
                     lastUpdated: new Date().getTime()
                 });
-                break;
+                break;      
         }
         return Promise.resolve();
     }

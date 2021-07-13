@@ -11,7 +11,7 @@ import { NotificationService, NotificationType } from './NotificationService';
 import { TaskModel, TaskState } from '../models/TaskModel';
 import addDays from 'date-fns/addDays';
 import { EventModel } from '../models/EventModel';
-import { TeamMemberModel, TeamMemberRole } from '../models/TeamModel';
+import { TeamMemberModel, TeamMemberRole, TeamModel } from '../models/TeamModel';
 
 export interface IResult {
     productModel: ProductModel;
@@ -139,6 +139,17 @@ export class RecordService {
             role: TeamMemberRole.default,
             active: true,
             memberId: uuidv4()
+        });
+    }
+
+    public static GetNewTeamModel(): TeamModel {
+        return new TeamModel({
+            teamId: uuidv4(),
+            name: 'New Team',
+            shortName: 'NT',
+            description: 'New team supporting something awesome',
+            active: true,
+            members: []
         });
     }
 
