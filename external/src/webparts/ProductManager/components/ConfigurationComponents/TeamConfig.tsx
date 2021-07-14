@@ -1,135 +1,131 @@
-import { Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import * as React from 'react';
-import { TeamMemberModel, TeamModel } from '../../../../models/TeamModel';
+import * as styles from '../ProductManager.module.scss';
+
 import AppService from '../../../../services/AppService';
+
+import { Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
+import { TeamModel } from '../../../../models/TeamModel';
 import { FormInputText } from '../FormComponents/FormInputText';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
-import * as styles from '../ProductManager.module.scss';
 import TeamMemberConfig from './TeamMemberConfig';
 
-export interface ITeamConfigProps {
-    teamId: string;
-    saveTeam: (newModel: TeamModel, moveMember?: TeamMemberModel, newTeamId?: string) => void;
-}
+export interface ITeamConfigProps { }
 
 export interface ITeamConfigState {
     draftTeam: TeamModel;
     showPane: boolean;
+    lastUpdated: number;
 }
 
 export default class TeamConfig extends React.Component <ITeamConfigProps, ITeamConfigState> {
-    private hasUpdates: boolean = false;
+    private hasUpdates = false;
 
     constructor(props: ITeamConfigProps) {
         super(props);
         this.state = {
-            draftTeam: AppService.AppSettings.teams.reduce((t, n) => n.teamId === props.teamId ? n : t, null),
-            showPane: false
-        }
+            draftTeam: null,
+            showPane: false,
+            lastUpdated: new Date().getTime()
+        };
     }
 
     public render(): React.ReactElement<ITeamConfigProps> {
         return (
-            <>
-                <Stack className={styles.card} style={{ opacity: this.state.draftTeam.active ? 1 : 0.4 }}>
-                    <Label onClick={this.showPane.bind(this)} className={styles.pointer}>{this.state.draftTeam.name}</Label>
-                    <Label onClick={this.showPane.bind(this)} className={styles.pointer}>{this.state.draftTeam.active ? 'Active Team' : 'InActive Team'}</Label>
-                    <Stack.Item>
-                        {
-                            (this.state.draftTeam.members || [])
-                            .sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0))
-                            .map(d => {
-                                return (
-                                    <TeamMemberConfig key={d.memberId}
-                                        teamId={this.state.draftTeam.teamId}
-                                        teamMemberId={d.memberId}
-                                        saveMember={this.updateTeamMember.bind(this)}
-                                        canEditMembers={this.state.draftTeam.active}
-                                    />
-                                );
-                            })
-                        }
-                    </Stack.Item>
+            <Stack className={styles.configZone}>
+                <Label style={{ fontSize: '1.5rem' }}>Teams</Label>
+                <Stack horizontal key={new Date().getTime()}>
+                    {
+                        AppService.AppSettings.teams.map(d => {
+                            return (
+                                <Stack.Item grow key={d.teamId}>
+                                    <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }}>
+                                        <Stack.Item onClick={this.showPane.bind(this, d)}>
+                                            <Label className={`${styles.pointer} ${styles.padBottom0}`}>{d.name}</Label>
+                                            <Label className={`${styles.pointer} ${styles.padTop0}`}>{d.active ? 'Active Team' : 'InActive Team'}</Label>
+                                        </Stack.Item>
+                                        <TeamMemberConfig teamId={d.teamId} canEditMembers={d.active} triggerUpdate={this.membersUpdated.bind(this)} />
+                                    </Stack>
+                                </Stack.Item>
+                            );
+                        })
+                    }
                 </Stack>
-                <Panel
-                    className={styles.productDetailPane}
-                    isHiddenOnDismiss={false}
-                    isLightDismiss={true}
-                    isOpen={this.state.showPane}
-                    onDismiss={this.closePane.bind(this)}
-                    closeButtonAriaLabel='Close'
-                    type={PanelType.medium}
-                    headerText={`${this.state.draftTeam.name} [${this.state.draftTeam.active ? 'Active' : 'InActive'}]`}
-                >
-                    <Stack>
-                        <Stack.Item align='end'>
-                            <FormInputToggle
-                                labelValue={'Active Team'}
-                                fieldValue={this.state.draftTeam.active}
-                                fieldRef={'active'}
+                {
+                    this.state.draftTeam && 
+                    <Panel
+                        className={styles.productDetailPane}
+                        isHiddenOnDismiss={false}
+                        isLightDismiss={true}
+                        isOpen={this.state.showPane}
+                        onDismiss={this.closePane.bind(this)}
+                        closeButtonAriaLabel='Close'
+                        type={PanelType.medium}
+                        headerText={`${this.state.draftTeam.name} [${this.state.draftTeam.active ? 'Active' : 'InActive'}]`}
+                    >
+                        <Stack>
+                            <Stack.Item align='end'>
+                                <FormInputToggle
+                                    labelValue={'Active Team'}
+                                    fieldValue={this.state.draftTeam.active}
+                                    fieldRef={'active'}
+                                    onUpdated={this.updateTeamField.bind(this)}
+                                    oneRow={true}
+                                />
+                            </Stack.Item>
+                            <Separator />
+                            <Stack horizontal tokens={{ childrenGap: 10 }}>
+                                <Stack.Item grow={4}>
+                                    <FormInputText
+                                        labelValue={'Team Name'} editing={true}
+                                        fieldValue={this.state.draftTeam.name}
+                                        fieldRef={'name'}
+                                        onUpdated={this.updateTeamField.bind(this)}
+                                    />
+                                </Stack.Item>
+                                <Stack.Item grow={1}>
+                                    <FormInputText
+                                        labelValue={'Team Initials'} editing={true}
+                                        fieldValue={this.state.draftTeam.shortName}
+                                        fieldRef={'shortName'}
+                                        onUpdated={this.updateTeamField.bind(this)}
+                                        onGetErrorMessage={((val: string) => (val.length < 1 || val.length > 2) ? 'Should only be 1 or 2 characters' : '').bind(this)}
+                                    />
+                                </Stack.Item>
+                            </Stack>
+                            <FormInputText
+                                labelValue={'Description'} editing={true}
+                                fieldValue={this.state.draftTeam.description}
+                                fieldRef={'description'}
+                                editLines={5}
                                 onUpdated={this.updateTeamField.bind(this)}
-                                oneRow={true}
                             />
-                        </Stack.Item>
-                        <Separator />
-                        <Stack horizontal tokens={{ childrenGap: 10 }}>
-                            <Stack.Item grow={4}>
-                                <FormInputText
-                                    labelValue={'Team Name'} editing={true}
-                                    fieldValue={this.state.draftTeam.name}
-                                    fieldRef={'name'}
-                                    onUpdated={this.updateTeamField.bind(this)}
-                                />
-                            </Stack.Item>
-                            <Stack.Item grow={1}>
-                                <FormInputText
-                                    labelValue={'Team Initials'} editing={true}
-                                    fieldValue={this.state.draftTeam.shortName}
-                                    fieldRef={'shortName'}
-                                    onUpdated={this.updateTeamField.bind(this)}
-                                    onGetErrorMessage={((val: string) => (val.length < 1 || val.length > 2) ? 'Should only be 1 or 2 characters' : '').bind(this)}
-                                />
-                            </Stack.Item>
                         </Stack>
-                        <FormInputText
-                            labelValue={'Description'} editing={true}
-                            fieldValue={this.state.draftTeam.description}
-                            fieldRef={'description'}
-                            editLines={5}
-                            onUpdated={this.updateTeamField.bind(this)}
-                        />
-                    </Stack>
-                </Panel>
-            </>
+                    </Panel>
+                }                    
+            </Stack>
         );
     }
 
-    private showPane(): void { this.setState({ showPane: true }) }
+    private showPane(model: TeamModel): void { this.setState({ showPane: true, draftTeam: model }); }
     private closePane(): void {
         if (this.hasUpdates) {
-            // Saving appsettings will cause an unmount/reload on all components
-            this.props.saveTeam(this.state.draftTeam);
+            this.saveTeam();
         } else {
-            this.setState({ showPane: false });
+            this.setState({ showPane: false, draftTeam: null });
         }
     }
 
-    private updateTeamMember(member: TeamMemberModel, teamId: string): void {
-        const newTeam = Object.assign(new TeamModel(), this.state.draftTeam);
-        if (teamId === this.state.draftTeam.teamId) {
-            newTeam.members = this.state.draftTeam.members
-            .filter(f => f.memberId != member.memberId)
-            .concat([member])
-            .sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0));
-    
-            this.props.saveTeam(newTeam);
-        } else {
-            newTeam.members = this.state.draftTeam.members
-            .filter(f => f.memberId != member.memberId)
-            .sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0));
-    
-            this.props.saveTeam(newTeam, member, teamId);
-        }
+    private saveTeam(): void {
+        const teams = AppService.AppSettings.teams
+        .filter(f => f.teamId !== this.state.draftTeam.teamId)
+        .concat([this.state.draftTeam])
+        .sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0));
+
+        AppService.UpdateAppSetting({ teams: teams })
+        .then(newSettings => {
+            this.hasUpdates = false;
+            this.setState({ showPane: false, draftTeam: null });
+        });
     }
 
     private updateTeamField(fieldVal: string, fieldRef: string): void {
@@ -138,5 +134,9 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
         const newTeam = Object.assign(new TeamModel(), this.state.draftTeam);
         newTeam[fieldRef] = fieldVal;
         this.setState({ draftTeam: newTeam });
+    }
+
+    private membersUpdated(): void {
+        this.setState({ lastUpdated: new Date().getTime() })
     }
 }

@@ -8,7 +8,7 @@ import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 
 import { IPageComponentProps } from './components/PageComponent';
 import AppService from '../../services/AppService';
-import { TeamModel } from '../../models/TeamModel';
+import { TeamMemberModel, TeamModel } from '../../models/TeamModel';
 
 import PnPTelemetry from '@pnp/telemetry-js';
 import { ProductManager } from './components/ProductManager';
@@ -16,18 +16,25 @@ import { ProductTypeModel } from '../../models/ProductTypeModel';
 import { EventModel } from '../../models/EventModel';
 import { ClassificationModel } from '../../models/ClassificationModel';
 import { CategoryModel } from '../../models/CategoryModel';
-import { NotificationService, NotificationType } from '../../services/NotificationService';
 import { RecordService } from '../../services/RecordService';
+import { MiscSettingsModel } from '../../models/MiscSettingsModel';
+import { TemplateDocumentModel } from '../../models/TemplateDocumentModel';
 
 export interface IProductManagerWebPartProps {
-  settingsListName: string;
   description: string;
+  appSettingsListName: string;
+}
+
+export interface IAppSettings {
+  description: string;
+  appSettingsListName: string;
+
   isDebugging: boolean;
-  productListUrl: string;
-  documentListUrl: string;
-  publishingLibraryUrl: string;
+
+  miscSettings: MiscSettingsModel;
   teams: Array<TeamModel>;
-  emailSenderName: string;
+  teamMembers: Array<TeamMemberModel>;
+  templateDocuments: Array<TemplateDocumentModel>;
   productTypes: Array<ProductTypeModel>;
   categories: Array<CategoryModel>;
   eventTypes: Array<EventModel>;
@@ -35,8 +42,7 @@ export interface IProductManagerWebPartProps {
 }
 
 export default class ProductManagerWebPart extends BaseClientSideWebPart<IProductManagerWebPartProps> {
-  private appSettings: IProductManagerWebPartProps;
-  // protected get isRenderAsync () { return true; }
+  private appSettings: IAppSettings;
 
   public render(): void {
     const element: React.ReactElement<IPageComponentProps> = React.createElement(
@@ -60,13 +66,14 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
 
     AppService.Init(this);
     this.appSettings = await this.getAppSettings();
-
     return Promise.resolve();
   }
 
-  protected get dataVersion(): Version {
-    return Version.parse('1.0');
-  }
+  protected get dataVersion(): Version { return Version.parse('1.0'); }
+  public get AppProps(): IAppSettings { return this.appSettings; }
+  public set AppProps(val: IAppSettings) { this.appSettings = val; }
+  public get AppContext(): WebPartContext { return this.context; }
+  private get isDebugging(): boolean { return window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig) ? false : true; }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
@@ -90,35 +97,26 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     };
   }
 
-  public get AppProps(): IProductManagerWebPartProps {
-    // return this.properties.isDebugging ? this.appSettings : this.properties;
-    return this.appSettings;
-  }
-
-  public set AppProps(val: IProductManagerWebPartProps) {
-    this.appSettings = val;
-  }
-
-  public get AppContext(): WebPartContext {
-    return this.context;
-  }
-
-  private getAppSettings(): Promise<IProductManagerWebPartProps> {
+  private getAppSettings(): Promise<IAppSettings> {
     console.log('Getting application settings');
 
     // We can't really use any SP libraries here yet, so we'll just guess at the siteUrl
     const siteUrl = window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig);
-    const settingsLoc = siteUrl ? `${siteUrl[1]}${this.properties.settingsListName}/Items?$orderby=Modified&$top=1` : '/dist/mockSettings.json';
+    const settingsLoc = siteUrl ? `${siteUrl[1]}${this.properties.appSettingsListName}/Items?$orderby=Modified&$top=1` : '/dist/mockSettings.json';
 
-    return new Promise<IProductManagerWebPartProps>((resolve, reject) => {
+    return new Promise<IAppSettings>((resolve, reject) => {
       return fetch(settingsLoc, { headers : { accept: 'application/json;odata=verbose' } })
       .then(data => data.json())
       .then(data => siteUrl ? data.d.results[0].configData : data)
-      .then((data: IProductManagerWebPartProps) => {
-        const settings: IProductManagerWebPartProps = Object.assign({}, data);
-        settings.isDebugging = siteUrl ? false : true;
+      .then((data: IAppSettings) => {
+        const settings: IAppSettings = Object.assign({}, data);
+        // We never want JSON saved data to overwrite these fields, so make sure they come from the property-pane
+        settings.appSettingsListName = this.properties.appSettingsListName;
+        settings.isDebugging = this.isDebugging;
 
         settings.teams = data.teams.map((d: TeamModel) => new TeamModel(d));
+        settings.teamMembers = data.teamMembers.map((d: TeamMemberModel) => new TeamMemberModel(d));
+        settings.templateDocuments = data.templateDocuments.map((d: TemplateDocumentModel) => new TemplateDocumentModel(d));
         settings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
         settings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
         settings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
@@ -127,21 +125,22 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
       })
       .catch(e => reject(e));
     })
-    .then((settings: IProductManagerWebPartProps) => Promise.resolve(settings))
+    .then((settings: IAppSettings) => Promise.resolve(settings))
     .catch(e => Promise.reject(e));
   }
 
   /** Updates one or more settings in the application */
-  public UpdateAppSettings(newSettings: Partial<IProductManagerWebPartProps>): Promise<IProductManagerWebPartProps> {
-    const newRecord = Object.assign(Object.assign(Object.assign({}, this.appSettings), this.properties), newSettings);
-console.log('UpdateAppSettings 1: ', newRecord);
-    return RecordService.AddListRecord(this.properties.settingsListName, newRecord)
+  public UpdateAppSettings(newSettings: Partial<IAppSettings>): Promise<IAppSettings> {
+    const newRecord = Object.assign(Object.assign({}, this.appSettings), newSettings);
+    // Never let these be overridden by this method
+    newRecord.appSettingsListName = this.properties.appSettingsListName;
+    newRecord.isDebugging = this.isDebugging;
+
+    return RecordService.AddListRecord(this.properties.appSettingsListName, newRecord)
     .then(d => JSON.parse(d))
     .then(d => {
       this.appSettings = d;
-      //Object.keys(d).forEach(p => this.properties[p] = d[p]);
-      this.render();
-console.log('UpdateAppSettings 2: ', this.appSettings);
+      // this.render();
       return Promise.resolve(this.appSettings);
     })
     .catch(e => Promise.reject(e));

@@ -19,7 +19,7 @@ export class Faker {
             Id: uuidv4(),
             Updated: new Date(),
             Title: fileName ? fileName.split('.').reverse()[1] : `Attached Document ${Math.round(Math.random() * 300)}`,
-            Url: `${AppService.AppSettings.documentListUrl}/${attachmentName}.${extn}`,
+            Url: `${AppService.AppSettings.miscSettings.documentListUrl}/${attachmentName}.${extn}`,
             Version: 1,
             LinkedProductGuid: linkedProductGuid
         });
@@ -96,7 +96,7 @@ export class Faker {
         }
 
         // Create fake attachments for this fake item
-        prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.Guid, f.documentName));
+        prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.Guid, AppService.AppSettings.templateDocuments.reduce((t, n) => n.templateId === f ? n.documentName : t, '')));
 
         return item;
     }

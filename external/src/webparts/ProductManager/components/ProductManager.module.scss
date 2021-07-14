@@ -150,10 +150,13 @@ div[class*="pageContent"] {
   }
 }
 
+.padTop0 { padding-top: 0px; }
 .padTop1 { padding-top: 5px; }
 .padTop2 { padding-top: 10px; }
 .padTop3 { padding-top: 15px; }
 .padTop4 { padding-top: 20px; }
+
+.padBottom0 { padding-bottom: 0px; }
 
 .padLeft1 { padding-left: 5px; }
 .padLeft2 { padding-left: 10px; }
@@ -176,4 +179,10 @@ div[class*="pageContent"] {
   border-radius: 10px;
   border: 1px solid #ddd;
   padding: 10px;
+}
+
+.tinyButton {
+  font-size: 0.6rem;
+  padding-left: 5px;
+  padding-right: 5px;
 }

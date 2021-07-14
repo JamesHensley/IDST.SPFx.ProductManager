@@ -3,6 +3,9 @@ import * as React from 'react';
 import AppService from '../../../services/AppService';
 import { CommandBar, ICommandBarItemProps, IContextualMenuItem } from '@fluentui/react';
 import { RecordService } from '../../../services/RecordService';
+import { IAppSettings } from '../ProductManagerWebPart';
+import { EventModel } from '../../../models/EventModel';
+import { TeamModel } from '../../../models/TeamModel';
 
 export interface IProductManagerCmdBarProps {
     appView: string;
@@ -43,6 +46,13 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
                         iconProps: { iconName: 'AddGroup' },
                         ['data-automation-id']: 'newTeam',
                         onClick: this.newTeamClicked.bind(this)
+                    } as IContextualMenuItem,
+                    {
+                        key: 'newEventType',
+                        text: 'Event Type',
+                        iconProps: { iconName: 'Quantity' },
+                        ['data-automation-id']: 'newEventType',
+                        onClick: this.newEventTypeClicked.bind(this)
                     } as IContextualMenuItem
                 ];
         }
@@ -103,7 +113,7 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
                                     text: 'Configuration',
                                     iconProps: { iconName: 'Settings' },
                                     ['data-automation-id']: 'configView',
-                                    onClick: this.itemClicked.bind(this)                                    
+                                    onClick: this.itemClicked.bind(this)
                                 }
                             ]
                         }
@@ -117,9 +127,17 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
         AppService.MenuItemClicked(item);
     }
 
-    private newTeamClicked(): void {
+    private newTeamClicked(): Promise<IAppSettings> {
         const newTeam = RecordService.GetNewTeamModel();
-        const teams = [].concat.apply(AppService.AppSettings.teams, [newTeam]);
-        AppService.UpdateAppSetting({ teams: teams });
+        const teams: Array<TeamModel> = [].concat.apply(AppService.AppSettings.teams, [newTeam])
+        .sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0));
+        return AppService.UpdateAppSetting({ teams: teams }).then(d => Promise.resolve(d));
+    }
+
+    private newEventTypeClicked(): Promise<IAppSettings> {
+        const newEvent = RecordService.GetNewEventTypeModel();
+        const eventTypes: Array<EventModel> = [].concat.apply(AppService.AppSettings.eventTypes, [newEvent])
+        .sort((a, b) => a.eventTitle > b.eventTitle ? 1 : (a.eventTitle < b.eventTitle ? -1 : 0));
+        return AppService.UpdateAppSetting({ eventTypes: eventTypes }).then(d => Promise.resolve(d));
     }
 }

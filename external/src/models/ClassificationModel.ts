@@ -5,4 +5,5 @@ export class ClassificationModel {
 
     classificationId: string;
     classificationTitle: string;
+    classificationCaveats: string;
 }

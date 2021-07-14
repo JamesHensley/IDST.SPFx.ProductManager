@@ -96,6 +96,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     editing={this.state.isEditing}
                                     options={AppService.AppSettings.categories.map(d => { return { key: d.categoryId, value: d.categoryText } as KeyValPair; })}
                                     allowNull={true}
+                                    disabledKeys={[]}
                                 />
                             </Stack.Item>
                             <Stack.Item grow={1}>
@@ -107,6 +108,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     editing={this.state.isEditing}
                                     options={AppService.AppSettings.classificationModels.map(d => { return { key: d.classificationId, value: d.classificationTitle } as KeyValPair; })}
                                     allowNull={true}
+                                    disabledKeys={[]}
                                 />
                             </Stack.Item>
                         </Stack>
@@ -132,6 +134,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     editing={this.state.isEditing}
                                     options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
                                     allowNull={true}
+                                    disabledKeys={AppService.AppSettings.productTypes.filter(f => !f.active).map(d => d.typeId)}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={stackItemStyles}>
@@ -147,6 +150,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                         { key: ProductStatus.canceled, value: 'Canceled' } as KeyValPair
                                     ]}
                                     allowNull={true}
+                                    disabledKeys={[]}
                                 />
                             </Stack.Item>
                         </Stack>
@@ -160,6 +164,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     editing={this.state.isEditing}
                                     options={AppService.AppSettings.eventTypes.map(d => { return { key: d.eventTypeId, value: d.eventTitle } as KeyValPair; })}
                                     allowNull={true}
+                                    disabledKeys={AppService.AppSettings.eventTypes.filter(f => !f.active).map(d => d.eventTypeId)}
                                 />
                             </Stack.Item>
                             {this.state.draftProduct.eventType &&

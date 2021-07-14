@@ -3,6 +3,7 @@ export class TemplateDocumentModel {
         Object.assign(this, init);
     }
 
+    public templateId: string;
     public documentUrl: string;
     public documentName: string;
 }

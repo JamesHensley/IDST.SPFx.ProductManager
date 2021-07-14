@@ -1,12 +1,12 @@
 import { ICommandBarItemProps } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-// import { SPAuthor } from '../models/SpListItem';
-import ProductManagerWebPart, { IProductManagerWebPartProps } from '../webparts/ProductManager/ProductManagerWebPart';
+
+import ProductManagerWebPart, { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
 import { NotificationService, NotificationType } from './NotificationService';
 import { SPUser } from '@microsoft/sp-page-context';
 import { ProductModel } from '../models/ProductModel';
 import { MailService } from './MailService';
-import { RecordService } from './RecordService';
+
 export interface ICmdBarListenerProps {
     callback: () => Promise<void>;
     btnKeys?: Array<string>;
@@ -16,24 +16,14 @@ export default class AppService {
     private static _webpart: ProductManagerWebPart;
     private static _productListeners: Array<() => Promise<void>> = [];
     private static _cmdBarListeners: Array<ICmdBarListenerProps> = [];
-    private static _appSettingsListName
-    public static get AppSettingsListName(): string {
-        return 'JiseProdMgr-Config';
-    }
 
-    public static Init(webpart: ProductManagerWebPart): void {
-        this._webpart = webpart;
-    }
+    public static Init(webpart: ProductManagerWebPart): void { this._webpart = webpart; }
 
-    public static get AppSettings(): IProductManagerWebPartProps {
-        return this._webpart.AppProps;
-    }
+    public static get AppSettings(): IAppSettings { return this._webpart.AppProps; }
 
-    public static get AppContext(): WebPartContext {
-        return this._webpart.context;
-    }
+    public static get AppContext(): WebPartContext { return this._webpart.context; }
 
-    public static async UpdateAppSetting(val: Partial<IProductManagerWebPartProps>): Promise<IProductManagerWebPartProps> {
+    public static async UpdateAppSetting(val: Partial<IAppSettings>): Promise<IAppSettings> {
         const settings = await this._webpart.UpdateAppSettings(val);
         return Promise.resolve(settings);
     }
@@ -52,7 +42,7 @@ export default class AppService {
         NotificationService.Notify(notificationType, product.title);
 
         const teamIds = (product.tasks || []).map(d => d.taskedTeamId);
-        const teamEmails = (AppService.AppSettings.teams || []).reduce((t,n) => teamIds.indexOf(n.teamId) >= 0 ? t.concat(n.members.map(m => m.email)) : t, []);
+        const teamEmails = AppService.AppSettings.teamMembers.filter(f => teamIds.indexOf(f.teamId) >= 0).map(m => m.email);
         MailService.SendEmail('Update', teamEmails, `A product has been ${notificationType.toString()}`)
         .catch(e => Promise.reject(e));
     }

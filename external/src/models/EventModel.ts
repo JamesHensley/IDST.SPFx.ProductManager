@@ -17,4 +17,7 @@ export class EventModel {
 
     /** Typical number of days from event-start to event-end */
     defaultEventLength: number;
+
+    /** Wether this event type is actively used or not */
+    active: boolean;
 }

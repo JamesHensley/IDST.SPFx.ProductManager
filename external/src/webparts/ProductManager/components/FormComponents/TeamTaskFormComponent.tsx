@@ -42,6 +42,7 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
                             ] }
                             toolTip={`${this.state.draftTask.taskStart} - ${this.state.draftTask.taskFinish}`}
                             allowNull={false}
+                            disabledKeys={[]}
                         />
                     </Stack.Item>
                     <Stack.Item grow styles={stackItemStyles}>

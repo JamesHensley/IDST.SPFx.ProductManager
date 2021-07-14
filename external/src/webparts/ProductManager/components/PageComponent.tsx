@@ -90,7 +90,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                                 {this.state.view === 'TeamView' &&
                                     <TeamView
                                         key={new Date().getTime()}
-                                        teamModel={AppService.AppSettings.teams.reduce((t,n) => n.teamId == this.state.chosenTeamId ? n : t, null)}
+                                        teamModel={AppService.AppSettings.teams.reduce((t,n) => n.teamId === this.state.chosenTeamId ? n : t, null)}
                                     />
                                 }
                                 {this.state.view === 'ConfigView' &&
@@ -176,18 +176,19 @@ export default class PageComponent extends React.Component <IPageComponentProps,
                     panelEditing: true
                 });
                 break;
+            /*
             case 'newTeamMember':
                 console.log('Should be adding a new team member here: ', this.state);
                 const teamId: string = this.state.chosenTeamId;
-                const team = AppService.AppSettings.teams
-                    .reduce((t, n) => n.teamId === this.state.chosenTeamId ? n : t);
+                const team = AppService.AppSettings.teams.reduce((t, n) => n.teamId === this.state.chosenTeamId ? n : t);
                 team.members.push(RecordService.GetNewTeamMemberModel(teamId));
                 this.setState({
                     view: 'TeamView',
                     // chosenTeamId: team,
                     lastUpdated: new Date().getTime()
                 });
-                break;      
+                break;
+            */
         }
         return Promise.resolve();
     }

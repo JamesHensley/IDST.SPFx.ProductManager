@@ -1,21 +1,32 @@
 {
-    "isDebugging": true,
     "description": "Product Manager",
-    "emailSenderName": "JISE Product Manager Tool",
-    "productListUrl": "/dist/mockProductList.json",
-    "documentListUrl": "/dist/mockDocumentList.json",
-    "publishingLibraryUrl": "",
+    "isDebugging": true,
+    "miscSettings": {
+        "emailSenderName": "JISE Product Manager Tool",
+        "productListUrl": "/dist/mockProductList.json",
+        "documentListUrl": "/dist/mockDocumentList.json",
+        "publishingLibraryUrl": ""
+    },
+    "teamMembers": [
+        { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": "Lead", "active": true, "memberId": "232fe7d0-a1b5-4c0d-98dc-17eb7c804b86", "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a" },
+        { "spId": "47dc2f4da49d", "name": "Person 2", "email": "person2@email.com", "role": "Member", "active": true, "memberId": "6e3ce2d8-73cc-42e1-b542-93f0a388956f", "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a" },
+        { "spId": "8f68befdbf8c", "name": "Person 3", "email": "person3@email.com", "role": "Member", "active": true, "memberId": "b566d1b5-3377-4dd5-80e2-b959b58f9f65", "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a" },
+        { "spId": "0cfd1d22797b", "name": "Person 4", "email": "person4@email.com", "role": "Lead", "active": true, "memberId": "c5912c2b-12fd-460e-9de6-321f9b440486", "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0" },
+        { "spId": "970f0495d8b6", "name": "Person 5", "email": "person5@email.com", "role": "Member", "active": true, "memberId": "aa98bf56-e7a2-42b0-86b5-74d2e7a41f48", "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0" },
+        { "spId": "9face56f210c", "name": "Person 6", "email": "person6@email.com", "role": "Member", "active": true, "memberId": "fb3ba70b-5f29-4bcb-ab96-fc7434c230a8", "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0" },
+        { "spId": "b4dacb1080c7", "name": "Person 7", "email": "person7@email.com", "role": "Lead", "active": true, "memberId": "54b40ef7-b489-4a3b-9266-6c44da4bbe09", "teamId": "625d64ec-f3bd-0495d-c80a-0cfd1d22797b" },
+        { "spId": "f9ee1234acbd", "name": "Person 8", "email": "person8@email.com", "role": "Member", "active": true, "memberId": "a62460e5-43c7-4e11-8d2e-7b402d17c65f", "teamId": "625d64ec-f3bd-0495d-c80a-0cfd1d22797b" },
+        { "spId": "90073312311f", "name": "Person 9", "email": "person9@email.com", "role": "Member", "active": true, "memberId": "c744ae48-ab42-4f1a-acab-cff7d5fd5bac", "teamId": "625d64ec-f3bd-0495d-c80a-0cfd1d22797b" },
+        { "spId": "b4dacb1080c7", "name": "Person 10", "email": "person10@email.com", "role": "Lead", "active": true, "memberId": "77541b09-6b08-4cf7-ab5e-28f5042546eb", "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6" },
+        { "spId": "f9ee1234acbd", "name": "Person 11", "email": "person11@email.com", "role": "Member", "active": true, "memberId": "28eedcd1-8f87-4163-a329-9eb43f4643ea", "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6" },
+        { "spId": "90073312311f", "name": "Person 12", "email": "person12@email.com", "role": "Member", "active": true, "memberId": "c35f9fda-6f5c-44cd-8fbb-8799a660c3fb", "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6" }
+    ],
     "teams": [
         {
             "id": 1,
             "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
             "name": "Team 1 - BA",
             "description": "Team 1 Description",
-            "members": [
-                { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": "Lead", "active": true, "memberId": "232fe7d0-a1b5-4c0d-98dc-17eb7c804b86" },
-                { "spId": "47dc2f4da49d", "name": "Person 2", "email": "person2@email.com", "role": "Member", "active": true, "memberId": "6e3ce2d8-73cc-42e1-b542-93f0a388956f" },
-                { "spId": "8f68befdbf8c", "name": "Person 3", "email": "person3@email.com", "role": "Member", "active": true, "memberId": "b566d1b5-3377-4dd5-80e2-b959b58f9f65" }
-            ],
             "active": true,
             "shortName": "T1"
         },
@@ -24,24 +35,14 @@
             "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
             "name": "Team 2 - BS",
             "description": "Team 2 Description",
-            "members": [
-                { "spId": "0cfd1d22797b", "name": "Person 4", "email": "person4@email.com", "role": "Lead", "active": true, "memberId": "c5912c2b-12fd-460e-9de6-321f9b440486" },
-                { "spId": "970f0495d8b6", "name": "Person 5", "email": "person5@email.com", "role": "Member", "active": true, "memberId": "aa98bf56-e7a2-42b0-86b5-74d2e7a41f48" },
-                { "spId": "9face56f210c", "name": "Person 6", "email": "person6@email.com", "role": "Member", "active": true, "memberId": "fb3ba70b-5f29-4bcb-ab96-fc7434c230a8" }
-            ],
             "active": true,
             "shortName": "T2"
         },
         {
             "id": 3,
-            "teamId": "501d64ec-f3bd-0495d-c80a-0cfd1d22797b",
+            "teamId": "625d64ec-f3bd-0495d-c80a-0cfd1d22797b",
             "name": "Team 3 - S",
             "description": "Team 3 Description",
-            "members": [
-                { "spId": "b4dacb1080c7", "name": "Person 7", "email": "person7@email.com", "role": "Lead", "active": true, "memberId": "54b40ef7-b489-4a3b-9266-6c44da4bbe09" },
-                { "spId": "f9ee1234acbd", "name": "Person 8", "email": "person8@email.com", "role": "Member", "active": true, "memberId": "a62460e5-43c7-4e11-8d2e-7b402d17c65f" },
-                { "spId": "90073312311f", "name": "Person 9", "email": "person9@email.com", "role": "Member", "active": true, "memberId": "c744ae48-ab42-4f1a-acab-cff7d5fd5bac" }
-            ],
             "active": true,
             "shortName": "ST"
         },
@@ -50,25 +51,24 @@
             "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
             "name": "Team 4 - F",
             "description": "Team 4 Description",
-            "members": [
-                { "spId": "b4dacb1080c7", "name": "Person 10", "email": "person10@email.com", "role": "Lead", "active": true, "memberId": "77541b09-6b08-4cf7-ab5e-28f5042546eb" },
-                { "spId": "f9ee1234acbd", "name": "Person 11", "email": "person11@email.com", "role": "Member", "active": true, "memberId": "28eedcd1-8f87-4163-a329-9eb43f4643ea" },
-                { "spId": "90073312311f", "name": "Person 12", "email": "person12@email.com", "role": "Member", "active": true, "memberId": "c35f9fda-6f5c-44cd-8fbb-8799a660c3fb" }
-            ],
             "active": true,
             "shortName": "F"
         }        
     ],
+    "templateDocuments": [
+        { "templateId": "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10", "documentUrl": "/", "documentName": "docType1.txt" },
+        { "templateId": "0ca8e54b-cf78-44e3-880d-723e3e3d7473", "documentUrl": "/", "documentName": "docType2.txt" },
+        { "templateId": "b28fab67-2863-45b0-93bf-932fa5f28645", "documentUrl": "/", "documentName": "docType3.txt" }
+    ],
     "productTypes": [
         {
+            "active": true,
             "typeId": "ca0a3b95-0770-4dfb-b358-f1beb2e5290e",
             "typeName": "ProductType 1",
             "colorValue": "rgb(100, 100, 250)",
             "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 7 day suspense and a default event type of eventType 1",
             "defaultSuspenseDays": 7,
-            "defaultTemplateDocs": [
-                { "documentUrl": "/", "documentName": "docType1.txt" }
-            ],
+            "defaultTemplateDocs": [ "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10", "b28fab67-2863-45b0-93bf-932fa5f28645" ],
             "defaultEventType": "1",
             "defaultTeamTasks": [
                 {
@@ -98,15 +98,13 @@
             ]
         },
         {
+            "active": true,
             "typeId": "a3bca095-b358-fb4d-0770-eb2e5f1be029",
             "typeName": "ProductType 2",
             "colorValue": "rgb(210, 210, 0)",
             "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 14 day suspense and no default event type",
             "defaultSuspenseDays": 14,
-            "defaultTemplateDocs": [
-                { "documentUrl": "/", "docIcon": "/", "documentName": "docType1.txt" },
-                { "documentUrl": "/", "docIcon": "/", "documentName": "docType2.txt" }
-            ],
+            "defaultTemplateDocs": [ "0ca8e54b-cf78-44e3-880d-723e3e3d7473", "b28fab67-2863-45b0-93bf-932fa5f28645" ],
             "defaultEventType": "2",
             "defaultTeamTasks": [
                 {
@@ -136,12 +134,13 @@
             ]
         },
         {
+            "active": true,
             "typeId": "3b95ca0a-0770-4dfb-b358-e5290ef1beb2",
             "typeName": "ProductType 3",
             "colorValue": "rgb(133, 0, 0)",
             "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 21 day suspense and no default event type",
             "defaultSuspenseDays": 21,
-            "defaultTemplateDocs": [],
+            "defaultTemplateDocs": [ "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10", "0ca8e54b-cf78-44e3-880d-723e3e3d7473", "b28fab67-2863-45b0-93bf-932fa5f28645" ],
             "defaultTeamTasks": [
                 {
                     "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
@@ -153,12 +152,13 @@
         }
     ],
     "categories": [
-        { "categoryId": "category1Guid", "categoryText": "Cat 1"},
-        { "categoryId": "category2Guid", "categoryText": "Cat 2"},
-        { "categoryId": "category3Guid", "categoryText": "Cat 3"}
+        { "categoryId": "category1Guid", "categoryText": "Cat 1", "description": ""},
+        { "categoryId": "category2Guid", "categoryText": "Cat 2", "description": ""},
+        { "categoryId": "category3Guid", "categoryText": "Cat 3", "description": ""}
     ],
     "eventTypes": [
         {
+            "active": true,
             "eventTypeId": "1",
             "eventTitle": "Hot Rod Show",
             "eventDescription": "This is typically a 5 day event",
@@ -166,6 +166,7 @@
             "defaultEventLength": 5
         },
         {
+            "active": true,
             "eventTypeId": "2",
             "eventTitle": "Camping Trip",
             "eventDescription": "This is typically a 3 day event",
@@ -173,6 +174,7 @@
             "defaultEventLength": 3
         },
         {
+            "active": true,
             "eventTypeId": "3",
             "eventTitle": "Shooting guns with dad",
             "eventDescription": "This is typically a same-day event",

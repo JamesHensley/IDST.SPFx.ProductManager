@@ -27,7 +27,7 @@ export class MailService {
     public static async SendEmail(subject: string, toList: Array<string>, msgBody: string): Promise<string> {
         const payload = {
             __metadata: { type: 'SP.Utilities.EmailProperties' },
-            From: AppService.AppSettings.emailSenderName,
+            From: AppService.AppSettings.miscSettings.emailSenderName,
             To: toList,
             Subject: subject,
             Body: msgBody

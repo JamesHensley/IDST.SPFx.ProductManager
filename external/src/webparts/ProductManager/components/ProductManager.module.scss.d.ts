@@ -30,10 +30,12 @@ interface CssExports {
   'listTable': string;
   'ms-Grid': string;
   'muted': string;
+  'padBottom0': string;
   'padLeft1': string;
   'padLeft2': string;
   'padLeft3': string;
   'padLeft4': string;
+  'padTop0': string;
   'padTop1': string;
   'padTop2': string;
   'padTop3': string;
@@ -48,6 +50,7 @@ interface CssExports {
   'stickyListHeader': string;
   'taskedTeamItem': string;
   'teamPanel': string;
+  'tinyButton': string;
 }
 declare var cssExports: CssExports;
 export = cssExports;

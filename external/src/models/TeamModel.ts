@@ -9,25 +9,24 @@ export class TeamMemberModel {
         Object.assign(this, init);
     }
 
-    public name: string;
-    public email: string;
-    public role: TeamMemberRole;
-    public spId: string;
-    public active: boolean;
-    public memberId: string;
+    name: string;
+    email: string;
+    role: TeamMemberRole;
+    spId: string;
+    active: boolean;
+    memberId: string;
+    teamId: string;
 }
 
 export class TeamModel {
     public constructor(init?: Partial<TeamModel>) {
         Object.assign(this, init);
-        this.members = init ? (init.members ? init.members.map(d => new TeamMemberModel(d)) : []) : [];
     }
 
     id: number;
     teamId: string;
     name: string;
     description: string;
-    members: Array<TeamMemberModel>;
     active: boolean;
     shortName: string;
 }

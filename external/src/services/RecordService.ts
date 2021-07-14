@@ -12,13 +12,13 @@ import { TaskModel, TaskState } from '../models/TaskModel';
 import addDays from 'date-fns/addDays';
 import { EventModel } from '../models/EventModel';
 import { TeamMemberModel, TeamMemberRole, TeamModel } from '../models/TeamModel';
+import { ProductTypeModel } from '../models/ProductTypeModel';
+import { ClassificationModel } from '../models/ClassificationModel';
 
 export interface IResult {
     productModel: ProductModel;
     resultStr: string;
 }
-
-
 
 export class RecordService {
     private static _prodService = new SPService();
@@ -30,25 +30,25 @@ export class RecordService {
     }
 
     public static async GetProducts(): Promise<Array<ProductModel>> {
-        const spItems: Array<SpProductItem> = await this.spService.GetListItems(AppService.AppSettings.productListUrl);
-        const spAttachments: Array<SpListAttachment> = await this.spService.GetAttachmentItems(AppService.AppSettings.documentListUrl);
+        const spItems: Array<SpProductItem> = await this.spService.GetListItems(AppService.AppSettings.miscSettings.productListUrl);
+        const spAttachments: Array<SpListAttachment> = await this.spService.GetAttachmentItems(AppService.AppSettings.miscSettings.documentListUrl);
         return MapperService.MapItemsToProducts(spItems.filter(f => f.Active), spAttachments);
     }
 
     public static async GetProductByGUID(guid: string): Promise<ProductModel> {
-        const spItem: SpProductItem = await this.spService.GetListItemByGuid(AppService.AppSettings.productListUrl, guid);
-        const spAttachments = await this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, guid);
+        const spItem: SpProductItem = await this.spService.GetListItemByGuid(AppService.AppSettings.miscSettings.productListUrl, guid);
+        const spAttachments = await this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, guid);
         return MapperService.MapItemToProduct(spItem, spAttachments);
     }
 
     public static async GetAttachmentsForItem(guid: string): Promise<Array<AttachmentModel>> {
-        const spItems = (await this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, guid))
+        const spItems = (await this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, guid))
             .map(d => MapperService.MapSpAttachmentToAttachment(d));
         return spItems;
     }
 
     public static async AddAttachmentsForItem(product: ProductModel, files: FileList): Promise<Array<AttachmentModel>> {
-        return this.spService.AddAttachment(AppService.AppSettings.documentListUrl, product.guid, files)
+        return this.spService.AddAttachment(AppService.AppSettings.miscSettings.documentListUrl, product.guid, files)
         .then(spAttachments => spAttachments.map(d => MapperService.MapSpAttachmentToAttachment(d)))
         .then(attachments => Promise.resolve(attachments))
         .catch(e => Promise.reject(e));
@@ -58,12 +58,12 @@ export class RecordService {
         const resultStr = product.guid ? 'Updated' : 'Created';
         const newItem = MapperService.MapProductToItem(product);
 
-        return (product.guid ? this.spService.UpdateListItem(AppService.AppSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.productListUrl, newItem))
+        return (product.guid ? this.spService.UpdateListItem(AppService.AppSettings.miscSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.miscSettings.productListUrl, newItem))
         .then((newItem: SpProductItem) => {
             // When we create a NEW item, we need to upload template documents here
             // newItem.Guid
 
-            return this.spService.GetAttachmentsForGuid(AppService.AppSettings.documentListUrl, newItem.Guid)
+            return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, newItem.Guid)
             .then(attachments => {
                 if (broadcastChange) { AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product); }
                 return Promise.resolve({
@@ -77,7 +77,7 @@ export class RecordService {
     }
 
     public static async RemoveProduct(product: ProductModel): Promise<Array<ProductModel>> {
-        return this.spService.RemoveListItem(AppService.AppSettings.productListUrl, MapperService.MapProductToItem(product))
+        return this.spService.RemoveListItem(AppService.AppSettings.miscSettings.productListUrl, MapperService.MapProductToItem(product))
         .then(async () => {
             const items = await this.GetProducts();
             return Promise.resolve(items);
@@ -148,8 +148,40 @@ export class RecordService {
             name: 'New Team',
             shortName: 'NT',
             description: 'New team supporting something awesome',
+            active: true
+        });
+    }
+
+    public static GetNewEventTypeModel(): EventModel {
+        return new EventModel({
             active: true,
-            members: []
+            eventTitle: 'New Event Type',
+            eventDescription: 'Please enter a description of the event type',
+            eventBackgroundColor: 'rgba(180, 180, 180, 1)',
+            defaultEventLength: 3,
+            eventTypeId: uuidv4()
+        });
+    }
+
+    public static GetNewProductTypeModel(): ProductTypeModel {
+        return new ProductTypeModel({
+            active: true,
+            typeId: uuidv4(),
+            typeName: 'New Product Type',
+            typeDescription: 'Please enter a description of this product-type',
+            defaultSuspenseDays: 7,
+            defaultTemplateDocs: [],
+            defaultTeamTasks: [],
+            colorValue: 'rgba(180, 180, 180, 1)',
+            defaultEventType: null
+        });
+    }
+
+    public static GetNewClassificationModel(): ClassificationModel {
+        return new ClassificationModel({
+            classificationId: uuidv4(),
+            classificationTitle: 'New Title',
+            classificationCaveats: 'Caveats'
         });
     }
 

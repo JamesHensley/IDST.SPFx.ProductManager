@@ -18,6 +18,7 @@ export class IFormInputDropDownProps {
     allowNull: boolean;
     onUpdated: (newVal: string, fieldRef: string) => void;
     toolTip?: string;
+    disabledKeys: Array<string>;
 }
 
 export class FormInputDropDown extends React.Component<IFormInputDropDownProps, {}> {
@@ -26,7 +27,8 @@ export class FormInputDropDown extends React.Component<IFormInputDropDownProps, 
             return {
                 key: d.key,
                 text: d.value,
-                selected: d.selected
+                selected: d.selected,
+                disabled: this.props.disabledKeys.indexOf(d.key) >= 0
             } as IDropdownOption;
         }).sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0));
         const options: Array<IDropdownOption> = this.props.allowNull ? [{ key: null, text: 'None' }].concat(givenOptions) : givenOptions;
