@@ -79,8 +79,11 @@ export class Faker {
 
         // const beginWork = startOfDay(reqDate);
         const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete']);
-        const tasks = prodType.defaultTeamTasks.map(d => {
-            return this.CreateFakeTask(d.teamId, d.taskDescription, addDays(beginWork, d.taskSuspenseDaysOffset), d.typicalTaskLength, taskState);
+        const tasks = prodType.defaultTeamTasks.map((d, i, e) => {
+            const xy = e.reduce((t, n, c) => c < i ? addDays(t, n.typicalTaskLength) : t, beginWork);
+            const xx = e.reduce((t, n, c) => c <= i ? addDays(t, n.typicalTaskLength) : t, beginWork);
+            // return this.CreateFakeTask(d.teamId, d.taskDescription, addDays(beginWork, d.taskSuspenseDaysOffset), d.typicalTaskLength, taskState);
+            return this.CreateFakeTask(d.teamId, d.taskDescription, xy, d.typicalTaskLength, taskState);
         });
         item.AssignedTeamData = JSON.stringify(tasks);
 

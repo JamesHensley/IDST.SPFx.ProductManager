@@ -14,13 +14,14 @@ import { EventModel } from '../models/EventModel';
 import { TeamMemberModel, TeamMemberRole, TeamModel } from '../models/TeamModel';
 import { ProductTypeModel } from '../models/ProductTypeModel';
 import { ClassificationModel } from '../models/ClassificationModel';
+import { format } from 'date-fns';
 
 export interface IResult {
     productModel: ProductModel;
     resultStr: string;
 }
 
-export class RecordService {
+export default class RecordService {
     private static _prodService = new SPService();
     private static _mockService = new MockSPService();
     private static listeners: Array<() => Promise<void>> = [];
@@ -104,15 +105,16 @@ export class RecordService {
                 productType: prodTypeModel.typeId,
                 guid: null,
                 requestDate: new Date(),
-                // returnDateExpected: addDays(new Date(), prodTypeModel.defaultSuspenseDays),
                 status: ProductStatus.open,
                 title: `NEW ${prodTypeModel.typeName}`,
                 description: prodTypeModel.typeDescription,
-                tasks: prodTypeModel.defaultTeamTasks.map(d => {
+                tasks: prodTypeModel.defaultTeamTasks.map((d, i, e) => {
+                    const xx = e.reduce((t, n, c) => c <= i ? addDays(t, n.typicalTaskLength) : t, new Date());
+                    console.log('Creating task with suspense of ', xx, ' based on ', d.typicalTaskLength, e);
                     return {
                         taskedTeamId: d.teamId,
                         taskDescription: d.taskDescription,
-                        taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * d.taskSuspenseDaysOffset)).toJSON(),
+                        taskSuspense: xx.toJSON(),
                         taskState: TaskState.pending,
                         taskGuid: uuidv4()
                     } as TaskModel;
@@ -138,6 +140,7 @@ export class RecordService {
             email: 'Member Email',
             role: TeamMemberRole.default,
             active: true,
+            teamId: teamId,
             memberId: uuidv4()
         });
     }
@@ -169,7 +172,6 @@ export class RecordService {
             typeId: uuidv4(),
             typeName: 'New Product Type',
             typeDescription: 'Please enter a description of this product-type',
-            defaultSuspenseDays: 7,
             defaultTemplateDocs: [],
             defaultTeamTasks: [],
             colorValue: 'rgba(180, 180, 180, 1)',

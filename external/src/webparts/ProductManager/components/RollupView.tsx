@@ -102,7 +102,9 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                     canChangeGroup={false}
                     canResize={false}
                     onItemSelect={this.itemClicked.bind(this)}
-                    onItemClick={this.itemClicked.bind(this)}
+                    // Moved the ItemClick logic into the itemRenderer method to overcome
+                    //   inconsistencies in the library
+                    // onItemClick={this.itemClicked.bind(this)}
                     timeSteps={{ second: 0, minute: 0, hour: 0, day: 1, month: 1, year: 1 }}
                     itemRenderer={this.itemRenderer.bind(this)}
                     onTimeChange={this.calendarTimeChange.bind(this)}
@@ -184,6 +186,11 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                 onMouseLeave={() => {
                     Array.from(document.querySelectorAll(`.rct-item.${styles.muted}`))
                         .forEach(i => i.classList.remove(styles.muted));
+                }}
+                onClick={() => {
+                    event.cancelBubble = true;
+                    event.preventDefault();
+                    this.props.productClicked(item.itemProps.productGuid);
                 }}
             >
                 <div

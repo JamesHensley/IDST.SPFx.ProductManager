@@ -45,7 +45,7 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
                     }
                 </Stack>
                 {
-                    this.state.draftEvent && 
+                    this.state.draftEvent &&
                     <Panel
                         className={styles.productDetailPane}
                         isHiddenOnDismiss={false}
@@ -111,7 +111,6 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
 
     private updateEventField(fieldVal: string, fieldRef: string): void {
         this.hasUpdates = true;
-
         const newTeam = Object.assign(new EventModel(), this.state.draftEvent);
         switch (typeof this.state.draftEvent[fieldRef]) {
             case 'number':
@@ -141,7 +140,8 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
 
         AppService.UpdateAppSetting({ eventTypes: events })
         .then(newSettings => {
-            this.setState({ showPane: false, draftEvent: null })            
-        });
+            this.setState({ showPane: false, draftEvent: null });
+        })
+        .catch(e => Promise.reject(e));
     }
 }

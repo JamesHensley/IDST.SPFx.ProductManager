@@ -5,7 +5,7 @@ export class TaskTemplate {
     public taskDescription: string;
 
     /** Typical days offset for this tasks suspense from the start of the product */
-    public taskSuspenseDaysOffset: number;
+    // public taskSuspenseDaysOffset: number;
     public typicalTaskLength: number;
 }
 
@@ -18,9 +18,16 @@ export class ProductTypeModel {
     public typeId: string;
     public typeName: string;
     public typeDescription: string;
-    public defaultSuspenseDays: number;
+
+    /** GUIDs of default document templates */
     public defaultTemplateDocs: Array<string>;
+
+    /** Guids of default task templates for this product */
     public defaultTeamTasks: Array<TaskTemplate>;
+
+    /** Color of the product to display in visualizations */
     public colorValue: string;
+
+    /** Default event type this product supports */
     public defaultEventType?: string;
 }

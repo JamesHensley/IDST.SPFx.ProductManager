@@ -1,37 +1,31 @@
 import * as React from 'react';
-import { Panel, PanelType, Separator, Stack, DefaultButton, ICommandBarItemProps, Label, Dialog, TextField, DialogFooter, IStackItemStyles, IPanelHeaderRenderer } from '@fluentui/react';
-
 import * as styles from './ProductManager.module.scss';
-import { FontSizes } from '@fluentui/theme';
 
-import { ProductModel, ProductStatus } from '../../../models/ProductModel';
-import { RecordService } from '../../../services/RecordService';
+import AppService from '../../../services/AppService';
+import RecordService from '../../../services/RecordService';
+import { NotificationService, NotificationType } from '../../../services/NotificationService';
+import { v4 as uuidv4 } from 'uuid';
 
+import { Panel, PanelType, Separator, Stack, DefaultButton, Label, IStackItemStyles, IPanelHeaderRenderer } from '@fluentui/react';
 import { FormInputText } from './FormComponents/FormInputText';
 import { FormInputUrl } from './FormComponents/FormInputUrl';
-import AppService from '../../../services/AppService';
-import { TaskComponent } from './FormComponents/TaskComponent';
-import { AttachmentComponent } from './FormComponents/AttachmentComponent';
-import { TaskModel } from '../../../models/TaskModel';
+import { FormInputDate } from './FormComponents/FormInputDate';
 import { FormInputDropDown, KeyValPair } from './FormComponents/FormInputDropDown';
-// import { KeyValPair } from './FormComponents/IFormInputProps';
 import { FormInputComboBox } from './FormComponents/FormInputComboBox';
 import { FormInputDialog } from './FormComponents/FormInputDialog';
-import { CommentsModel } from '../../../models/CommentsModel';
-import { v4 as uuidv4 } from 'uuid';
 import { CommentComponent } from './FormComponents/CommentComponent';
-import { NotificationService, NotificationType } from '../../../services/NotificationService';
-import { FormInputDate } from './FormComponents/FormInputDate';
+import { TaskComponent } from './FormComponents/TaskComponent';
+import { AttachmentComponent } from './FormComponents/AttachmentComponent';
+
+import { ProductModel, ProductStatus } from '../../../models/ProductModel';
+import { TaskModel } from '../../../models/TaskModel';
+import { CommentsModel } from '../../../models/CommentsModel';
 
 export interface IProductDetailPaneProps {
     isVisible: boolean;
     isEditing: boolean;
-    // currentProductId: string;
     currentProduct: ProductModel;
-    /** used to notify the parent that the pane should be destroyed */
     paneCloseCallBack: () => void;
-    /** used to notify the parent that the item was updated */
-    // productUpdatedCallBack: (newPanelEditValue: boolean) => void;
     readOnly: boolean;
 }
 
@@ -94,7 +88,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     fieldRef={'categoryId'}
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
-                                    options={AppService.AppSettings.categories.map(d => { return { key: d.categoryId, value: d.categoryText } as KeyValPair; })}
+                                    options={AppService.AppSettings.categories.map(d => { return { key: d.categoryId, value: d.categoryText, selected: d.categoryId === this.state.draftProduct.categoryId } as KeyValPair; })}
                                     allowNull={true}
                                     disabledKeys={[]}
                                 />
@@ -106,7 +100,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     fieldRef={'classificationId'}
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
-                                    options={AppService.AppSettings.classificationModels.map(d => { return { key: d.classificationId, value: d.classificationTitle } as KeyValPair; })}
+                                    options={AppService.AppSettings.classificationModels.map(d => { return { key: d.classificationId, value: d.classificationTitle, selected: d.classificationId === this.state.draftProduct.classificationId } as KeyValPair; })}
                                     allowNull={true}
                                     disabledKeys={[]}
                                 />
@@ -132,7 +126,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     fieldRef={'productType'}
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
-                                    options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName } as KeyValPair; })}
+                                    options={AppService.AppSettings.productTypes.map(d => { return { key: d.typeId, value: d.typeName, selected: d.typeId === this.state.draftProduct.productType } as KeyValPair; })}
                                     allowNull={true}
                                     disabledKeys={AppService.AppSettings.productTypes.filter(f => !f.active).map(d => d.typeId)}
                                 />
@@ -145,9 +139,9 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
                                     options={[
-                                        { key: ProductStatus.open, value: 'Open' } as KeyValPair,
-                                        { key: ProductStatus.closed, value: 'Closed' } as KeyValPair,
-                                        { key: ProductStatus.canceled, value: 'Canceled' } as KeyValPair
+                                        { key: ProductStatus.open, value: 'Open', selected: this.state.draftProduct.status === ProductStatus.open } as KeyValPair,
+                                        { key: ProductStatus.closed, value: 'Closed', selected: this.state.draftProduct.status === ProductStatus.closed } as KeyValPair,
+                                        { key: ProductStatus.canceled, value: 'Canceled', selected: this.state.draftProduct.status === ProductStatus.canceled } as KeyValPair
                                     ]}
                                     allowNull={true}
                                     disabledKeys={[]}
@@ -162,7 +156,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     fieldRef={'eventType'}
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
-                                    options={AppService.AppSettings.eventTypes.map(d => { return { key: d.eventTypeId, value: d.eventTitle } as KeyValPair; })}
+                                    options={AppService.AppSettings.eventTypes.map(d => { return { key: d.eventTypeId, value: d.eventTitle, selected: d.eventTypeId === this.state.draftProduct.eventType } as KeyValPair; })}
                                     allowNull={true}
                                     disabledKeys={AppService.AppSettings.eventTypes.filter(f => !f.active).map(d => d.eventTypeId)}
                                 />

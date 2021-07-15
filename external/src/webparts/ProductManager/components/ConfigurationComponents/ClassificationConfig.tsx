@@ -98,6 +98,7 @@ export default class ClassificationConfig extends React.Component <IClassificati
         .then(newSettings => {
             this.hasUpdates = false;
             this.setState({ draftModel: null, showPane: false });
-        });
+        })
+        .catch(e => Promise.reject(e));
     }
 }

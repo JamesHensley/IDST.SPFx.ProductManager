@@ -100,18 +100,19 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
     }
 
     private updateVal(fieldVal: string, fieldRef: string): void {
+        this.hasUpdates = true;
+
         const newModel = Object.assign({}, this.state.draftModel);
         newModel[fieldRef] = fieldVal;
         this.setState({ draftModel: newModel });
     }
 
     private saveSettings(): void {
-        console.log('StringConfig.saveSettings: ', this.state.draftModel);
-        
         AppService.UpdateAppSetting({ miscSettings: this.state.draftModel })
         .then(newSettings => {
             this.hasUpdates = false;
-            this.setState({ draftModel: null, showPane: false });
-        });
-    }    
+            this.setState({ draftModel: AppService.AppSettings.miscSettings, showPane: false });
+        })
+        .catch(e => Promise.reject(e));
+    }
 }

@@ -96,6 +96,7 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
         .then(newSettings => {
             this.hasUpdates = false;
             this.setState({ draftModel: null, showPane: false });
-        });
+        })
+        .catch(e => Promise.reject(e));
     }
 }

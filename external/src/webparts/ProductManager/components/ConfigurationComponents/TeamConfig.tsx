@@ -43,7 +43,7 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                                             <Label className={`${styles.pointer} ${styles.padBottom0}`}>{d.name}</Label>
                                             <Label className={`${styles.pointer} ${styles.padTop0}`}>{d.active ? 'Active Team' : 'InActive Team'}</Label>
                                         </Stack.Item>
-                                        <TeamMemberConfig teamId={d.teamId} canEditMembers={d.active} triggerUpdate={this.membersUpdated.bind(this)} />
+                                        <TeamMemberConfig teamId={d.teamId} canEditMembers={d.active} />
                                     </Stack>
                                 </Stack.Item>
                             );
@@ -51,7 +51,7 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                     }
                 </Stack>
                 {
-                    this.state.draftTeam && 
+                    this.state.draftTeam &&
                     <Panel
                         className={styles.productDetailPane}
                         isHiddenOnDismiss={false}
@@ -101,7 +101,7 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                             />
                         </Stack>
                     </Panel>
-                }                    
+                }
             </Stack>
         );
     }
@@ -125,7 +125,8 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
         .then(newSettings => {
             this.hasUpdates = false;
             this.setState({ showPane: false, draftTeam: null });
-        });
+        })
+        .catch(e => Promise.reject(e));
     }
 
     private updateTeamField(fieldVal: string, fieldRef: string): void {
@@ -134,9 +135,5 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
         const newTeam = Object.assign(new TeamModel(), this.state.draftTeam);
         newTeam[fieldRef] = fieldVal;
         this.setState({ draftTeam: newTeam });
-    }
-
-    private membersUpdated(): void {
-        this.setState({ lastUpdated: new Date().getTime() })
     }
 }

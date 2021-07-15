@@ -1,16 +1,18 @@
-import { Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import * as React from 'react';
-import { TeamMemberModel, TeamMemberRole } from '../../../../models/TeamModel';
+import * as styles from '../ProductManager.module.scss';
+
 import AppService from '../../../../services/AppService';
+import RecordService from '../../../../services/RecordService';
+
+import { TeamMemberModel, TeamMemberRole } from '../../../../models/TeamModel';
+import { IconButton, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import { FormInputDropDown, KeyValPair } from '../FormComponents/FormInputDropDown';
 import { FormInputText } from '../FormComponents/FormInputText';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
-import * as styles from '../ProductManager.module.scss';
 
 export interface ITeamMemberConfigProps {
     teamId: string;
     canEditMembers: boolean;
-    triggerUpdate: () => void;
 }
 
 export interface ITeamMemberConfigState {
@@ -20,21 +22,25 @@ export interface ITeamMemberConfigState {
 
 export default class TeamMemberConfig extends React.Component <ITeamMemberConfigProps, ITeamMemberConfigState> {
     private hasUpdates = false;
-
     constructor(props: ITeamMemberConfigProps) {
         super(props);
-        this.state = {
-            draftMember: null,
-            showPane: false
-        };
+        this.state = { draftMember: null, showPane: false };
     }
 
     public render(): React.ReactElement<ITeamMemberConfigProps> {
         const teamMembers = AppService.AppSettings.teamMembers.filter(f => f.teamId === this.props.teamId);
         return (
             <Stack>
-                Members [{teamMembers.length}]
+                <Stack horizontal verticalAlign={'center'}>
+                    <Stack.Item>
+                        Members [{teamMembers.length}]
+                    </Stack.Item>
+                    <Stack.Item>
+                        <IconButton iconProps={{ iconName: 'Add', styles: { root: { fontSize: '0.7rem'} } }} title="Add Member" ariaLabel="Add Member" onClick={this.addNewMember.bind(this)} />
+                    </Stack.Item>
+                </Stack>
                 {
+                    // TODO: Maybe consider sorting the members by ROLE and then alaphabetically
                     teamMembers.map(d => {
                         return (
                             <Stack horizontal key={d.memberId}>
@@ -114,13 +120,13 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
                                 disabledKeys={AppService.AppSettings.teams.filter(f => !f.active).map(d => d.teamId)}
                             />
                         </Stack>
-                    </Panel>                
+                    </Panel>
                 }
             </Stack>
         );
     }
 
-    public showDetailPane(member: TeamMemberModel): void {
+    private showDetailPane(member: TeamMemberModel): void {
         if (this.props.canEditMembers) {
             this.setState({ showPane: true, draftMember: member });
         }
@@ -132,6 +138,17 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
         } else {
             this.setState({ showPane: false, draftMember: null });
         }
+    }
+
+    private addNewMember(): void {
+        const newMem = RecordService.GetNewTeamMemberModel(this.props.teamId);
+        const members = AppService.AppSettings.teamMembers.concat([newMem]);
+
+        AppService.UpdateAppSetting({ teamMembers: members })
+        .then(newSettings => {
+            this.setState({ showPane: true, draftMember: newSettings.teamMembers.reduce((t, n) => n.memberId === newMem.memberId ? n : t, null) });
+        })
+        .catch(e => Promise.reject(e));
     }
 
     private updateMember(fieldVal: any, fieldRef: string): void {
@@ -158,7 +175,7 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
         AppService.UpdateAppSetting({ teamMembers: members })
         .then(newSettings => {
             this.setState({ showPane: false, draftMember: null });
-            this.props.triggerUpdate();
-        });
-    }    
+        })
+        .catch(e => Promise.reject(e));
+    }
 }
