@@ -35,17 +35,17 @@ export class FormInputDate extends React.Component<IFormInputProps, IFormInputDa
                         <Stack.Item styles={stackItemStyles}>
                             {this.props.editing &&
                                 <CalendarButton
-                                    dateVal={this.props.fieldValue}
+                                    dateVal={this.state.draftValue}
                                     dateChangeCallback={this.updateValueFromCalendar.bind(this)}
                                 />
                             }
                         </Stack.Item>
                     </Stack>
                     {!this.props.editing &&
-                        <Text>{format(new Date(this.props.fieldValue), AppService.DateFormatView)}</Text>
+                        <Text>{format(new Date(this.state.draftValue), AppService.DateFormatView)}</Text>
                     }
                     {this.props.editing &&
-                        <TextField value={format(new Date(this.props.fieldValue), AppService.DateFormatView)} disabled />
+                        <TextField value={format(new Date(this.state.draftValue), AppService.DateFormatView)} disabled />
                     }
                 </Stack>
             </div>

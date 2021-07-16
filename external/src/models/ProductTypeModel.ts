@@ -1,4 +1,10 @@
+import { TaskModel } from "./TaskModel";
+
 export class TaskTemplate {
+    public constructor(init?: Partial<TaskTemplate>) {
+        Object.assign(this, init);
+    }
+
     public teamId: string;
     public taskDescription: string;
 
@@ -10,6 +16,7 @@ export class TaskTemplate {
 export class ProductTypeModel {
     public constructor(init?: Partial<ProductTypeModel>) {
         Object.assign(this, init);
+        this.defaultTeamTasks = (init ? (init.defaultTeamTasks || []) : []).map(d => new TaskTemplate(d));
     }
 
     public active: boolean;

@@ -100,7 +100,7 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
 
     public componentDidMount(): void {
         this.menuReceiver = this.cmdBarEvent.bind(this);
-        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps)
+        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps);
     }
     public componentWillUnmount(): void {
         AppService.UnRegisterCmdBarListener(this.menuReceiver);

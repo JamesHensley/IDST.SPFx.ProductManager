@@ -72,7 +72,7 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
 
     public componentDidMount(): void {
         this.menuReceiver = this.cmdBarEvent.bind(this);
-        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps)
+        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps);
     }
     public componentWillUnmount(): void {
         AppService.UnRegisterCmdBarListener(this.menuReceiver);
@@ -138,5 +138,5 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
                 </Stack>
             </div>
         );
-    }    
+    }
 }

@@ -135,7 +135,7 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
 
     private addNewMember(): void {
         const newMem = RecordService.GetNewTeamMemberModel(this.props.teamId);
-        this.setState({ showPane: true, draftMember: newMem });        
+        this.setState({ showPane: true, draftMember: newMem });
     }
 
     private updateMember(fieldVal: any, fieldRef: string): void {

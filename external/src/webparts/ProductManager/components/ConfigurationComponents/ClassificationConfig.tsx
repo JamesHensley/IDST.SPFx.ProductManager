@@ -105,10 +105,10 @@ export default class ClassificationConfig extends React.Component <IClassificati
         })
         .catch(e => Promise.reject(e));
     }
-    
+
     public componentDidMount(): void {
         this.menuReceiver = this.cmdBarEvent.bind(this);
-        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps)
+        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps);
     }
     public componentWillUnmount(): void {
         AppService.UnRegisterCmdBarListener(this.menuReceiver);
@@ -120,7 +120,7 @@ export default class ClassificationConfig extends React.Component <IClassificati
         }
         return Promise.resolve();
     }
-    
+
     /** Returns a header for the detail pane with buttons */
     private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
         return (

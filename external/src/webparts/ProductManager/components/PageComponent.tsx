@@ -10,7 +10,7 @@ import { ProductModel } from '../../../models/ProductModel';
 import ProductList from './Views/ProductList';
 import RollupView from './Views/RollupView';
 import TeamView from './Views/TeamView';
-import ConfigComponent from './Views/ConfigComponent';
+import ConfigurationView from './Views/ConfigComponent';
 
 import ProductManagerCmdBar from './ProductManagerCmdBar';
 
@@ -54,7 +54,7 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 						/>
 					}
 					{this.state.view === 'ConfigView' &&
-						<ConfigComponent />
+						<ConfigurationView />
 					}
 				</Stack.Item>
 			</Stack>

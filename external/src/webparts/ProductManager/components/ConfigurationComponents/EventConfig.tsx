@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { DefaultButton, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import * as styles from '../ProductManager.module.scss';
+
+import { DefaultButton, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import { EventModel } from '../../../../models/EventModel';
 import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
@@ -103,7 +104,7 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
 
     public componentDidMount(): void {
         this.menuReceiver = this.cmdBarEvent.bind(this);
-        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps)
+        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps);
     }
     public componentWillUnmount(): void {
         AppService.UnRegisterCmdBarListener(this.menuReceiver);

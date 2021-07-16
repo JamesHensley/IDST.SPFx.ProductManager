@@ -1,25 +1,22 @@
 import * as React from 'react';
-import { Label, Stack } from '@fluentui/react';
+import { Stack } from '@fluentui/react';
 
 import TeamConfig from '../ConfigurationComponents/TeamConfig';
-
 import EventConfig from '../ConfigurationComponents/EventConfig';
 import StringConfig from '../ConfigurationComponents/StringConfig';
 import ClassificationConfig from '../ConfigurationComponents/ClassificationConfig';
 import CategoryConfig from '../ConfigurationComponents/CategoryConfig';
+import ProductTypeConfig from '../ConfigurationComponents/ProductTypeConfig';
 
-import { ProductTypeModel } from '../../../../models/ProductTypeModel';
-
-export interface IConfigComponentProps {}
-export interface IConfigComponentState {}
-
-export default class ConfigComponent extends React.Component <IConfigComponentProps, IConfigComponentState> {
-    public render(): React.ReactElement<IConfigComponentProps> {
-
+export default class ConfigurationView extends React.Component <{}, {}> {
+    public render(): React.ReactElement<{}> {
         return (
             <Stack tokens={{ childrenGap: 10 }}>
                 <Stack.Item grow>
                     <TeamConfig />
+                </Stack.Item>
+                <Stack.Item grow>
+                    <ProductTypeConfig />
                 </Stack.Item>
                 <Stack.Item grow>
                     <Stack horizontal tokens={{ childrenGap: 10 }} verticalFill={true}>
@@ -40,6 +37,4 @@ export default class ConfigComponent extends React.Component <IConfigComponentPr
             </Stack>
         );
     }
-
-    private updateProductType(prodTypeModel: ProductTypeModel): void {}
 }
