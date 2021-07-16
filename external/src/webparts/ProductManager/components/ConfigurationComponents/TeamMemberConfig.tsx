@@ -13,6 +13,7 @@ import { FormInputToggle } from '../FormComponents/FormInputToggle';
 export interface ITeamMemberConfigProps {
     teamId: string;
     canEditMembers: boolean;
+    triggerUpdate: () => void;
 }
 
 export interface ITeamMemberConfigState {
@@ -174,7 +175,9 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
 
         AppService.UpdateAppSetting({ teamMembers: members })
         .then(newSettings => {
-            this.setState({ showPane: false, draftMember: null });
+            // We unfortunately have to have the parent redraw all children in case someone
+            //  is moved to a different team.  This will destroy and rebuild each child
+            this.props.triggerUpdate();
         })
         .catch(e => Promise.reject(e));
     }

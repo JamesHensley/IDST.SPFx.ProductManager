@@ -2,21 +2,22 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import { BaseClientSideWebPart, WebPartContext, IPropertyPaneConfiguration, PropertyPaneTextField, IPropertyPaneCustomFieldProps } from '@microsoft/sp-webpart-base';
+import PnPTelemetry from '@pnp/telemetry-js';
 
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 
-import { IPageComponentProps } from './components/PageComponent';
 import AppService from '../../services/AppService';
-import { TeamMemberModel, TeamModel } from '../../models/TeamModel';
+import RecordService from '../../services/RecordService';
 
-import PnPTelemetry from '@pnp/telemetry-js';
+import { IPageComponentProps } from './components/PageComponent';
 import { ProductManager } from './components/ProductManager';
+
+import { TeamMemberModel, TeamModel } from '../../models/TeamModel';
 import { ProductTypeModel } from '../../models/ProductTypeModel';
 import { EventModel } from '../../models/EventModel';
 import { ClassificationModel } from '../../models/ClassificationModel';
 import { CategoryModel } from '../../models/CategoryModel';
-import { RecordService } from '../../services/RecordService';
 import { MiscSettingsModel } from '../../models/MiscSettingsModel';
 import { TemplateDocumentModel } from '../../models/TemplateDocumentModel';
 

@@ -16,6 +16,7 @@ import * as styles from './ProductManager.module.scss';
 import { Stack, Toggle } from '@fluentui/react';
 import { ITimelineTeamGroup, ITimelineItem, TimelineTeamGroup, TimelineProductItem } from '../../../models/TimelineModels';
 import RecordService from '../../../services/RecordService';
+import ProductDetailPane from './ProductDetailPane';
 
 export interface IRollupViewProps {
     // products: Array<ProductModel>;
@@ -29,6 +30,7 @@ export interface IRollupViewState {
     colorBySuspense: boolean;
     hideOpenProducts: boolean;
     showEventsRow: boolean;
+    currentProduct: ProductModel;
 }
 
 export default class RollupView extends React.Component <IRollupViewProps, IRollupViewState> {
@@ -42,7 +44,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         // this.calendarEnd = endOfMonth(this.props.defaultMonth);
         this.calendarStart = startOfMonth(new Date());
         this.calendarEnd = endOfMonth(new Date);
-        this.state = { mergeTeamTasks: true, colorBySuspense: true, hideOpenProducts: true, showEventsRow: false, products: [] };
+        this.state = { mergeTeamTasks: true, colorBySuspense: true, hideOpenProducts: true, showEventsRow: false, products: [], currentProduct: null };
     }
 
     private get calendarGroups(): Array<ITimelineTeamGroup> {
@@ -127,6 +129,17 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                         <DateHeader />
                     </TimelineHeaders>
                 </Timeline>
+                {
+                    this.state.currentProduct && 
+                    <ProductDetailPane
+                        currentProduct={this.state.currentProduct}
+                        isVisible={true}
+                        isEditing={false}
+                        readOnly={true}
+                        closePane={() => this.setState({ currentProduct: null })}
+                        saveProduct={null}
+                    />
+                }
             </Stack>
         );
     }
@@ -160,8 +173,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         event.preventDefault();
         event.cancelBubble = true;
         const clickedProductGuid: string = i.itemProps.productGuid;
-        console.log('itemClicked: ', clickedProductGuid);
-        debugger;
+        this.setState({ currentProduct: this.state.products.reduce((t,n) => n.guid == clickedProductGuid ? n : t, null) });
     }
 
     private itemSelected(itemId: number, e: Event, time: number): void {
@@ -169,8 +181,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         event.cancelBubble = true;
         const clickedProductGuid: string = this.calendarItems
             .reduce((t: string, n: ITimelineItem) => n.id === itemId ? n.itemProps.productGuid : t, null);
-        console.log('itemSelected: ', clickedProductGuid);
-        debugger;
+        this.setState({ currentProduct: this.state.products.reduce((t,n) => n.guid == clickedProductGuid ? n : t, null) });
     }
 
     private itemRenderer({ item, timelineContext, itemContext, getItemProps, getResizeProps }): JSX.Element {

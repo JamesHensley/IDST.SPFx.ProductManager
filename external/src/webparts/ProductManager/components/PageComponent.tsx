@@ -1,17 +1,18 @@
 import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
+import { ICommandBarItemProps } from '@fluentui/react';
 
 import RecordService from '../../../services/RecordService';
 import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
-import ProductList from './ProductList';
-// import ProductDetailPane from './ProductDetailPane';
+
 import { ProductModel } from '../../../models/ProductModel';
 
-import ProductManagerCmdBar from './ProductManagerCmdBar';
-import { ICommandBarItemProps } from '@fluentui/react';
+import ProductList from './ProductList';
 import RollupView from './RollupView';
 import TeamView from './TeamView';
 import ConfigComponent from './ConfigurationComponents/ConfigComponent';
+
+import ProductManagerCmdBar from './ProductManagerCmdBar';
 
 export interface IPageComponentProps { }
 
@@ -26,10 +27,7 @@ export interface IPageComponentState {
 }
 
 export default class PageComponent extends React.Component <IPageComponentProps, IPageComponentState> {
-	private receivers = {
-		productEvents: null,
-		cmdbarEvents: null
-	};
+	private menuReceiver = null;
 
 	constructor(props: IPageComponentProps) {
 		super(props);
@@ -80,53 +78,18 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 	}
 
 	public componentDidMount(): void {
-		this.receivers = {
-			productEvents: this.productsUpdated.bind(this),
-			cmdbarEvents: this.cmdBarItemClicked.bind(this)
-		};
-		AppService.RegisterProductListener(this.receivers.productEvents);
-		AppService.RegisterCmdBarListener({ callback: this.receivers.cmdbarEvents } as ICmdBarListenerProps);
+		this.menuReceiver = this.cmdBarItemClicked.bind(this);
+		AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps);
 	}
 
 	public componentWillUnmount(): void {
-		AppService.UnRegisterProductListener(this.receivers.productEvents);
-		AppService.UnRegisterCmdBarListener(this.receivers.cmdbarEvents);
-	}
-
-	private productClicked(prodId: string): void {
-		this.setState({
-			panelVisible: true,
-			panelEditing: false,
-			currentProduct: this.state.allProducts.reduce((t,n) => n.guid === prodId ? n : t, null)
-		});
-	}
-
-	private eventPaneClose(): void {
-		this.setState({
-			panelVisible: false,
-			currentProduct: null
-		});
+		AppService.UnRegisterCmdBarListener(this.menuReceiver);
 	}
 
 	//#region Emitter receivers
 
-	/** Receives the PRODUCT UPDATED message whenever the recordservice saves a product */
-	private async productsUpdated(): Promise<void> {
-		return RecordService.GetProducts()
-		.then(allProducts => {
-			this.setState({
-				allProducts: allProducts,
-				currentProduct: null,
-				panelEditing: false,
-				panelVisible: false
-			});
-		})
-		.then(() => Promise.resolve())
-		.catch(e => Promise.reject(e));
-	}
-
+    /** Receives messages from the commandBar component */
 	private async cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
-		// console.log('PageComponent.cmdBarItemClicked: ', item);
 		switch (item['data-automation-id']) {
 			case 'viewRollup':
 				this.setState({ view: 'RollUp' });
@@ -151,19 +114,6 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 					panelEditing: true
 				});
 				break;
-			/*
-			case 'newTeamMember':
-				console.log('Should be adding a new team member here: ', this.state);
-				const teamId: string = this.state.chosenTeamId;
-				const team = AppService.AppSettings.teams.reduce((t, n) => n.teamId === this.state.chosenTeamId ? n : t);
-				team.members.push(RecordService.GetNewTeamMemberModel(teamId));
-				this.setState({
-					view: 'TeamView',
-					// chosenTeamId: team,
-					lastUpdated: new Date().getTime()
-				});
-				break;
-			*/
 		}
 		return Promise.resolve();
 	}
