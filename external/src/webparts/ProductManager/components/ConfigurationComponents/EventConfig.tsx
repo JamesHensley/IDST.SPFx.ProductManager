@@ -7,6 +7,7 @@ import AppService, { ICmdBarListenerProps } from '../../../../services/AppServic
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
 import { FormInputText } from '../FormComponents/FormInputText';
 import RecordService from '../../../../services/RecordService';
+import { FormInputColor } from '../FormComponents/FormInputColor';
 
 export interface IEventConfigProps { }
 
@@ -87,8 +88,9 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
                                     />
                                 </Stack.Item>
                                 <Stack.Item grow>
-                                    <FormInputText
-                                        labelValue={'Event Color (CSS color string)'} editing={true}
+                                    <FormInputColor
+                                        key={new Date().getTime()}
+                                        labelValue={'Event Color'} editing={true}
                                         fieldValue={this.state.draftEvent.eventBackgroundColor}
                                         fieldRef={'eventBackgroundColor'}
                                         onUpdated={this.updateEventField.bind(this)}
