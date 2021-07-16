@@ -22,11 +22,12 @@ import { TaskModel } from '../../../models/TaskModel';
 import { CommentsModel } from '../../../models/CommentsModel';
 
 export interface IProductDetailPaneProps {
+    currentProduct: ProductModel;
     isVisible: boolean;
     isEditing: boolean;
-    currentProduct: ProductModel;
-    paneCloseCallBack: () => void;
     readOnly: boolean;
+    saveProduct: (newProd: ProductModel, keepPaneOpen?: boolean) => void;
+    closePane: () => void;
 }
 
 export interface IProductDetailPaneState {
@@ -39,12 +40,9 @@ export interface IProductDetailPaneState {
 export default class ProductDetailPane extends React.Component<IProductDetailPaneProps, IProductDetailPaneState> {
     constructor(props: IProductDetailPaneProps) {
         super(props);
-        const draftProduct: ProductModel = new ProductModel();
-        Object.assign(draftProduct, this.props.currentProduct);
-
         this.state = {
             isEditing: this.props.isEditing,
-            draftProduct: draftProduct,
+            draftProduct: Object.assign(new ProductModel(), props.currentProduct),
             showCommentDialog: false
         };
     }
@@ -57,7 +55,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                 isLightDismiss={!this.state.isEditing}
                 isHiddenOnDismiss={false}
                 isOpen={this.props.isVisible}
-                onDismiss={this.closePane.bind(this)}
+                onDismiss={this.closeProduct.bind(this)}
                 closeButtonAriaLabel='Close'
                 type={PanelType.medium}
                 onRenderHeader={this.getPaneHeader.bind(this)}
@@ -215,59 +213,33 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         );
     }
 
-    private closePane(): void {
-        this.props.paneCloseCallBack();
-    }
-
     private toggleEditMode(): void {
         this.setState({ isEditing: !this.state.isEditing });
     }
 
     private showCommentDialog(): void { this.setState({ showCommentDialog: true }); }
-
     private cancelAddComment(): void { this.setState({ showCommentDialog: false }); }
-
     private updateComment(commentStr: string): void {
-        const comment: CommentsModel = {
+        const newDraft = Object.assign(new ProductModel(), this.state.draftProduct);
+        newDraft.comments.push(new CommentsModel({
             commentGuid: uuidv4(),
             commentAuthor: AppService.CurrentUser,
             commentDate: new Date().toJSON(),
             commentValue: commentStr
-        };
-        const newDraft = new ProductModel();
-        Object.assign(newDraft, this.state.draftProduct);
-        newDraft.comments.push(comment);
+        }));
 
-        // We're seperating these out in case someone adds a comment to a new product and then decides
-        // to cancel the action.  If we processed the comment before the initial save, the product would
-        // get saved
-        if (this.state.isEditing) {
-            this.setState({ draftProduct: newDraft, showCommentDialog: false });
-        } else {
-            RecordService.SaveProduct(newDraft, false)
-            .then(result => {
-                NotificationService.Notify(NotificationType.AttachAdd, newDraft.title);
-                this.setState({ draftProduct: result.productModel, showCommentDialog: false });
-            })
-            .catch(e => console.log('Update failed for: ', this.state.draftProduct));
+        this.setState({ draftProduct: newDraft, showCommentDialog: false });
+        if (!this.state.isEditing) {
+            this.props.saveProduct(newDraft, true);
         }
     }
 
-    private saveRFI(): void {
-        // We let the parent component close this pane.
-        RecordService.SaveProduct(this.state.draftProduct, true)
-        .then(d => console.log('Saved RFI: ', this.state.draftProduct, 'and received: ', d))
-        .catch(e => console.log('Update failed for: ', this.state.draftProduct));
+    private saveProduct(): void {
+       this.props.saveProduct(this.state.draftProduct);
     }
 
-    private cancelRFIChanges(): void {
-        if (!this.state.draftProduct.guid) {
-            // Canceled creating a new product
-            this.props.paneCloseCallBack();
-        } else {
-            // Canceled updating an existing product
-            this.setState({ isEditing: false, draftProduct: this.props.currentProduct });
-        }
+    private closeProduct(): void {
+        this.props.closePane();
     }
 
     private fieldUpdated(newVal: any, fieldRef: string): void {
@@ -323,28 +295,30 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         }
     }
 
+    /** Returns a header for the detail pane with or without edit/save buttons */
     private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
-        // console.log('getPaneHeader: ', arguments);
-        return (<div className={styles.panelHead}>
-            <Stack grow styles={{ root: { display: 'flex' } }}>
-                <Label style={{ fontSize: '1.5rem' }}>
-                    {this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
-                </Label>
-                {!this.props.readOnly &&
-                <Stack horizontal>
-                    <Stack.Item grow>
-                        <Stack horizontal>
-                            <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
-                            {this.state.isEditing && <DefaultButton onClick={this.saveRFI.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
-                            {this.state.isEditing && <DefaultButton onClick={this.cancelRFIChanges.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
-                        </Stack>
-                    </Stack.Item>
-                    <Stack.Item>
-                        <DefaultButton onClick={this.showCommentDialog.bind(this)}>Add Comment</DefaultButton>
-                    </Stack.Item>
+        return (
+            <div className={styles.panelHead}>
+                <Stack grow styles={{ root: { display: 'flex' } }}>
+                    <Label style={{ fontSize: '1.5rem' }}>
+                        {this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
+                    </Label>
+                    {!this.props.readOnly &&
+                    <Stack horizontal>
+                        <Stack.Item grow>
+                            <Stack horizontal>
+                                <DefaultButton onClick={this.toggleEditMode.bind(this)} disabled={this.state.isEditing}>Edit</DefaultButton>
+                                {this.state.isEditing && <DefaultButton onClick={this.saveProduct.bind(this)} disabled={!this.state.isEditing}>Save</DefaultButton>}
+                                {this.state.isEditing && <DefaultButton onClick={this.closeProduct.bind(this)} disabled={!this.state.isEditing}>Cancel</DefaultButton>}
+                            </Stack>
+                        </Stack.Item>
+                        <Stack.Item>
+                            <DefaultButton onClick={this.showCommentDialog.bind(this)}>Add Comment</DefaultButton>
+                        </Stack.Item>
+                    </Stack>
+                    }
                 </Stack>
-                }
-            </Stack>
-        </div>);
+            </div>
+        );
     }
 }

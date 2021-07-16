@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Dialog, DialogType, DialogFooter, DialogContent } from '@fluentui/react/lib/Dialog';
 import { DefaultButton } from '@fluentui/react/lib/Button';
-import { ITextField, Label, TextField } from '@fluentui/react';
+import { TextField } from '@fluentui/react';
 
 export interface IFormInputDialogProps {
     titleStr: string;

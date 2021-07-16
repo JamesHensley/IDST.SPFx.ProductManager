@@ -9,7 +9,7 @@ import AppService from './AppService';
 export class MapperService {
     public static MapProductToItem(prod: ProductModel): SpProductItem {
         return new SpProductItem({
-            Id: prod.id,
+            Id: prod.spId,
             Guid: prod.guid,
             Title: prod.title,
             Description: prod.description,
@@ -33,7 +33,7 @@ export class MapperService {
 
     public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
         return new ProductModel({
-            id: item.Id,
+            spId: item.Id,
             guid: item.Guid,
             title: item.Title,
             description: item.Description,

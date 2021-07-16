@@ -55,18 +55,19 @@ export default class RecordService {
         .catch(e => Promise.reject(e));
     }
 
-    public static async SaveProduct(product: ProductModel, broadcastChange: boolean): Promise<IResult> {
-        const resultStr = product.guid ? 'Updated' : 'Created';
+    //public static async SaveProduct(product: ProductModel, broadcastChange: boolean): Promise<IResult> {
+    public static async SaveProduct(product: ProductModel): Promise<IResult> {
+        const resultStr = product.spId ? 'Updated' : 'Created';
         const newItem = MapperService.MapProductToItem(product);
 
-        return (product.guid ? this.spService.UpdateListItem(AppService.AppSettings.miscSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.miscSettings.productListUrl, newItem))
+        return (product.spId ? this.spService.UpdateListItem(AppService.AppSettings.miscSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.miscSettings.productListUrl, newItem))
         .then((newItem: SpProductItem) => {
             // When we create a NEW item, we need to upload template documents here
-            // newItem.Guid
-
+            // UPLOAD DOCUMENTS
             return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, newItem.Guid)
             .then(attachments => {
-                if (broadcastChange) { AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product); }
+                //if (broadcastChange) { AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product); }
+                AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product);
                 return Promise.resolve({
                     productModel: MapperService.MapItemToProduct(newItem, attachments),
                     resultStr: resultStr
@@ -102,8 +103,9 @@ export default class RecordService {
         const prodTypeModel = productType ? AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productType ? n : t, null) : null;
         if (prodTypeModel) {
             const prod = new ProductModel({
+                spId: null,
                 productType: prodTypeModel.typeId,
-                guid: null,
+                guid: uuidv4(),
                 requestDate: new Date(),
                 status: ProductStatus.open,
                 title: `NEW ${prodTypeModel.typeName}`,

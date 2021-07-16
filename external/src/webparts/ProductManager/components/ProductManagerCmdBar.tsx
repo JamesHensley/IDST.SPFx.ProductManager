@@ -1,8 +1,9 @@
 import * as React from 'react';
 
 import AppService from '../../../services/AppService';
+import RecordService from '../../../services/RecordService';
+
 import { CommandBar, ICommandBarItemProps, IContextualMenuItem } from '@fluentui/react';
-import { RecordService } from '../../../services/RecordService';
 import { IAppSettings } from '../ProductManagerWebPart';
 import { EventModel } from '../../../models/EventModel';
 import { TeamModel } from '../../../models/TeamModel';

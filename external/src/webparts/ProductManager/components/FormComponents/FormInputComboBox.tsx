@@ -1,11 +1,10 @@
 import * as React from 'react';
+import * as styles from '../ProductManager.module.scss';
 
 import { Label, Text, ComboBox, IComboBoxOption, TextField, IComboBox } from '@fluentui/react';
 
-import * as styles from '../ProductManager.module.scss';
-
 import { IFormInputProps } from './IFormInputProps';
-import { RecordService } from '../../../../services/RecordService';
+import RecordService from '../../../../services/RecordService';
 
 export interface IFormInputState {
     lastUpdate: number;

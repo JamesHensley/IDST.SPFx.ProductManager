@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { ContextualMenu, ContextualMenuItemType, IContextualMenuItem } from '@fluentui/react/lib/ContextualMenu';
-import { IconButton } from '@fluentui/react';
-
-import * as styles from '../ProductManager.module.scss';
+import { ContextualMenu, IContextualMenuItem } from '@fluentui/react/lib/ContextualMenu';
 
 export interface IColumnSelectorProps {
   hideMenuCallBack: (someVal: any) => void;

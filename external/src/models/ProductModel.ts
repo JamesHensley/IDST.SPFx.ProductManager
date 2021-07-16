@@ -17,7 +17,7 @@ export class ProductModel {
         this.tasks = init && init.tasks ? init.tasks.map(d => new TaskModel(d)) : [];
     }
 
-    public id: number;
+    public spId: number;
     public guid: string;
     public title: string;
     public description: string;

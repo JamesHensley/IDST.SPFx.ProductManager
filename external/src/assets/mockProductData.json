@@ -60,7 +60,7 @@
         "ClassificationId": "2",
         "RequestUrl": "https://www.github.com",
         "Customer": "George Washington",
-        "Comments": "",
+        "Comments": "[]",
         "Active": true
     },
     {
@@ -82,7 +82,7 @@
         "ClassificationId": "1",
         "RequestUrl": "https://www.github.com",
         "Customer": "Daniel Boone",
-        "Comments": "",
+        "Comments": "[]",
         "Active": true
     },
     {
@@ -104,7 +104,7 @@
         "ClassificationId": "2",
         "RequestUrl": "https://www.github.com",
         "Customer": "George Washington",
-        "Comments": "",
+        "Comments": "[]",
         "Active": true
     },
     {
@@ -147,7 +147,7 @@
         "ClassificationId": "2",
         "RequestUrl": "https://www.github.com",
         "Customer": "Doctor Creep",
-        "Comments": "",
+        "Comments": "[]",
         "Active": true
     },
     {
@@ -169,7 +169,7 @@
         "ClassificationId": "1",
         "RequestUrl": "https://www.github.com",
         "Customer": "George Washington",
-        "Comments": "",
+        "Comments": "[]",
         "Active": true
     }
 ]

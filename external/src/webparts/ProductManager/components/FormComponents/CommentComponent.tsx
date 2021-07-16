@@ -2,8 +2,6 @@ import { Label, Stack } from '@fluentui/react';
 import * as React from 'react';
 import { CommentsModel } from '../../../../models/CommentsModel';
 
-import * as styles from '../ProductManager.module.scss';
-
 export interface ICommentComponentProps {
     comments: Array<CommentsModel>;
 }

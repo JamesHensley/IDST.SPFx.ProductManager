@@ -15,14 +15,16 @@ import TaskService from '../../../services/TaskService';
 import * as styles from './ProductManager.module.scss';
 import { Stack, Toggle } from '@fluentui/react';
 import { ITimelineTeamGroup, ITimelineItem, TimelineTeamGroup, TimelineProductItem } from '../../../models/TimelineModels';
+import RecordService from '../../../services/RecordService';
 
 export interface IRollupViewProps {
-    products: Array<ProductModel>;
-    productClicked: (prodId: string) => void;
-    defaultMonth: Date;
+    // products: Array<ProductModel>;
+    // productClicked: (prodId: string) => void;
+    // defaultMonth: Date;
 }
 
 export interface IRollupViewState {
+    products: Array<ProductModel>;
     mergeTeamTasks: boolean;
     colorBySuspense: boolean;
     hideOpenProducts: boolean;
@@ -36,9 +38,11 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
 
     constructor(props: IRollupViewProps) {
         super(props);
-        this.calendarStart = startOfMonth(this.props.defaultMonth);
-        this.calendarEnd = endOfMonth(this.props.defaultMonth);
-        this.state = { mergeTeamTasks: true, colorBySuspense: true, hideOpenProducts: true, showEventsRow: false };
+        // this.calendarStart = startOfMonth(this.props.defaultMonth);
+        // this.calendarEnd = endOfMonth(this.props.defaultMonth);
+        this.calendarStart = startOfMonth(new Date());
+        this.calendarEnd = endOfMonth(new Date);
+        this.state = { mergeTeamTasks: true, colorBySuspense: true, hideOpenProducts: true, showEventsRow: false, products: [] };
     }
 
     private get calendarGroups(): Array<ITimelineTeamGroup> {
@@ -58,7 +62,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
     }
 
     private get calendarItems(): Array<ITimelineItem> {
-        const productList = this.props.products.filter(f => this.state.hideOpenProducts ? f.status === ProductStatus.closed : true);
+        const productList = this.state.products.filter(f => this.state.hideOpenProducts ? f.status === ProductStatus.closed : true);
 
         return [].concat.apply((this.state.showEventsRow ? TaskService.BreakProductsToEvents(productList, 'noGuid') : []), (TaskService.BreakProductsToTasks(productList, this.state.mergeTeamTasks)))
         .map((d: ITimelineItem) => { d.group = this.calendarGroups.reduce((t, n) => n.teamGuid === d.teamGuid ? n.id : t, 0); return d; })
@@ -101,10 +105,9 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                     canMove={false}
                     canChangeGroup={false}
                     canResize={false}
-                    onItemSelect={this.itemClicked.bind(this)}
                     // Moved the ItemClick logic into the itemRenderer method to overcome
                     //   inconsistencies in the library
-                    // onItemClick={this.itemClicked.bind(this)}
+                    onItemSelect={this.itemSelected.bind(this)}
                     timeSteps={{ second: 0, minute: 0, hour: 0, day: 1, month: 1, year: 1 }}
                     itemRenderer={this.itemRenderer.bind(this)}
                     onTimeChange={this.calendarTimeChange.bind(this)}
@@ -132,6 +135,11 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         // The timeline component has problems being rendered within SP (maybe just the workbench), so we force
         //  a recalc/redraw of the component once it's been mounted
         this.tlRef.resize();
+        RecordService.GetProducts()
+        .then(prods => {
+            this.setState({ products: prods });
+        })
+        .catch(e => Promise.reject(e));
     }
 
     public componentDidUpdate(): void {
@@ -148,13 +156,21 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         updateScrollCanvas(visibleTimeStart, visibleTimeEnd);
     }
 
-    private itemClicked(itemId: number, e: Event, time: number): void {
-        e.cancelBubble = true;
-        e.preventDefault();
+    private itemClicked(i: TimelineProductItem): void {
+        event.preventDefault();
+        event.cancelBubble = true;
+        const clickedProductGuid: string = i.itemProps.productGuid;
+        console.log('itemClicked: ', clickedProductGuid);
+        debugger;
+    }
+
+    private itemSelected(itemId: number, e: Event, time: number): void {
+        event.preventDefault();
+        event.cancelBubble = true;
         const clickedProductGuid: string = this.calendarItems
             .reduce((t: string, n: ITimelineItem) => n.id === itemId ? n.itemProps.productGuid : t, null);
-
-        this.props.productClicked(clickedProductGuid);
+        console.log('itemSelected: ', clickedProductGuid);
+        debugger;
     }
 
     private itemRenderer({ item, timelineContext, itemContext, getItemProps, getResizeProps }): JSX.Element {
@@ -190,7 +206,8 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                 onClick={() => {
                     event.cancelBubble = true;
                     event.preventDefault();
-                    this.props.productClicked(item.itemProps.productGuid);
+                    // this.props.productClicked(item.itemProps.productGuid);
+                    this.itemClicked(item);
                 }}
             >
                 <div

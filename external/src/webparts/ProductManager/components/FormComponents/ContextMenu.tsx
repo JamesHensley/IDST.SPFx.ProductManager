@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { ContextualMenu, ContextualMenuItemType, IContextualMenuItem } from '@fluentui/react/lib/ContextualMenu';
-import { IconButton } from '@fluentui/react';
+import { ContextualMenu, IContextualMenuItem } from '@fluentui/react/lib/ContextualMenu';
 
 export interface IContextMenuProps {
     menuItems: Array<IContextualMenuItem>;

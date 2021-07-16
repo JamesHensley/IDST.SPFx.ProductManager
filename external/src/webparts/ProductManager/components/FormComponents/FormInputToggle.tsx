@@ -1,8 +1,5 @@
 import * as React from 'react';
-
-import { Label, TextField, Text, Toggle, Stack } from '@fluentui/react';
-
-import * as styles from '../ProductManager.module.scss';
+import { Label, Toggle, Stack } from '@fluentui/react';
 
 export interface IFormInputToggleProps {
     labelValue: string;
