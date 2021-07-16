@@ -1,13 +1,14 @@
 import * as React from 'react';
 import * as styles from '../ProductManager.module.scss';
 
-import AppService from '../../../../services/AppService';
+import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 
-import { Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
+import { DefaultButton, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import { TeamModel } from '../../../../models/TeamModel';
 import { FormInputText } from '../FormComponents/FormInputText';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
 import TeamMemberConfig from './TeamMemberConfig';
+import RecordService from '../../../../services/RecordService';
 
 export interface ITeamConfigProps { }
 
@@ -19,7 +20,8 @@ export interface ITeamConfigState {
 
 export default class TeamConfig extends React.Component <ITeamConfigProps, ITeamConfigState> {
     private hasUpdates = false;
-
+    private menuReceiver = null;
+    
     constructor(props: ITeamConfigProps) {
         super(props);
         this.state = {
@@ -60,19 +62,9 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                         onDismiss={this.closePane.bind(this)}
                         closeButtonAriaLabel='Close'
                         type={PanelType.medium}
-                        headerText={`${this.state.draftTeam.name} [${this.state.draftTeam.active ? 'Active' : 'InActive'}]`}
+                        onRenderHeader={this.getPaneHeader.bind(this)}
                     >
                         <Stack>
-                            <Stack.Item align='end'>
-                                <FormInputToggle
-                                    labelValue={'Active Team'}
-                                    fieldValue={this.state.draftTeam.active}
-                                    fieldRef={'active'}
-                                    onUpdated={this.updateTeamField.bind(this)}
-                                    oneRow={true}
-                                />
-                            </Stack.Item>
-                            <Separator />
                             <Stack horizontal tokens={{ childrenGap: 10 }}>
                                 <Stack.Item grow={4}>
                                     <FormInputText
@@ -106,12 +98,28 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
         );
     }
 
+    public componentDidMount(): void {
+        this.menuReceiver = this.cmdBarEvent.bind(this);
+        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps)
+    }
+    public componentWillUnmount(): void {
+        AppService.UnRegisterCmdBarListener(this.menuReceiver);
+    }
+    private cmdBarEvent(item: ICommandBarItemProps): Promise<void> {
+        if (item['data-automation-id'] === 'newTeam') {
+                const newRecord = RecordService.GetNewTeamModel();
+                this.setState({ draftTeam: newRecord, showPane: true });
+        }
+        return Promise.resolve();
+    }
+
     private showPane(model: TeamModel): void { this.setState({ showPane: true, draftTeam: model }); }
-    private closePane(): void {
-        if (this.hasUpdates) {
-            this.saveTeam();
-        } else {
+    private closePane(ignoreChanges?: boolean): void {
+        if (!this.hasUpdates || ignoreChanges) {
+            this.hasUpdates = false;
             this.setState({ showPane: false, draftTeam: null });
+        } else {
+            this.saveTeam();
         }
     }
 
@@ -135,5 +143,35 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
         const newTeam = Object.assign(new TeamModel(), this.state.draftTeam);
         newTeam[fieldRef] = fieldVal;
         this.setState({ draftTeam: newTeam });
+    }
+
+    /** Returns a header for the detail pane with buttons */
+    private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
+        return (
+            <div className={styles.panelHead}>
+                <Stack>
+                    <Stack.Item grow>
+                        <Label style={{ fontSize: '1.5rem' }}>
+                            {this.state.draftTeam.name} [{this.state.draftTeam.active ? 'Active' : 'InActive'}]
+                        </Label>
+                    </Stack.Item>
+                    <Stack horizontal>
+                        <Stack.Item grow>
+                            <Stack horizontal tokens={{ childrenGap: 10 }}>
+                                <DefaultButton onClick={this.saveTeam.bind(this)}>Save</DefaultButton>
+                                <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
+                            </Stack>
+                        </Stack.Item>
+                        <FormInputToggle
+                            labelValue={'Active Team'}
+                            fieldValue={this.state.draftTeam.active}
+                            fieldRef={'active'}
+                            onUpdated={this.updateTeamField.bind(this)}
+                            oneRow={true}
+                        />
+                    </Stack>
+                </Stack>
+            </div>
+        );
     }
 }

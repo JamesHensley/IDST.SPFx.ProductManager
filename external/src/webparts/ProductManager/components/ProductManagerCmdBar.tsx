@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as styles from './ProductManager.module.scss';
 
 import AppService from '../../../services/AppService';
 import RecordService from '../../../services/RecordService';
@@ -15,48 +16,50 @@ export interface IProductManagerCmdBarState { }
 
 export default class ProductManagerCmdBar extends React.Component <IProductManagerCmdBarProps, IProductManagerCmdBarState> {
     private get getNewMenuItems(): Array<IContextualMenuItem> {
-        switch (this.props.appView) {
-            case 'ProductList':
-                return AppService.AppSettings.productTypes.map(d => {
-                    return {
-                        key: d.typeId,
-                        text: d.typeName,
-                        iconProps: { iconName: 'Questionnaire' },
-                        ['data-automation-id']: 'newProduct',
-                        onClick: this.itemClicked.bind(this),
-                        data: { id: d.typeId, name: d.typeName }
-                    } as IContextualMenuItem;
-                });
-            case 'RollUp':
-                return [];
-            case 'TeamView':
-                return [
-                    {
-                        key: 'newTeamMember',
-                        text: 'Team Member',
-                        iconProps: { iconName: 'AddFriend' },
-                        ['data-automation-id']: 'newTeamMember',
-                        onClick: this.itemClicked.bind(this)
-                    } as IContextualMenuItem
-                ];
-            case 'ConfigView':
-                return [
-                    {
-                        key: 'newTeam',
-                        text: 'Team',
-                        iconProps: { iconName: 'AddGroup' },
-                        ['data-automation-id']: 'newTeam',
-                        onClick: this.newTeamClicked.bind(this)
-                    } as IContextualMenuItem,
-                    {
-                        key: 'newEventType',
-                        text: 'Event Type',
-                        iconProps: { iconName: 'Quantity' },
-                        ['data-automation-id']: 'newEventType',
-                        onClick: this.newEventTypeClicked.bind(this)
-                    } as IContextualMenuItem
-                ];
-        }
+        return AppService.AppSettings.productTypes.map(d => {
+            return {
+                key: d.typeId,
+                text: d.typeName,
+                iconProps: { iconName: 'Questionnaire' },
+                ['data-automation-id']: 'newProduct',
+                onClick: this.itemClicked.bind(this),
+                data: { id: d.typeId, name: d.typeName }.name,
+                className: this.props.appView !== 'ProductList' ? styles.hidden : ''
+            } as IContextualMenuItem;
+        }).concat([
+            {
+                key: 'newTeam',
+                text: 'Team',
+                iconProps: { iconName: 'AddGroup' },
+                ['data-automation-id']: 'newTeam',
+                onClick: this.itemClicked.bind(this),
+                className: this.props.appView !== 'ConfigView' ? styles.hidden : ''
+            } as IContextualMenuItem,
+            {
+                key: 'newEventType',
+                text: 'Event Type',
+                iconProps: { iconName: 'Quantity' },
+                ['data-automation-id']: 'newEventType',
+                onClick: this.itemClicked.bind(this),
+                className: this.props.appView !== 'ConfigView' ? styles.hidden : ''
+            } as IContextualMenuItem,
+            {
+                key: 'newCategoryModel',
+                text: 'Category',
+                iconProps: { iconName: 'GroupedList' },
+                ['data-automation-id']: 'newCategoryModel',
+                onClick: this.itemClicked.bind(this),
+                className: this.props.appView !== 'ConfigView' ? styles.hidden : ''
+            } as IContextualMenuItem,
+            {
+                key: 'newClassificationModel',
+                text: 'Classification model',
+                iconProps: { iconName: 'Admin' },
+                ['data-automation-id']: 'newClassificationModel',
+                onClick: this.itemClicked.bind(this),
+                className: this.props.appView !== 'ConfigView' ? styles.hidden : ''
+            } as IContextualMenuItem
+        ]);
     }
 
     public render(): React.ReactElement<IProductManagerCmdBarProps> {
@@ -126,19 +129,5 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
 
     private itemClicked(ev: any, item: ICommandBarItemProps): void {
         AppService.MenuItemClicked(item);
-    }
-
-    private newTeamClicked(): Promise<IAppSettings> {
-        const newTeam = RecordService.GetNewTeamModel();
-        const teams: Array<TeamModel> = [].concat.apply(AppService.AppSettings.teams, [newTeam])
-        .sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0));
-        return AppService.UpdateAppSetting({ teams: teams }).then(d => Promise.resolve(d));
-    }
-
-    private newEventTypeClicked(): Promise<IAppSettings> {
-        const newEvent = RecordService.GetNewEventTypeModel();
-        const eventTypes: Array<EventModel> = [].concat.apply(AppService.AppSettings.eventTypes, [newEvent])
-        .sort((a, b) => a.eventTitle > b.eventTitle ? 1 : (a.eventTitle < b.eventTitle ? -1 : 0));
-        return AppService.UpdateAppSetting({ eventTypes: eventTypes }).then(d => Promise.resolve(d));
     }
 }

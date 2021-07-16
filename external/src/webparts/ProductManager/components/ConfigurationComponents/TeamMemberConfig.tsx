@@ -5,7 +5,7 @@ import AppService from '../../../../services/AppService';
 import RecordService from '../../../../services/RecordService';
 
 import { TeamMemberModel, TeamMemberRole } from '../../../../models/TeamModel';
-import { IconButton, Panel, PanelType, Separator, Stack } from '@fluentui/react';
+import { DefaultButton, IconButton, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import { FormInputDropDown, KeyValPair } from '../FormComponents/FormInputDropDown';
 import { FormInputText } from '../FormComponents/FormInputText';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
@@ -56,24 +56,15 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
                     <Panel
                         className={styles.productDetailPane}
                         isHiddenOnDismiss={false}
-                        isLightDismiss={true}
+                        isLightDismiss={!this.hasUpdates}
                         isOpen={this.state.showPane}
                         onDismiss={this.closeDetailPane.bind(this)}
                         closeButtonAriaLabel='Close'
                         type={PanelType.medium}
                         headerText={`${this.state.draftMember.name} [${this.state.draftMember.active ? 'Active' : 'InActive'}]`}
+                        onRenderHeader={this.getPaneHeader.bind(this)}
                     >
                         <Stack>
-                            <Stack.Item align='end'>
-                                <FormInputToggle
-                                    labelValue={'Active Member'}
-                                    fieldValue={this.state.draftMember.active}
-                                    fieldRef={'active'}
-                                    onUpdated={this.updateMember.bind(this)}
-                                    oneRow={true}
-                                />
-                            </Stack.Item>
-                            <Separator />
                             <FormInputText
                                 labelValue={'Name'} editing={true}
                                 fieldValue={this.state.draftMember.name}
@@ -133,23 +124,18 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
         }
     }
 
-    private closeDetailPane(): void {
-        if (this.hasUpdates) {
-            this.saveMember();
-        } else {
+    private closeDetailPane(ignoreChanges?: boolean): void {
+        if (!this.hasUpdates || ignoreChanges) {
+            this.hasUpdates = false;
             this.setState({ showPane: false, draftMember: null });
+        } else {
+            this.saveMember();
         }
     }
 
     private addNewMember(): void {
         const newMem = RecordService.GetNewTeamMemberModel(this.props.teamId);
-        const members = AppService.AppSettings.teamMembers.concat([newMem]);
-
-        AppService.UpdateAppSetting({ teamMembers: members })
-        .then(newSettings => {
-            this.setState({ showPane: true, draftMember: newSettings.teamMembers.reduce((t, n) => n.memberId === newMem.memberId ? n : t, null) });
-        })
-        .catch(e => Promise.reject(e));
+        this.setState({ showPane: true, draftMember: newMem });        
     }
 
     private updateMember(fieldVal: any, fieldRef: string): void {
@@ -180,5 +166,35 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
             this.props.triggerUpdate();
         })
         .catch(e => Promise.reject(e));
+    }
+
+    /** Returns a header for the detail pane with buttons */
+    private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
+        return (
+            <div className={styles.panelHead}>
+                <Stack>
+                    <Stack.Item grow>
+                        <Label style={{ fontSize: '1.5rem' }}>
+                            {this.state.draftMember.name} [{this.state.draftMember.active ? 'Active' : 'InActive'}]
+                        </Label>
+                    </Stack.Item>
+                    <Stack horizontal>
+                        <Stack.Item grow>
+                            <Stack horizontal tokens={{ childrenGap: 10 }}>
+                                <DefaultButton onClick={this.saveMember.bind(this)}>Save</DefaultButton>
+                                <DefaultButton onClick={this.closeDetailPane.bind(this, true)}>Cancel</DefaultButton>
+                            </Stack>
+                        </Stack.Item>
+                        <FormInputToggle
+                            labelValue={'Active Member'}
+                            fieldValue={this.state.draftMember.active}
+                            fieldRef={'active'}
+                            onUpdated={this.updateMember.bind(this)}
+                            oneRow={true}
+                        />
+                    </Stack>
+                </Stack>
+            </div>
+        );
     }
 }

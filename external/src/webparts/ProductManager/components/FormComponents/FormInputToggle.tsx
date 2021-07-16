@@ -11,7 +11,7 @@ export interface IFormInputToggleProps {
 
 export class FormInputToggle extends React.Component<IFormInputToggleProps, {}> {
     render(): React.ReactElement<IFormInputToggleProps> {
-        const oneRow = <Stack horizontal tokens={{ childrenGap: 10 }}><Label>{this.props.labelValue}</Label><Toggle checked={this.props.fieldValue} onChange={this.fieldUpdated.bind(this)}/></Stack>;
+        const oneRow = <Stack horizontal tokens={{ childrenGap: 10 }}><Label>{this.props.labelValue}</Label><Toggle styles={{ root: { marginBottom: 0, paddingTop: 6 } }} checked={this.props.fieldValue} onChange={this.fieldUpdated.bind(this)}/></Stack>;
         const twoRow = <Toggle label={this.props.labelValue} checked={this.props.fieldValue} onChange={this.fieldUpdated.bind(this)} />;
 
         return (

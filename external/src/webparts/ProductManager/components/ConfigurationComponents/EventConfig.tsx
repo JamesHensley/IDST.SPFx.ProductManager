@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
+import { DefaultButton, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import * as styles from '../ProductManager.module.scss';
 import { EventModel } from '../../../../models/EventModel';
-import AppService from '../../../../services/AppService';
+import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
 import { FormInputText } from '../FormComponents/FormInputText';
+import RecordService from '../../../../services/RecordService';
 
 export interface IEventConfigProps { }
 
@@ -15,6 +16,7 @@ export interface IEventConfigState {
 
 export default class EventConfig extends React.Component <IEventConfigProps, IEventConfigState> {
     private hasUpdates = false;
+    private menuReceiver = null;
 
     constructor(props: IEventConfigProps) {
         super(props);
@@ -26,9 +28,9 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
 
     public render(): React.ReactElement<IEventConfigProps> {
         return (
-            <Stack className={styles.configZone}>
+            <Stack className={styles.configZone} verticalFill={true}>
                 <Label style={{ fontSize: '1.5rem' }}>Event Types</Label>
-                <Stack horizontal key={new Date().getTime()}>
+                <Stack key={new Date().getTime()}>
                     {
                         AppService.AppSettings.eventTypes
                         .sort((a, b) => a.eventTitle > b.eventTitle ? 1 : (a.eventTitle < b.eventTitle ? -1 : 0))
@@ -54,19 +56,9 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
                         onDismiss={this.closePane.bind(this)}
                         closeButtonAriaLabel='Close'
                         type={PanelType.medium}
-                        headerText={`${this.state.draftEvent.eventTitle} [${this.state.draftEvent.active ? 'Active' : 'InActive'}]`}
+                        onRenderHeader={this.getPaneHeader.bind(this)}
                     >
                         <Stack>
-                            <Stack.Item align='end'>
-                                <FormInputToggle
-                                    labelValue={'Active EventType'}
-                                    fieldValue={this.state.draftEvent.active}
-                                    fieldRef={'active'}
-                                    onUpdated={this.updateEventField.bind(this)}
-                                    oneRow={true}
-                                />
-                            </Stack.Item>
-                            <Separator />
                             <Stack.Item grow>
                                 <FormInputText
                                     labelValue={'Event Title'} editing={true}
@@ -109,6 +101,21 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
         );
     }
 
+    public componentDidMount(): void {
+        this.menuReceiver = this.cmdBarEvent.bind(this);
+        this.menuReceiver = AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps)
+    }
+    public componentWillUnmount(): void {
+        AppService.UnRegisterCmdBarListener(this.menuReceiver);
+    }
+    private cmdBarEvent(item: ICommandBarItemProps): Promise<void> {
+        if (item['data-automation-id'] === 'newEventType') {
+                const newRecord = RecordService.GetNewEventTypeModel();
+                this.setState({ draftEvent: newRecord, showPane: true });
+        }
+        return Promise.resolve();
+    }
+
     private updateEventField(fieldVal: string, fieldRef: string): void {
         this.hasUpdates = true;
         const newTeam = Object.assign(new EventModel(), this.state.draftEvent);
@@ -124,11 +131,12 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
     }
 
     private showPane(model: EventModel): void { this.setState({ showPane: true, draftEvent: model }); }
-    private closePane(): void {
-        if (this.hasUpdates) {
-            this.saveEvents();
-        } else {
+    private closePane(ignoreChanges?: boolean): void {
+        if (!this.hasUpdates || ignoreChanges) {
+            this.hasUpdates = false;
             this.setState({ showPane: false, draftEvent: null });
+        } else {
+            this.saveEvents();
         }
     }
 
@@ -143,5 +151,35 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
             this.setState({ showPane: false, draftEvent: null });
         })
         .catch(e => Promise.reject(e));
+    }
+
+    /** Returns a header for the detail pane with buttons */
+    private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
+        return (
+            <div className={styles.panelHead}>
+                <Stack>
+                    <Stack.Item grow>
+                        <Label style={{ fontSize: '1.5rem' }}>
+                            {this.state.draftEvent.eventTitle} [{this.state.draftEvent.active ? 'Active' : 'InActive'}]
+                        </Label>
+                    </Stack.Item>
+                    <Stack horizontal>
+                        <Stack.Item grow>
+                            <Stack horizontal tokens={{ childrenGap: 10 }}>
+                                <DefaultButton onClick={this.saveEvents.bind(this)}>Save</DefaultButton>
+                                <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
+                            </Stack>
+                        </Stack.Item>
+                        <FormInputToggle
+                            labelValue={'Active Event Type'}
+                            fieldValue={this.state.draftEvent.active}
+                            fieldRef={'active'}
+                            onUpdated={this.updateEventField.bind(this)}
+                            oneRow={true}
+                        />
+                    </Stack>
+                </Stack>
+            </div>
+        );
     }
 }

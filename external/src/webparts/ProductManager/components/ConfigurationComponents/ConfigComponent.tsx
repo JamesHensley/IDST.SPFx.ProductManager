@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { Label, Stack } from '@fluentui/react';
-import * as styles from '../ProductManager.module.scss';
 
 import TeamConfig from './TeamConfig';
-import { TeamMemberModel, TeamModel } from '../../../../models/TeamModel';
 
-import AppService from '../../../../services/AppService';
 import EventConfig from './EventConfig';
 import StringConfig from './StringConfig';
 import ClassificationConfig from './ClassificationConfig';
@@ -25,18 +22,18 @@ export default class ConfigComponent extends React.Component <IConfigComponentPr
                     <TeamConfig />
                 </Stack.Item>
                 <Stack.Item grow>
-                    <EventConfig />
-                </Stack.Item>
-                <Stack.Item grow>
-                    <Stack horizontal tokens={{ childrenGap: 10 }}>
-                        <Stack.Item grow verticalFill={true}>
+                    <Stack horizontal tokens={{ childrenGap: 10 }} verticalFill={true}>
+                        <Stack.Item grow verticalFill={true} align={'stretch'}>
                             <StringConfig />
                         </Stack.Item>
-                        <Stack.Item grow verticalFill={true}>
-                            <ClassificationConfig />
+                        <Stack.Item grow verticalFill={true} align={'stretch'}>
+                            <EventConfig />
                         </Stack.Item>
-                        <Stack.Item grow verticalFill={true}>
+                        <Stack.Item grow verticalFill={true} align={'stretch'}>
                             <CategoryConfig />
+                        </Stack.Item>
+                        <Stack.Item grow verticalFill={true} align={'stretch'}>
+                            <ClassificationConfig />
                         </Stack.Item>
                     </Stack>
                 </Stack.Item>

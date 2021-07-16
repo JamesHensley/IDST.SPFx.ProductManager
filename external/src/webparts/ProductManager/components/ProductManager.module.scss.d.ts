@@ -24,6 +24,7 @@ interface CssExports {
   'gridCol8': string;
   'gridCol9': string;
   'gridRow': string;
+  'hidden': string;
   'listColumnHeader': string;
   'listDataCell': string;
   'listDataRow': string;

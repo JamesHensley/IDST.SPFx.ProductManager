@@ -15,6 +15,7 @@ import { TeamMemberModel, TeamMemberRole, TeamModel } from '../models/TeamModel'
 import { ProductTypeModel } from '../models/ProductTypeModel';
 import { ClassificationModel } from '../models/ClassificationModel';
 import { format } from 'date-fns';
+import { CategoryModel } from '../models/CategoryModel';
 
 export interface IResult {
     productModel: ProductModel;
@@ -183,6 +184,14 @@ export default class RecordService {
             classificationId: uuidv4(),
             classificationTitle: 'New Title',
             classificationCaveats: 'Caveats'
+        });
+    }
+
+    public static GetNewCategoryModel(): CategoryModel {
+        return new CategoryModel({
+            categoryText: 'New Category',
+            categoryDescription: 'New Category description',
+            categoryId: uuidv4()
         });
     }
 
