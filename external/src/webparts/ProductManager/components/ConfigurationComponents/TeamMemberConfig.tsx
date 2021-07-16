@@ -37,7 +37,7 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
                         Members [{teamMembers.length}]
                     </Stack.Item>
                     <Stack.Item>
-                        <IconButton iconProps={{ iconName: 'Add', styles: { root: { fontSize: '0.7rem'} } }} title="Add Member" ariaLabel="Add Member" onClick={this.addNewMember.bind(this)} />
+                        <IconButton iconProps={{ iconName: 'Add', styles: { root: { fontSize: '0.7rem' } } }} title='Add Member' ariaLabel='Add Member' onClick={this.addNewMember.bind(this)} />
                     </Stack.Item>
                 </Stack>
                 {

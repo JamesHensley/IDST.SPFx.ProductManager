@@ -253,15 +253,14 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         this.setState({ draftProduct: newDraft });
     }
 
-    private handleEventType(draft: ProductModel, newVal: any): ProductModel {
+    private handleEventType(draft: ProductModel, newVal: any): void {
         if (newVal) {
-            draft.eventDateStart = addDays(new Date(Math.max(...draft.tasks.map(d => new Date(d.taskSuspense).getTime()))), 2);
-            draft.eventDateEnd = addDays(draft.eventDateStart, AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId == newVal ? n.defaultEventLength : t, 2))
+            draft.eventDateStart = addDays(new Date(Math.max(...(draft.tasks || []).map(d => new Date(d.taskSuspense).getTime()) || [new Date().getTime()])), 2);
+            draft.eventDateEnd = addDays(draft.eventDateStart, AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === newVal ? n.defaultEventLength : t, 2));
         } else {
             draft.eventDateStart = null;
             draft.eventDateEnd = null;
         }
-        return draft;
     }
 
     private dateFieldUpdated(newVal: any, fieldRef: string): void {

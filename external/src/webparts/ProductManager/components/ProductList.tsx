@@ -28,7 +28,7 @@ export interface IDocument {
 }
 
 export interface IProductListProps { }
-export interface IProductListState { allProducts: Array<ProductModel>, lastUpdate: number; showingColumnMenu: boolean; currentProd: ProductModel; isEditing: boolean; }
+export interface IProductListState { allProducts: Array<ProductModel>; lastUpdate: number; showingColumnMenu: boolean; currentProd: ProductModel; isEditing: boolean; }
 
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
     private menuReceiver: any = null;
@@ -98,31 +98,34 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 	}
 
 	public render(): React.ReactElement<IProductListProps> {
-        console.log('ProductList.render: ', this.state.currentProd);
 		const items = this.allItems;
 		return (
 			<Stack>
-				<TextField
-					styles={{ root: { width: '100%' } }}
-					label={`Filter text - [${items.length} items displayed]`}
-					onChange={this.onChangeFilter}
-					value={FilterService.FilterText}
-				/>
-				<DetailsList
-					key={this.state.lastUpdate}
-					items={items}
-					columns={this.allColumns}
-					selectionMode={SelectionMode.none}
-					compact={true}
-					layoutMode={DetailsListLayoutMode.justified}
-					skipViewportMeasures={false}
-					onRenderRow={(props: IDetailsRowProps) => {
-						return (
-							<div onClick={this.onRowClick.bind(this, props)}>
-								<DetailsRow {...props} styles={{ root: { cursor: 'pointer' } }} />
-							</div>);
-					}}
-				/>
+				<Stack.Item grow>
+					<TextField
+						styles={{ root: { width: '100%' } }}
+						label={`Filter text - [${items.length} items displayed]`}
+						onChange={this.onChangeFilter}
+						value={FilterService.FilterText}
+					/>
+				</Stack.Item>
+				<Stack.Item grow>
+					<DetailsList
+						key={this.state.lastUpdate}
+						items={items}
+						columns={this.allColumns}
+						selectionMode={SelectionMode.none}
+						compact={true}
+						layoutMode={DetailsListLayoutMode.justified}
+						skipViewportMeasures={false}
+						onRenderRow={(props: IDetailsRowProps) => {
+							return (
+								<div onClick={this.onRowClick.bind(this, props)}>
+									<DetailsRow {...props} styles={{ root: { cursor: 'pointer' } }} />
+								</div>);
+						}}
+					/>
+				</Stack.Item>
 				{
 					this.state.currentProd &&
 					<ProductDetailPane
@@ -131,7 +134,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 						currentProduct={this.state.currentProd}
 						readOnly={false}
 						saveProduct={this.saveProduct.bind(this)}
-						closePane={() => { this.setState({ currentProd: null }) }}
+						closePane={() => { this.setState({ currentProd: null }); }}
 					/>
 				}
 			</Stack>
@@ -185,14 +188,14 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		this.setState({ lastUpdate: new Date().getTime() });
 	}
 
-	/** Will be used to show/hide columns */
+	/** Will be used to show/hide columns in the future */
 	private onShowColumnsMenu(): void {
 		// this.setState({ showingColumnMenu: !((this.state && this.state.showingColumnMenu) || false) });
 	}
 
     //#region Emitter receivers
     private cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
-        if (item['data-automation-id'] == 'newProduct') {
+        if (item['data-automation-id'] === 'newProduct') {
                 const newRecord = RecordService.GetNewProductModel(item.data.id);
                 this.setState({ currentProd: newRecord, isEditing: true });
         }

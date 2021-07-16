@@ -55,7 +55,6 @@ export default class RecordService {
         .catch(e => Promise.reject(e));
     }
 
-    //public static async SaveProduct(product: ProductModel, broadcastChange: boolean): Promise<IResult> {
     public static async SaveProduct(product: ProductModel): Promise<IResult> {
         const resultStr = product.spId ? 'Updated' : 'Created';
         const newItem = MapperService.MapProductToItem(product);
@@ -66,7 +65,6 @@ export default class RecordService {
             // UPLOAD DOCUMENTS
             return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, newItem.Guid)
             .then(attachments => {
-                //if (broadcastChange) { AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product); }
                 AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product);
                 return Promise.resolve({
                     productModel: MapperService.MapItemToProduct(newItem, attachments),

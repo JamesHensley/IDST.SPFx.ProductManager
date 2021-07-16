@@ -31,7 +31,7 @@ export class FormInputDropDown extends React.Component<IFormInputDropDownProps, 
                 disabled: this.props.disabledKeys.indexOf(d.key) >= 0
             } as IDropdownOption;
         }).sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0));
-        
+
         const options: Array<IDropdownOption> = this.props.allowNull ? [{ key: null, text: 'None' }].concat(givenOptions) : givenOptions;
         const nullOption = this.props.allowNull ? { key: null, text: 'None' } : { key: null, text: '' };
         const selectedKVP = options.reduce((t,n) => n.selected ? n : t, nullOption);

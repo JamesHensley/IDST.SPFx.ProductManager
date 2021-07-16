@@ -40,10 +40,8 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
 
     constructor(props: IRollupViewProps) {
         super(props);
-        // this.calendarStart = startOfMonth(this.props.defaultMonth);
-        // this.calendarEnd = endOfMonth(this.props.defaultMonth);
         this.calendarStart = startOfMonth(new Date());
-        this.calendarEnd = endOfMonth(new Date);
+        this.calendarEnd = endOfMonth(new Date());
         this.state = { mergeTeamTasks: true, colorBySuspense: true, hideOpenProducts: true, showEventsRow: false, products: [], currentProduct: null };
     }
 
@@ -130,7 +128,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                     </TimelineHeaders>
                 </Timeline>
                 {
-                    this.state.currentProduct && 
+                    this.state.currentProduct &&
                     <ProductDetailPane
                         currentProduct={this.state.currentProduct}
                         isVisible={true}
@@ -172,8 +170,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
     private itemClicked(i: TimelineProductItem): void {
         event.preventDefault();
         event.cancelBubble = true;
-        const clickedProductGuid: string = i.itemProps.productGuid;
-        this.setState({ currentProduct: this.state.products.reduce((t,n) => n.guid == clickedProductGuid ? n : t, null) });
+        this.setState({ currentProduct: this.state.products.reduce((t,n) => n.guid === i.itemProps.productGuid ? n : t, null) });
     }
 
     private itemSelected(itemId: number, e: Event, time: number): void {
@@ -181,7 +178,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         event.cancelBubble = true;
         const clickedProductGuid: string = this.calendarItems
             .reduce((t: string, n: ITimelineItem) => n.id === itemId ? n.itemProps.productGuid : t, null);
-        this.setState({ currentProduct: this.state.products.reduce((t,n) => n.guid == clickedProductGuid ? n : t, null) });
+        this.setState({ currentProduct: this.state.products.reduce((t,n) => n.guid === clickedProductGuid ? n : t, null) });
     }
 
     private itemRenderer({ item, timelineContext, itemContext, getItemProps, getResizeProps }): JSX.Element {

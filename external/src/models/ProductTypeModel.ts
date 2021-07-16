@@ -1,5 +1,3 @@
-import { TemplateDocumentModel } from "./TemplateDocumentModel";
-
 export class TaskTemplate {
     public teamId: string;
     public taskDescription: string;
