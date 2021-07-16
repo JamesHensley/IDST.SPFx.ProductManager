@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { Label, Stack } from '@fluentui/react';
 
-import TeamConfig from './TeamConfig';
+import TeamConfig from '../ConfigurationComponents/TeamConfig';
 
-import EventConfig from './EventConfig';
-import StringConfig from './StringConfig';
-import ClassificationConfig from './ClassificationConfig';
-import CategoryConfig from './CategoryConfig';
+import EventConfig from '../ConfigurationComponents/EventConfig';
+import StringConfig from '../ConfigurationComponents/StringConfig';
+import ClassificationConfig from '../ConfigurationComponents/ClassificationConfig';
+import CategoryConfig from '../ConfigurationComponents/CategoryConfig';
 
 import { ProductTypeModel } from '../../../../models/ProductTypeModel';
 

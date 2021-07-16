@@ -1,25 +1,25 @@
 import * as React from 'react';
-import * as styles from './ProductManager.module.scss';
+import * as styles from '../ProductManager.module.scss';
 
-import AppService from '../../../services/AppService';
-import RecordService from '../../../services/RecordService';
-import { NotificationService, NotificationType } from '../../../services/NotificationService';
+import AppService from '../../../../services/AppService';
+import RecordService from '../../../../services/RecordService';
+import { NotificationService, NotificationType } from '../../../../services/NotificationService';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Panel, PanelType, Separator, Stack, DefaultButton, Label, IStackItemStyles, IPanelHeaderRenderer } from '@fluentui/react';
-import { FormInputText } from './FormComponents/FormInputText';
-import { FormInputUrl } from './FormComponents/FormInputUrl';
-import { FormInputDate } from './FormComponents/FormInputDate';
-import { FormInputDropDown, KeyValPair } from './FormComponents/FormInputDropDown';
-import { FormInputComboBox } from './FormComponents/FormInputComboBox';
-import { FormInputDialog } from './FormComponents/FormInputDialog';
-import { CommentComponent } from './FormComponents/CommentComponent';
-import { TaskComponent } from './FormComponents/TaskComponent';
-import { AttachmentComponent } from './FormComponents/AttachmentComponent';
+import { FormInputText } from '../FormComponents/FormInputText';
+import { FormInputUrl } from '../FormComponents/FormInputUrl';
+import { FormInputDate } from '../FormComponents/FormInputDate';
+import { FormInputDropDown, KeyValPair } from '../FormComponents/FormInputDropDown';
+import { FormInputComboBox } from '../FormComponents/FormInputComboBox';
+import { FormInputDialog } from '../FormComponents/FormInputDialog';
+import { CommentComponent } from '../FormComponents/CommentComponent';
+import { TaskComponent } from '../FormComponents/TaskComponent';
+import { AttachmentComponent } from '../FormComponents/AttachmentComponent';
 
-import { ProductModel, ProductStatus } from '../../../models/ProductModel';
-import { TaskModel } from '../../../models/TaskModel';
-import { CommentsModel } from '../../../models/CommentsModel';
+import { ProductModel, ProductStatus } from '../../../../models/ProductModel';
+import { TaskModel } from '../../../../models/TaskModel';
+import { CommentsModel } from '../../../../models/CommentsModel';
 import { debug } from 'interactjs';
 import { addDays } from 'date-fns';
 

@@ -1,14 +1,14 @@
 import * as React from 'react';
-import * as styles from './ProductManager.module.scss';
-import { ProductModel } from '../../../models/ProductModel';
+import * as styles from '../ProductManager.module.scss';
+import { ProductModel } from '../../../../models/ProductModel';
 import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, ICommandBarItemProps, IDetailsRowProps, IFacepilePersona, Label, SelectionMode, Stack, TextField } from '@fluentui/react';
 import { addDays, format } from 'date-fns';
-import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
-import { TaskModel } from '../../../models/TaskModel';
-import { TeamModel } from '../../../models/TeamModel';
-import { FilterService } from '../../../services/FilterService';
-import RecordService from '../../../services/RecordService';
-import ProductDetailPane from './ProductDetailPane';
+import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
+import { TaskModel } from '../../../../models/TaskModel';
+import { TeamModel } from '../../../../models/TeamModel';
+import { FilterService } from '../../../../services/FilterService';
+import RecordService from '../../../../services/RecordService';
+import ProductDetailPane from '../SharedComponents/ProductDetailPane';
 
 export interface IDocument {
 	key: string;

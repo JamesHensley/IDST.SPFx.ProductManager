@@ -6,17 +6,17 @@ import Timeline, { DateHeader, SidebarHeader, TimelineHeaders } from 'react-cale
 // make sure you include the timeline stylesheet or the timeline will not be styled
 import 'react-calendar-timeline/lib/Timeline.css';
 
-import { ProductModel, ProductStatus } from '../../../models/ProductModel';
-import AppService from '../../../services/AppService';
+import { ProductModel, ProductStatus } from '../../../../models/ProductModel';
+import AppService from '../../../../services/AppService';
 import { startOfMonth, endOfMonth, subDays, addDays } from 'date-fns';
-import ColorService from '../../../services/ColorService';
-import TaskService from '../../../services/TaskService';
+import ColorService from '../../../../services/ColorService';
+import TaskService from '../../../../services/TaskService';
 
-import * as styles from './ProductManager.module.scss';
+import * as styles from '../ProductManager.module.scss';
 import { Stack, Toggle } from '@fluentui/react';
-import { ITimelineTeamGroup, ITimelineItem, TimelineTeamGroup, TimelineProductItem } from '../../../models/TimelineModels';
-import RecordService from '../../../services/RecordService';
-import ProductDetailPane from './ProductDetailPane';
+import { ITimelineTeamGroup, ITimelineItem, TimelineTeamGroup, TimelineProductItem } from '../../../../models/TimelineModels';
+import RecordService from '../../../../services/RecordService';
+import ProductDetailPane from '../SharedComponents/ProductDetailPane';
 
 export interface IRollupViewProps {
     // products: Array<ProductModel>;

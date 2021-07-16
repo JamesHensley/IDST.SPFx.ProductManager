@@ -3,16 +3,11 @@ import * as React from 'react';
 import { NotificationService, NotificationType } from '../../../services/NotificationService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ProductModel } from '../../../models/ProductModel';
 
-export interface IToasterComponentProps {}
-
-export interface IToasterComponentState {}
-
-export default class ToasterComponent extends React.Component<IToasterComponentProps, IToasterComponentState> {
+export default class ToasterComponent extends React.Component<{}, {}> {
     private receiver: any;
 
-    constructor(props: IToasterComponentProps) {
+    constructor(props: {}) {
         super(props);
         this.receiver = this.notificationFired.bind(this);
     }

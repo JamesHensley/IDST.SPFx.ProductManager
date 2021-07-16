@@ -7,10 +7,10 @@ import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
 
 import { ProductModel } from '../../../models/ProductModel';
 
-import ProductList from './ProductList';
-import RollupView from './RollupView';
-import TeamView from './TeamView';
-import ConfigComponent from './ConfigurationComponents/ConfigComponent';
+import ProductList from './Views/ProductList';
+import RollupView from './Views/RollupView';
+import TeamView from './Views/TeamView';
+import ConfigComponent from './Views/ConfigComponent';
 
 import ProductManagerCmdBar from './ProductManagerCmdBar';
 

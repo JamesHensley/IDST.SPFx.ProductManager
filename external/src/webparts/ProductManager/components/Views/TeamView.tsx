@@ -1,8 +1,8 @@
 import { Stack, Toggle } from '@fluentui/react';
 import * as React from 'react';
-import * as styles from './ProductManager.module.scss';
+import * as styles from '../ProductManager.module.scss';
 
-import { TeamModel } from '../../../models/TeamModel';
+import { TeamModel } from '../../../../models/TeamModel';
 
 export interface ITeamViewProps {
     teamModel: TeamModel;
