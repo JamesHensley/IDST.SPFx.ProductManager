@@ -20,6 +20,8 @@ import { AttachmentComponent } from './FormComponents/AttachmentComponent';
 import { ProductModel, ProductStatus } from '../../../models/ProductModel';
 import { TaskModel } from '../../../models/TaskModel';
 import { CommentsModel } from '../../../models/CommentsModel';
+import { debug } from 'interactjs';
+import { addDays } from 'date-fns';
 
 export interface IProductDetailPaneProps {
     currentProduct: ProductModel;
@@ -246,7 +248,20 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         const newDraft = new ProductModel();
         Object.assign(newDraft, this.state.draftProduct);
         newDraft[fieldRef] = newVal;
+
+        if (fieldRef === 'eventType') { this.handleEventType(newDraft, newVal); }
         this.setState({ draftProduct: newDraft });
+    }
+
+    private handleEventType(draft: ProductModel, newVal: any): ProductModel {
+        if (newVal) {
+            draft.eventDateStart = addDays(new Date(Math.max(...draft.tasks.map(d => new Date(d.taskSuspense).getTime()))), 2);
+            draft.eventDateEnd = addDays(draft.eventDateStart, AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId == newVal ? n.defaultEventLength : t, 2))
+        } else {
+            draft.eventDateStart = null;
+            draft.eventDateEnd = null;
+        }
+        return draft;
     }
 
     private dateFieldUpdated(newVal: any, fieldRef: string): void {

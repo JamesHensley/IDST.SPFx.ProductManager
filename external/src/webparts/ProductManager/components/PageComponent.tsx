@@ -17,12 +17,9 @@ import ProductManagerCmdBar from './ProductManagerCmdBar';
 export interface IPageComponentProps { }
 
 export interface IPageComponentState {
-	panelVisible: boolean;
-	panelEditing: boolean;
 	currentProduct: ProductModel;
-	allProducts: Array<ProductModel>;
+    chosenTeamId: string;
 	view: string;
-	chosenTeamId: string;
 	lastUpdated: number;
 }
 
@@ -32,48 +29,43 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 	constructor(props: IPageComponentProps) {
 		super(props);
 		this.state = {
-			panelVisible: false,
-			panelEditing: false,
 			currentProduct: null,
-			allProducts: [],
+            chosenTeamId: null,
 			view: 'ProductList',
-			chosenTeamId: null,
 			lastUpdated: new Date().getTime()
 		};
 	}
 
 	public render(): React.ReactElement<{}> {
 		return(
-			<>
-				<div className={styles.productManager}>
-					<div className={styles.grid}>
-						<div className={styles.gridRow}>
-							<ProductManagerCmdBar
-								appView={this.state.view}
-							/>
-						</div>
-						<div className={styles.gridRow}>
-							<div className={styles.gridCol12}>
-								{this.state.view === 'ProductList' &&
-									<ProductList />
-								}
-								{this.state.view === 'RollUp' &&
-									<RollupView />
-								}
-								{this.state.view === 'TeamView' &&
-									<TeamView
-										key={new Date().getTime()}
-										teamModel={AppService.AppSettings.teams.reduce((t,n) => n.teamId === this.state.chosenTeamId ? n : t, null)}
-									/>
-								}
-								{this.state.view === 'ConfigView' &&
-									<ConfigComponent />
-								}
-							</div>
-						</div>
-					</div>
-				</div>
-			</>
+            <div className={styles.productManager}>
+                <div className={styles.grid}>
+                    <div className={styles.gridRow}>
+                        <ProductManagerCmdBar
+                            appView={this.state.view}
+                        />
+                    </div>
+                    <div className={styles.gridRow}>
+                        <div className={styles.gridCol12}>
+                            {this.state.view === 'ProductList' &&
+                                <ProductList />
+                            }
+                            {this.state.view === 'RollUp' &&
+                                <RollupView />
+                            }
+                            {this.state.view === 'TeamView' &&
+                                <TeamView
+                                    key={new Date().getTime()}
+                                    teamModel={AppService.AppSettings.teams.reduce((t,n) => n.teamId === this.state.chosenTeamId ? n : t, null)}
+                                />
+                            }
+                            {this.state.view === 'ConfigView' &&
+                                <ConfigComponent />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
 		);
 	}
 
@@ -95,24 +87,13 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 				this.setState({ view: 'RollUp' });
 				break;
 			case 'teamView':
-				this.setState({
-					view: 'TeamView',
-					chosenTeamId: item.data.id
-				});
+				this.setState({ view: 'TeamView', chosenTeamId: item.data.id, currentProduct: null });
 				break;
 			case 'viewList':
-				this.setState({ view: 'ProductList' });
+				this.setState({ view: 'ProductList', chosenTeamId: null, currentProduct: null });
 				break;
 			case 'configView':
-				this.setState({ view: 'ConfigView' });
-				break;
-			case 'newProduct':
-				const newRecord = RecordService.GetNewProductModel(item.data.id);
-				this.setState({
-					currentProduct: newRecord,
-					panelVisible: true,
-					panelEditing: true
-				});
+				this.setState({ view: 'ConfigView', chosenTeamId: null, currentProduct: null });
 				break;
 		}
 		return Promise.resolve();

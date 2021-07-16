@@ -111,12 +111,11 @@ export default class RecordService {
                 title: `NEW ${prodTypeModel.typeName}`,
                 description: prodTypeModel.typeDescription,
                 tasks: prodTypeModel.defaultTeamTasks.map((d, i, e) => {
-                    const xx = e.reduce((t, n, c) => c <= i ? addDays(t, n.typicalTaskLength) : t, new Date());
-                    console.log('Creating task with suspense of ', xx, ' based on ', d.typicalTaskLength, e);
+                    const taskSuspense = e.reduce((t, n, c) => c <= i ? addDays(t, n.typicalTaskLength) : t, new Date());
                     return {
                         taskedTeamId: d.teamId,
                         taskDescription: d.taskDescription,
-                        taskSuspense: xx.toJSON(),
+                        taskSuspense: taskSuspense.toJSON(),
                         taskState: TaskState.pending,
                         taskGuid: uuidv4()
                     } as TaskModel;

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ProductModel } from '../../../models/ProductModel';
-import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, IDetailsRowProps, IFacepilePersona, Label, SelectionMode, Stack, TextField } from '@fluentui/react';
+import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, ICommandBarItemProps, IDetailsRowProps, IFacepilePersona, Label, SelectionMode, Stack, TextField } from '@fluentui/react';
 import { addDays, format } from 'date-fns';
-import AppService from '../../../services/AppService';
+import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
 import { TaskModel } from '../../../models/TaskModel';
 import { TeamModel } from '../../../models/TeamModel';
 import { FilterService } from '../../../services/FilterService';
@@ -28,9 +28,11 @@ export interface IDocument {
 }
 
 export interface IProductListProps { }
-export interface IProductListState { allProducts: Array<ProductModel>, lastUpdate: number; showingColumnMenu: boolean; currentProd: ProductModel }
+export interface IProductListState { allProducts: Array<ProductModel>, lastUpdate: number; showingColumnMenu: boolean; currentProd: ProductModel; isEditing: boolean; }
 
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
+    private menuReceiver: any = null;
+
 	constructor(props: IProductListProps) {
 		super(props);
 		FilterService.RegisterListFields([
@@ -43,7 +45,8 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 			{ key: 'eventDate', name: 'Event Date', minWidth: 100, maxWidth: 150, fieldName: 'eventDate', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'object', colCount: 1, displayed: true } },
 			{ key: 'tasks', name: 'Tasked Teams', minWidth: 100, maxWidth: 300, fieldName: 'tasks', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'object', colCount: 1, displayed: true } }
 		]);
-		this.state = { allProducts: [], lastUpdate: new Date().getTime(), showingColumnMenu: false, currentProd: null };
+
+        this.state = { allProducts: [], lastUpdate: new Date().getTime(), showingColumnMenu: false, currentProd: null, isEditing: false };
 	}
 
 	/** Data displayed in the list */
@@ -81,7 +84,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 			d.onColumnClick = this.onColumnClick.bind(this, d);
 			d.onRender = ((i: IDocument, idx, col) => {
 				switch (col.fieldName) {
-						case 'tasks':
+                    case 'tasks':
 						const tasks: Array<string> = (i.tasks as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
 						const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.teamId) >= 0 ? t.concat(n) : t, [])
 							.map(d => { return { imageInitials: d.shortName, personaName: d.name } as IFacepilePersona; });
@@ -95,6 +98,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 	}
 
 	public render(): React.ReactElement<IProductListProps> {
+        console.log('ProductList.render: ', this.state.currentProd);
 		const items = this.allItems;
 		return (
 			<Stack>
@@ -123,7 +127,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 					this.state.currentProd &&
 					<ProductDetailPane
 						isVisible={true}
-						isEditing={false}
+						isEditing={this.state.isEditing}
 						currentProduct={this.state.currentProd}
 						readOnly={false}
 						saveProduct={this.saveProduct.bind(this)}
@@ -135,27 +139,36 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 	}
 
 	private saveProduct(newModel: ProductModel, keepPaneOpen?: boolean): void {
-		console.log('ProductList.saveProduct 1: ', newModel);
 		RecordService.SaveProduct(newModel)
 		.then(result => result.productModel)
 		.then(model => {
-			console.log('ProductList.saveProduct 2: ', model);
 			RecordService.GetProducts()
-			.then(prods => this.setState({ allProducts: prods, currentProd: keepPaneOpen ? (prods.reduce((t, n) => n.guid == newModel.guid ? n : t, null)) : null }))
+			.then(prods => this.setState({
+                allProducts: prods,
+                isEditing: false,
+                currentProd: keepPaneOpen ? (prods.reduce((t, n) => n.guid === newModel.guid ? n : t, null)) : null
+            }))
 			.catch(e => Promise.reject(e));
 		})
 		.catch(e => Promise.reject(e));
 	}
 
 	public componentDidMount(): void {
+		this.menuReceiver = this.cmdBarItemClicked.bind(this);
+		AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps);
+
 		RecordService.GetProducts()
 		.then(prods => { this.setState({ allProducts: prods }); })
 		.catch(e => Promise.reject(e));
 	}
 
+    public componentWillUnmount(): void {
+        AppService.UnRegisterCmdBarListener(this.menuReceiver);
+    }
+
 	/** Handler for when a user clicks a row to view the records details */
 	private onRowClick(i?: IDetailsRowProps, ev?: React.FocusEvent<HTMLElement>): void {
-		this.setState({ currentProd: this.state.allProducts.reduce((t, n) => n.guid === i.item.key ? n : t, null) });
+		this.setState({ currentProd: this.state.allProducts.reduce((t, n) => n.guid === i.item.key ? n : t, null), isEditing: false });
 	}
 
 	/** Handler for when a user clicks a column heading to sort the list */
@@ -176,4 +189,14 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 	private onShowColumnsMenu(): void {
 		// this.setState({ showingColumnMenu: !((this.state && this.state.showingColumnMenu) || false) });
 	}
+
+    //#region Emitter receivers
+    private cmdBarItemClicked(item: ICommandBarItemProps): Promise<void> {
+        if (item['data-automation-id'] == 'newProduct') {
+                const newRecord = RecordService.GetNewProductModel(item.data.id);
+                this.setState({ currentProd: newRecord, isEditing: true });
+        }
+        return Promise.resolve();
+    }
+    //#endregion
 }

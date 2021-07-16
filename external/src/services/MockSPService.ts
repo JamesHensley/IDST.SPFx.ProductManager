@@ -52,9 +52,9 @@ export class MockSPService implements ISPService {
 
     UpdateListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
         this.mockedProductItems = this.mockedProductItems.reduce((t, n) => n.Guid === item.Guid ? t.concat([item]) : t.concat([n]), []);
-console.log('---------------------------------------');
-console.log(JSON.stringify(this.mockedProductItems, null, '    '));
-console.log('---------------------------------------');
+// console.log('---------------------------------------');
+// console.log(JSON.stringify(this.mockedProductItems, null, '    '));
+console.log('MockSPService.UpdateListItem---------------------------------------');
         return Promise.resolve(item);
     }
 
