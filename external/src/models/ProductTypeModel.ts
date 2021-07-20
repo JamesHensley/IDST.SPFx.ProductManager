@@ -1,5 +1,3 @@
-import { TaskModel } from "./TaskModel";
-
 export class TaskTemplate {
     public constructor(init?: Partial<TaskTemplate>) {
         Object.assign(this, init);

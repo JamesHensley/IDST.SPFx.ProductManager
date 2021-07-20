@@ -21,7 +21,7 @@ export interface ITeamConfigState {
 export default class TeamConfig extends React.Component <ITeamConfigProps, ITeamConfigState> {
     private hasUpdates = false;
     private menuReceiver = null;
-    
+
     constructor(props: ITeamConfigProps) {
         super(props);
         this.state = {

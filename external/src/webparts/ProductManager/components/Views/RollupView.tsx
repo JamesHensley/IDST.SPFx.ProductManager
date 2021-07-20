@@ -61,7 +61,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         .map((d, i) => { d.id = i; return d; });
     }
 
-    private get calendarItems(): Array<ITimelineItem> {
+    private get calendarItems(): Array<any> {
         const productList = this.state.products.filter(f => this.state.hideOpenProducts ? f.status === ProductStatus.closed : true);
 
         return [].concat.apply((this.state.showEventsRow ? TaskService.BreakProductsToEvents(productList, 'noGuid') : []), (TaskService.BreakProductsToTasks(productList, this.state.mergeTeamTasks)))
@@ -96,6 +96,17 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
                 </Stack>
                 <Timeline
                     key={new Date().getTime()}
+                    keys={{
+                        groupIdKey: 'id',
+                        groupTitleKey: 'title',
+                        groupRightTitleKey: 'rightTitle',
+                        itemIdKey: 'id',
+                        itemTitleKey: 'title',    // key for item div content
+                        itemDivTitleKey: 'title', // key for item div title (<div title="text"/>)
+                        itemGroupKey: 'group',
+                        itemTimeStartKey: 'startTime',
+                        itemTimeEndKey: 'endTime'
+                    }}
                     ref={r => (this.tlRef = r)}
                     groups={this.calendarGroups}
                     items={this.calendarItems}

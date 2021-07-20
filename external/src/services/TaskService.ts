@@ -33,8 +33,8 @@ export default class TaskService {
 
             return new TimelineProductItem({
                 title: product.title,
-                start_time: d.taskStart.getTime(),
-                end_time: d.taskFinish.getTime(),
+                startTime: d.taskStart.getTime(),
+                endTime: d.taskFinish.getTime(),
                 bustedSuspense: d.bustedSuspense,
                 productType: product.productType,
                 teamGuid: d.taskedTeamId,
@@ -56,13 +56,13 @@ export default class TaskService {
             const newItem = new TimelineProductItem(d[0]);
             const teamTimes = d.reduce((t, n) => {
                 return {
-                    start_time: (t.start_time ? (n.start_time < t.start_time ? n.start_time : t.start_time) : n.start_time),
-                    end_time: (t.end_time ? (n.end_time > t.end_time ? n.end_time : t.end_time) : n.end_time)
+                    start_time: (t.start_time ? (n.startTime < t.start_time ? n.startTime : t.start_time) : n.startTime),
+                    end_time: (t.end_time ? (n.endTime > t.end_time ? n.endTime : t.end_time) : n.endTime)
                 };
             }, { start_time: undefined, end_time: undefined });
 
-            newItem.start_time = teamTimes.start_time;
-            newItem.end_time = teamTimes.end_time;
+            newItem.startTime = teamTimes.start_time;
+            newItem.endTime = teamTimes.end_time;
             newItem.bustedSuspense = d.reduce((t, n) => t || n.bustedSuspense, false);
             newItem.itemProps.style = {
                 backgroundColor: newItem.bustedSuspense ? 'rgba(180, 40, 40, 1)' : 'rgba(40, 180, 40, 1)',
@@ -84,8 +84,8 @@ export default class TaskService {
             const eModel: EventModel = AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === d.eventType ? n : t, null);
             return new TimelineEventItem({
                 title: eModel.eventTitle,
-                start_time: d.eventDateStart.getTime(),
-                end_time: d.eventDateEnd.getTime(),
+                startTime: d.eventDateStart.getTime(),
+                endTime: d.eventDateEnd.getTime(),
                 productType: d.productType,
                 bustedSuspense: false,
                 teamGuid: teamId,

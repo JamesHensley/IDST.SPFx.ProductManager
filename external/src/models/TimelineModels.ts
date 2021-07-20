@@ -23,8 +23,8 @@ export interface ITimelineItem {
     id: number;
     group: number;
     title: string;
-    start_time: number;
-    end_time: number;
+    startTime: number;
+    endTime: number;
     itemProps: IItemProps;
     isEvent: boolean;
     bustedSuspense: boolean;
@@ -52,8 +52,8 @@ export class TimelineProductItem implements ITimelineItem {
     id: number;
     group: number;
     title: string;
-    start_time: number;
-    end_time: number;
+    startTime: number;
+    endTime: number;
     itemProps: IItemProps;
     isEvent: boolean;
     bustedSuspense: boolean;
@@ -74,8 +74,8 @@ export class TimelineEventItem implements ITimelineItem {
     id: number;
     group: number;
     title: string;
-    start_time: number;
-    end_time: number;
+    startTime: number;
+    endTime: number;
     itemProps: IItemProps;
     isEvent: boolean;
     bustedSuspense: boolean;
