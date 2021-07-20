@@ -57,7 +57,7 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                     <Panel
                         className={styles.productDetailPane}
                         isHiddenOnDismiss={false}
-                        isLightDismiss={true}
+                        isLightDismiss={!this.hasUpdates}
                         isOpen={this.state.showPane}
                         onDismiss={this.closePane.bind(this)}
                         closeButtonAriaLabel='Close'
@@ -158,7 +158,7 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                     <Stack horizontal>
                         <Stack.Item grow>
                             <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                <DefaultButton onClick={this.saveTeam.bind(this)}>Save</DefaultButton>
+                                <DefaultButton onClick={this.saveTeam.bind(this)} disabled={!this.hasUpdates}>Save</DefaultButton>
                                 <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
                             </Stack>
                         </Stack.Item>

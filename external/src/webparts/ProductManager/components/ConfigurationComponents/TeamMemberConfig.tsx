@@ -181,7 +181,7 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
                     <Stack horizontal>
                         <Stack.Item grow>
                             <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                <DefaultButton onClick={this.saveMember.bind(this)}>Save</DefaultButton>
+                                <DefaultButton onClick={this.saveMember.bind(this)} disabled={!this.hasUpdates}>Save</DefaultButton>
                                 <DefaultButton onClick={this.closeDetailPane.bind(this, true)}>Cancel</DefaultButton>
                             </Stack>
                         </Stack.Item>

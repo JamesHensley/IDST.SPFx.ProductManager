@@ -55,7 +55,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                     <Panel
                         className={styles.productDetailPane}
                         isHiddenOnDismiss={false}
-                        isLightDismiss={true}
+                        isLightDismiss={!this.hasUpdates}
                         isOpen={this.state.showPane}
                         onDismiss={this.closePane.bind(this)}
                         closeButtonAriaLabel='Close'
@@ -181,7 +181,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                     <Stack horizontal>
                         <Stack.Item grow>
                             <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                <DefaultButton onClick={this.saveProductType.bind(this)}>Save</DefaultButton>
+                                <DefaultButton onClick={this.saveProductType.bind(this)} disabled={!this.hasUpdates}>Save</DefaultButton>
                                 <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
                             </Stack>
                         </Stack.Item>

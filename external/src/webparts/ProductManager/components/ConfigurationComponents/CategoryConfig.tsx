@@ -43,7 +43,7 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
                     <Panel
                         className={styles.productDetailPane}
                         isHiddenOnDismiss={false}
-                        isLightDismiss={true}
+                        isLightDismiss={!this.hasUpdates}
                         isOpen={this.state.showPane}
                         onDismiss={this.closePane.bind(this)}
                         closeButtonAriaLabel='Close'
@@ -130,7 +130,7 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
                     <Stack horizontal>
                         <Stack.Item grow>
                             <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                <DefaultButton onClick={this.saveCategories.bind(this)}>Save</DefaultButton>
+                                <DefaultButton onClick={this.saveCategories.bind(this)} disabled={!this.hasUpdates}>Save</DefaultButton>
                                 <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
                             </Stack>
                         </Stack.Item>

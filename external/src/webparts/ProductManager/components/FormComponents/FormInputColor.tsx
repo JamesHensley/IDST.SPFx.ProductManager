@@ -26,20 +26,17 @@ export class FormInputColor extends React.Component<IFormInputProps, IFormInputC
         return(
             <div className={`${styles.padTop2} ${styles.fieldValue}`} style={{ width: '100%' }}>
                 <Stack>
-                    <Stack horizontal>
-                        <Stack.Item styles={stackItemStyles}>
-                            <Label>{this.props.labelValue}</Label>
-                        </Stack.Item>
-                        <Stack.Item styles={stackItemStyles}>
-                            {this.props.editing &&
-                                <ColorSelectorButton
-                                    color={this.state.draftValue}
-                                    colorChangeCallback={this.updateValueFromPallete.bind(this)}
-                                />
-                            }
-                        </Stack.Item>
-                    </Stack>
-                    <canvas style={{ width: '100%', height: '27px', backgroundColor: this.state.draftValue }} />
+                    <Stack.Item styles={stackItemStyles}>
+                        <Label>{this.props.labelValue}</Label>
+                    </Stack.Item>
+                    <Stack.Item styles={stackItemStyles}>
+                        {this.props.editing &&
+                            <ColorSelectorButton
+                                color={this.state.draftValue}
+                                colorChangeCallback={this.updateValueFromPallete.bind(this)}
+                            />
+                        }
+                    </Stack.Item>
                 </Stack>
             </div>
         );

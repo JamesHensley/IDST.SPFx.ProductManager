@@ -29,11 +29,19 @@ export const ColorSelectorButton: React.FunctionComponent<IColorSelectorButtonPr
             props.colorChangeCallback(`rgba(${currColor.r},${currColor.g},${currColor.b},${currColor.a / 100})`);
         },
         [currColor]
-    )
+    );
 
+    // <IconButton iconProps={{ iconName: 'Color' }} className={styles.appIcon} title='' ariaLabel='' onClick={toggleShowControl} />
+    /*
+      <Separator />
+      <Stack horizontal>
+          <DefaultButton onClick={saveColor}>Save</DefaultButton>
+          <DefaultButton onClick={hideControl}>Cancel</DefaultButton>
+      </Stack>
+    */
     return (
       <div style={{ width: '100%' }} ref={buttonContainerRef}>
-          <IconButton iconProps={{ iconName: 'Color' }} className={styles.appIcon} title='' ariaLabel='' onClick={toggleShowControl} />
+          <canvas style={{ width: '100%', height: '27px', backgroundColor: props.color, cursor: 'pointer' }} onClick={toggleShowControl} />
           { showColorControl &&
             <Callout
               isBeakVisible={false}
@@ -41,7 +49,7 @@ export const ColorSelectorButton: React.FunctionComponent<IColorSelectorButtonPr
               doNotLayer={false}
               target={buttonContainerRef}
               directionalHint={DirectionalHint.bottomLeftEdge}
-              onDismiss={hideControl}
+              onDismiss={saveColor}
               setInitialFocus
             >
             <FocusTrapZone isClickableOutsideFocusTrap>
@@ -50,11 +58,6 @@ export const ColorSelectorButton: React.FunctionComponent<IColorSelectorButtonPr
                     onChange={updateColor}
                     showPreview={true}
                 />
-                <Separator />
-                <Stack horizontal>
-                    <DefaultButton onClick={saveColor}>Save</DefaultButton>
-                    <DefaultButton onClick={hideControl}>Cancel</DefaultButton>
-                </Stack>
             </FocusTrapZone>
           </Callout>
         }

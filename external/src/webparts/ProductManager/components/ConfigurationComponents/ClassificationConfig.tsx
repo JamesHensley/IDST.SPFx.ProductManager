@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DefaultButton, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
+import { DefaultButton, FocusTrapZone, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import * as styles from '../ProductManager.module.scss';
 import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 import { FormInputText } from '../FormComponents/FormInputText';
@@ -45,7 +45,7 @@ export default class ClassificationConfig extends React.Component <IClassificati
                     <Panel
                         className={styles.productDetailPane}
                         isHiddenOnDismiss={false}
-                        isLightDismiss={true}
+                        isLightDismiss={!this.hasUpdates}
                         isOpen={this.state.showPane}
                         onDismiss={this.closePane.bind(this)}
                         closeButtonAriaLabel='Close'
@@ -134,7 +134,7 @@ export default class ClassificationConfig extends React.Component <IClassificati
                     <Stack horizontal>
                         <Stack.Item grow>
                             <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                <DefaultButton onClick={this.saveClassifications.bind(this)}>Save</DefaultButton>
+                                <DefaultButton onClick={this.saveClassifications.bind(this)} disabled={!this.hasUpdates}>Save</DefaultButton>
                                 <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
                             </Stack>
                         </Stack.Item>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from '../ProductManager.module.scss';
 
-import { DefaultButton, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
+import { DefaultButton, FocusTrapZone, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack } from '@fluentui/react';
 import { EventModel } from '../../../../models/EventModel';
 import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
@@ -53,7 +53,7 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
                     <Panel
                         className={styles.productDetailPane}
                         isHiddenOnDismiss={false}
-                        isLightDismiss={true}
+                        isLightDismiss={!this.hasUpdates}
                         isOpen={this.state.showPane}
                         onDismiss={this.closePane.bind(this)}
                         closeButtonAriaLabel='Close'
@@ -169,7 +169,7 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
                     <Stack horizontal>
                         <Stack.Item grow>
                             <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                <DefaultButton onClick={this.saveEvents.bind(this)}>Save</DefaultButton>
+                                <DefaultButton onClick={this.saveEvents.bind(this)} disabled={!this.hasUpdates}>Save</DefaultButton>
                                 <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
                             </Stack>
                         </Stack.Item>

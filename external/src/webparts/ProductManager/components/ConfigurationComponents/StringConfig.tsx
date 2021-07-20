@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DefaultButton, Label, Panel, PanelType, Stack, Text } from '@fluentui/react';
+import { DefaultButton, IPanelHeaderRenderer, Label, Panel, PanelType, Stack, Text } from '@fluentui/react';
 import * as styles from '../ProductManager.module.scss';
 import AppService from '../../../../services/AppService';
 import { FormInputText } from '../FormComponents/FormInputText';
@@ -47,12 +47,13 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
                 <Panel
                     className={styles.productDetailPane}
                     isHiddenOnDismiss={false}
-                    isLightDismiss={true}
+                    isLightDismiss={!this.hasUpdates}
                     isOpen={this.state.showPane}
                     onDismiss={this.closePane.bind(this)}
                     closeButtonAriaLabel='Close'
                     type={PanelType.medium}
                     headerText={'Miscellaneous App Settings'}
+                    onRenderHeader={this.getPaneHeader.bind(this)}
                 >
                     <Stack>
                         <FormInputText
@@ -91,11 +92,12 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
 
     private showPane(): void { this.setState({ showPane: true }); }
 
-    private closePane(): void {
-        if (this.hasUpdates) {
-            this.saveSettings();
-        } else {
+    private closePane(ignoreChanges?: boolean): void {
+        if (!this.hasUpdates || ignoreChanges) {
+            this.hasUpdates = false;
             this.setState({ showPane: false, draftModel: AppService.AppSettings.miscSettings });
+        } else {
+            this.saveSettings();
         }
     }
 
@@ -114,5 +116,26 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
             this.setState({ draftModel: AppService.AppSettings.miscSettings, showPane: false });
         })
         .catch(e => Promise.reject(e));
+    }
+
+    /** Returns a header for the detail pane with buttons */
+    private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
+        return (
+            <div className={styles.panelHead}>
+                <Stack>
+                    <Stack.Item grow>
+                        <Label style={{ fontSize: '1.5rem' }}>Miscellaneous App Settings</Label>
+                    </Stack.Item>
+                    <Stack horizontal>
+                        <Stack.Item grow>
+                            <Stack horizontal tokens={{ childrenGap: 10 }}>
+                                <DefaultButton onClick={this.saveSettings.bind(this)} disabled={!this.hasUpdates}>Save</DefaultButton>
+                                <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
+                            </Stack>
+                        </Stack.Item>
+                    </Stack>
+                </Stack>
+            </div>
+        );
     }
 }
