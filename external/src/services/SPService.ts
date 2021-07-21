@@ -4,6 +4,7 @@ import AppService from './AppService';
 import { FileService } from './FileService';
 import { MapperService } from './MapperService';
 import { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
+import { ProductModel } from '../models/ProductModel';
 
 export class SPService implements ISPService {
     private get currentSiteUrl(): string { return AppService.AppContext.pageContext.site.absoluteUrl; }
@@ -64,12 +65,28 @@ export class SPService implements ISPService {
         .catch(e => Promise.reject(e));
     }
 
-    GetAttachmentItems(listUrl: string): Promise<SpListAttachment[]> {
-        throw new Error('Method not implemented.');
+    GetAttachmentItems(listTitle: string): Promise<Array<SpListAttachment>> {
+        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')`, { headers: { 'accept': 'application/json;odata=verbose' } })
+        .then(d => d.json())
+        .then(d => d.d.results)
+        .then(d => d.map(m => new SpListAttachment({
+            Id: m.Id,
+            Title: m.Title,
+            Updated: new Date(m.Modified),
+            Author: null,
+            Url: '',
+            Version: null,
+            LinkedProductGuid: m.LinkedProductGuid
+        })))
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
     }
 
-    GetAttachmentsForGuid(listUrl: string, guid: string): Promise<Array<SpListAttachment>> {
-        throw new Error('Method not implemented.');
+    GetAttachmentsForGuid(listTitle: string, guid: string): Promise<Array<SpListAttachment>> {
+        return this.GetAttachmentItems(listTitle)
+        .then(d => d.filter(f => f.LinkedProductGuid === guid))
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
     }
 
     AddAttachment(listUrl: string, productGuid: string, fileList: FileList): Promise<Array<SpListAttachment>> {
@@ -92,29 +109,65 @@ export class SPService implements ISPService {
             Title: d.Title,
             ProdData: d.ProdData,
             Active: d.Active,
-            Created: d.Created,
-            Modified: d.Modified
+            Created: new Date(d.Created),
+            Modified: new Date(d.Modified)
         }))
         .then(d => Promise.resolve(d))
         .catch(e => Promise.reject(e));
     }
 
-    UpdateListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
-        throw new Error('Method not implemented.');
+    UpdateListItem(listTitle: string, item: SpProductItem): Promise<SpProductItem> {
+        return this.saveListItem(listTitle, { Id:item.Id, GUID: item.GUID, Title: item.Title, ProdData: item.ProdData, Active: item.Active })
+        .then(d => new SpProductItem({
+            Id: d.Id,
+            GUID: d.GUID,
+            Title: d.Title,
+            ProdData: d.ProdData,
+            Active: d.Active,
+            Created: new Date(d.Created),
+            Modified: new Date(d.Modified)
+        }))
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
     }
 
-    RemoveListItem(listUrl: string, item: SpProductItem): Promise<void> {
-        throw new Error('Method not implemented.');
+    RemoveListItem(listTitle: string, item: SpProductItem): Promise<void> {
+        return this.saveListItem(listTitle, { Id:item.Id, GUID: item.GUID, Title: item.Title, ProdData: item.ProdData, Active: false })
+        .then(d => new SpProductItem({
+            Id: d.Id,
+            GUID: d.GUID,
+            Title: d.Title,
+            ProdData: d.ProdData,
+            Active: d.Active,
+            Created: new Date(d.Created),
+            Modified: new Date(d.Modified)
+        }))
+        .then(d => Promise.resolve())
+        .catch(e => Promise.reject(e));
     }
 
-    GetListItemByGuid(listUrl: string, guid: string): Promise<SpProductItem> {
-        throw new Error('Method not implemented.');
+    GetListItemByGuid(listTitle: string, guid: string): Promise<SpProductItem> {
+        return this.GetListItems(listTitle)
+        .then(d => d.reduce((t,n) => n.GUID === guid ? n : t, null))
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
     }
 
-    GetListItems(listUrl: string): Promise<Array<SpProductItem>> {
-        return new Promise<Array<SpProductItem>>((resolve, reject) => {
-            resolve([]);
-        });
+    GetListItems(listTitle: string): Promise<Array<SpProductItem>> {
+        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items`, {})
+        .then(d => d.json())
+        .then(d => d.d.results)
+        .then(d => d.map(m => new SpProductItem({
+            Id: m.Id,
+            GUID: m.GUID,
+            Title: m.Title,
+            ProdData: m.ProdData,
+            Active: m.Active,
+            Created: new Date(m.Created),
+            Modified: new Date(m.Modified)
+        })))
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
     }
 
     /** Copies a file from one document library to another in the same site-collection */

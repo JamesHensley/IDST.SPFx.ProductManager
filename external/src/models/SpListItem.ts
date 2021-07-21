@@ -31,6 +31,6 @@ export class SpProductItem {
     public Title: string;
     public ProdData: string;
     public Active: boolean;
-    public Created: string;
-    public Modified: string;
+    public Created: Date;
+    public Modified: Date;
 }
