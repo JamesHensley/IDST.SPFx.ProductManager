@@ -10,8 +10,10 @@ export enum TaskState {
 export class TaskModel {
     public constructor(init?: Partial<TaskModel>) {
         Object.assign(this, init);
-        this.taskStart = (init && init.taskStart && typeof(init.taskStart) === 'string') ? parseISO(init.taskStart) : this.taskStart;
-        this.taskFinish = (init && init.taskFinish && typeof(init.taskFinish) === 'string') ? parseISO(init.taskFinish) : this.taskFinish;
+        // this.taskStart = (init && init.taskStart && typeof(init.taskStart) === 'string') ? parseISO(init.taskStart) : this.taskStart;
+        // this.taskFinish = (init && init.taskFinish && typeof(init.taskFinish) === 'string') ? parseISO(init.taskFinish) : this.taskFinish;
+        this.taskStart = this.taskStart ? new Date(this.taskStart) : null;
+        this.taskFinish = this.taskFinish ? new Date(this.taskFinish) : null;
     }
 
     taskGuid: string;

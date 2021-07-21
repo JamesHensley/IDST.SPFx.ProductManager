@@ -11,16 +11,12 @@ export class MockSPService implements ISPService {
     private _mockedAttachmentItems: Array<SpListAttachment> = [];
 
     private get mockedProductItems(): Array<SpProductItem> {
-        //  if (this._mockedProductItems.length === 0) {
-        //    for (let x = 0; x < 10; x++) {
-        //        this._mockedProductItems.push(Faker.CreateFakeItem());
-        //    }
-        //  }
+        if (this._mockedProductItems.length === 0) {
+            for (let x = 0; x < 10; x++) {
+                this._mockedProductItems.push(Faker.CreateFakeItem());
+            }
+        }
         return this._mockedProductItems.filter(f => f.Active);
-    }
-
-    private set mockedProductItems(val: Array<SpProductItem>) {
-        this._mockedProductItems = val;
     }
 
     private get mockedAttachmentItems(): Array<SpListAttachment> {
@@ -46,16 +42,15 @@ export class MockSPService implements ISPService {
 
     AddListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
         item.GUID = uuidv4();
-        item.Id = Math.max(...this.mockedProductItems.map(d => d.Id)) + 1;
-        this.mockedProductItems = this.mockedProductItems.concat([item]);
+        item.Id = Math.max(...((this.mockedProductItems || []) as any).concat([{ Id: 0 }]).map(d => d.Id)) + 1;
+        this._mockedProductItems.push(item);
+console.log('MockSPService.UpdateListItem: ', this._mockedProductItems);
         return Promise.resolve(item);
     }
 
     UpdateListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
-        this.mockedProductItems = this.mockedProductItems.reduce((t, n) => n.GUID === item.GUID ? t.concat([item]) : t.concat([n]), []);
-// console.log('---------------------------------------');
-// console.log(JSON.stringify(this.mockedProductItems, null, '    '));
-console.log('MockSPService.UpdateListItem---------------------------------------');
+        this._mockedProductItems = this._mockedProductItems.reduce((t, n) => n.GUID === item.GUID ? t.concat([item]) : t.concat([n]), []);
+console.log('MockSPService.UpdateListItem: ', this._mockedProductItems);
         return Promise.resolve(item);
     }
 

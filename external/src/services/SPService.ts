@@ -2,9 +2,7 @@ import { SPAuthor, SpListAttachment, SpProductItem } from '../models/SpListItem'
 import { ISPService } from './ISPService';
 import AppService from './AppService';
 import { FileService } from './FileService';
-import { MapperService } from './MapperService';
 import { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
-import { ProductModel } from '../models/ProductModel';
 
 export class SPService implements ISPService {
     private get currentSiteUrl(): string { return AppService.AppContext.pageContext.site.absoluteUrl; }
@@ -117,7 +115,7 @@ export class SPService implements ISPService {
     }
 
     UpdateListItem(listTitle: string, item: SpProductItem): Promise<SpProductItem> {
-        return this.saveListItem(listTitle, { Id:item.Id, GUID: item.GUID, Title: item.Title, ProdData: item.ProdData, Active: item.Active })
+        return this.saveListItem(listTitle, { Id: item.Id, GUID: item.GUID, Title: item.Title, ProdData: item.ProdData, Active: item.Active })
         .then(d => new SpProductItem({
             Id: d.Id,
             GUID: d.GUID,
@@ -132,7 +130,7 @@ export class SPService implements ISPService {
     }
 
     RemoveListItem(listTitle: string, item: SpProductItem): Promise<void> {
-        return this.saveListItem(listTitle, { Id:item.Id, GUID: item.GUID, Title: item.Title, ProdData: item.ProdData, Active: false })
+        return this.saveListItem(listTitle, { Id: item.Id, GUID: item.GUID, Title: item.Title, ProdData: item.ProdData, Active: false })
         .then(d => new SpProductItem({
             Id: d.Id,
             GUID: d.GUID,

@@ -19,6 +19,6 @@ const copyStaticFilesSubtask = build.subTask('copy-static-files', function (gulp
 
 // Uncomment the line below if you're using SPFx v1.4 or higher to copy static assets
 //   into the SPPKG; versions below 1.4 will not support embedded assets (ie: SP2016)
-// build.rig.addPostBuildTask(copyStaticFilesSubtask);
+build.rig.addPostBuildTask(copyStaticFilesSubtask);
 
 build.initialize(gulp);

@@ -23,7 +23,7 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
                 iconProps: { iconName: 'Questionnaire' },
                 ['data-automation-id']: 'newProduct',
                 onClick: this.itemClicked.bind(this),
-                data: { id: d.typeId, name: d.typeName }.name,
+                data: { id: d.typeId, name: d.typeName },
                 className: this.props.appView !== 'ProductList' ? styles.hidden : ''
             } as IContextualMenuItem;
         }).concat([

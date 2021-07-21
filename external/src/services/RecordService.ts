@@ -93,8 +93,8 @@ export default class RecordService {
     }
 
     /** Creates a new empty product model but does not commit it to SharePoint */
-    public static GetNewProductModel(productType: string): ProductModel {
-        const prodTypeModel = productType ? AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productType ? n : t, null) : null;
+    public static GetNewProductModel(productTypeId: string): ProductModel {
+        const prodTypeModel = productTypeId ? AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === productTypeId ? n : t, null) : null;
         if (prodTypeModel) {
             const prod = new ProductModel({
                 spId: null,
@@ -115,7 +115,8 @@ export default class RecordService {
                     } as TaskModel;
                 }),
                 classificationId: AppService.AppSettings.classificationModels[0] ? AppService.AppSettings.classificationModels[0].classificationId : null,
-                eventType: prodTypeModel.defaultEventType
+                eventType: prodTypeModel.defaultEventType,
+                active: true
             });
 
             const eventModel: EventModel = prodTypeModel.defaultEventType ? AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === prodTypeModel.defaultEventType ? n : t, null) : null;

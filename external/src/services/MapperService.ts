@@ -8,13 +8,13 @@ export class MapperService {
     }
 
     public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
-        const oModel: ProductModel = Object.assign(JSON.parse(item.ProdData), { spId: item.Id, spGuid: item.GUID });
+        const oModel: ProductModel = new ProductModel(Object.assign(JSON.parse(item.ProdData), { spId: item.Id, spGuid: item.GUID, active: item.Active }));
         oModel.attachedDocuments = attachments.map(d => this.MapSpAttachmentToAttachment(d));
         return new ProductModel(oModel);
     }
 
     public static MapProductToItem(prod: ProductModel): SpProductItem {
-        const oModel: SpProductItem = Object.assign(new SpProductItem(), { Id: prod.spId, GUID: prod.spGuid, Title: prod.title, ProdData: JSON.stringify(prod) });
+        const oModel: SpProductItem = Object.assign(new SpProductItem(), { Id: prod.spId, GUID: prod.spGuid, Title: prod.title, ProdData: JSON.stringify(prod), Active: prod.active });
         return oModel;
     }
 

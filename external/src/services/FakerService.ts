@@ -59,6 +59,7 @@ export class Faker {
             spId: Math.floor(Math.random() * 300),
             spGuid: newItemGuid,
             guid: newItemGuid,
+            active: true,
             title: (title ? title : this.mockTitles[Math.round(Math.random() * (this.mockTitles.length - 1))]),
             description: this.mockSentences[Math.round(Math.random() * (this.mockSentences.length - 1))],
             productType: prodType.typeId,

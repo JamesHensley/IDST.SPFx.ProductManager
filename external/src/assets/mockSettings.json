@@ -4,6 +4,7 @@
     "miscSettings": {
         "emailSenderName": "JISE Product Manager Tool",
         "productListTitle": "mockProductList.json",
+        "xproductListTitle": "mockProductData.json",
         "productListDataField": "",
         "documentListUrl": "/dist/mockDocumentList.json",
         "publishingLibraryUrl": ""

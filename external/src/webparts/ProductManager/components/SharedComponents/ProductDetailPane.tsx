@@ -165,6 +165,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 <>
                                     <Stack.Item grow styles={stackItemStyles}>
                                         <FormInputDate
+                                            key={new Date().getTime()}
                                             labelValue={'Event Start'}
                                             fieldValue={(this.state.draftProduct.eventDateStart || new Date()).toJSON()}
                                             fieldRef={'eventDateStart'}
@@ -174,6 +175,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                     </Stack.Item>
                                     <Stack.Item grow styles={stackItemStyles}>
                                         <FormInputDate
+                                            key={new Date().getTime()}
                                             labelValue={'Event End'}
                                             fieldValue={(this.state.draftProduct.eventDateEnd || new Date()).toJSON()}
                                             fieldRef={'eventDateEnd'}
