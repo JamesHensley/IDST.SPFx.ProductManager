@@ -4,6 +4,7 @@ import { Faker } from './FakerService';
 import { FileService } from './FileService';
 import { ISPService } from './ISPService';
 import { v4 as uuidv4 } from 'uuid';
+import { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
 
 export class MockSPService implements ISPService {
     private _mockedProductItems: Array<SpProductItem> = [];
@@ -44,14 +45,14 @@ export class MockSPService implements ISPService {
     }
 
     AddListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
-        item.Guid = uuidv4();
+        item.GUID = uuidv4();
         item.Id = Math.max(...this.mockedProductItems.map(d => d.Id)) + 1;
         this.mockedProductItems = this.mockedProductItems.concat([item]);
         return Promise.resolve(item);
     }
 
     UpdateListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
-        this.mockedProductItems = this.mockedProductItems.reduce((t, n) => n.Guid === item.Guid ? t.concat([item]) : t.concat([n]), []);
+        this.mockedProductItems = this.mockedProductItems.reduce((t, n) => n.GUID === item.GUID ? t.concat([item]) : t.concat([n]), []);
 // console.log('---------------------------------------');
 // console.log(JSON.stringify(this.mockedProductItems, null, '    '));
 console.log('MockSPService.UpdateListItem---------------------------------------');
@@ -59,13 +60,13 @@ console.log('MockSPService.UpdateListItem---------------------------------------
     }
 
     RemoveListItem(listUrl: string, item: SpProductItem): Promise<void> {
-        this.mockedProductItems.forEach((i) => i.Active = i.Guid === item.Guid ? false : i.Active);
+        this.mockedProductItems.forEach((i) => i.Active = i.GUID === item.GUID ? false : i.Active);
         return Promise.resolve();
     }
 
     GetListItems(listUrl: string): Promise<Array<SpProductItem>> {
         if (this.mockedProductItems.length === 0) {
-            return fetch('/dist/mockProductData.json')
+            return fetch(`/dist/${AppService.AppSettings.miscSettings.productListTitle}`)
             .then(d => d.json())
             .then(d => d.map(p => new SpProductItem(p)))
             .then(d => {
@@ -99,7 +100,7 @@ console.log('MockSPService.UpdateListItem---------------------------------------
 
     GetListItemByGuid(listUrl: string, guid: string): Promise<SpProductItem> {
         return new Promise<SpProductItem>((resolve, reject) => {
-            const prod = this.mockedProductItems.reduce((t,n) => n.Guid === guid ? n : t, null);
+            const prod = this.mockedProductItems.reduce((t,n) => n.GUID === guid ? n : t, null);
             resolve(prod);
         });
     }
@@ -120,7 +121,7 @@ console.log('MockSPService.UpdateListItem---------------------------------------
         return Promise.resolve(true);
     }
 
-    SaveNewListRecord(listUrl: string, listRecord: string): Promise<string> {
+    SaveAppSettings(listTitle: string, listRecord: IAppSettings): Promise<IAppSettings> {
         return Promise.resolve(listRecord);
     }
 

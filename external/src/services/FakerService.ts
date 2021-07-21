@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import AppService from './AppService';
 import { TaskModel, TaskState } from '../models/TaskModel';
 import { subDays, addDays, startOfDay } from 'date-fns';
+import { ProductModel, ProductStatus } from '../models/ProductModel';
+import { MapperService } from './MapperService';
 
 export class Faker {
     private static _fakeCustomers = ['Doctor Creep', 'George Washington', 'Daniel Boone'];
@@ -11,7 +13,6 @@ export class Faker {
         const attachmentName = fileName ? fileName.split('.').reverse()[1] : [ 'File1', 'File2', 'File3', 'File4', 'File5' ][Math.round(Math.random() * 4)];
         const extn = fileName ? fileName.split('.').reverse()[0] : ['docx', 'doc','ppt', 'pptx', 'xls', 'xlsx', 'txt', 'pdf', 'csv', 'json'][Math.round(Math.random() * 7)];
 
-        // const author: string = ['Jimmy', 'Johnny "Two Fingers"', 'Vince', 'Fat Tony', 'Bob'][Math.round(Math.random() * 4)];
         const author = AppService.CurrentSpUser;
 
         const attachment: SpListAttachment = new SpListAttachment({
@@ -54,54 +55,44 @@ export class Faker {
         const beginWork = startOfDay(subDays(new Date(), Math.round(Math.random() * 60)));
         const endDate = addDays(beginWork, (Math.round(Math.random() * 13) + 1));
 
-        const item: SpProductItem = {
-            Id: Math.floor(Math.random() * 300),
-            Title: (title ? title : this.mockTitles[Math.round(Math.random() * (this.mockTitles.length - 1))]),
-            Guid: newItemGuid,
-            Description: this.mockSentences[Math.round(Math.random() * (this.mockSentences.length - 1))],
-            RequestDate: beginWork.toJSON(),
-            ReturnDateExpected: endDate.toJSON(),
-            ReturnDateActual: null,
-            Requestor: 'Some Requestor',
-            AssignedTeamData: null,
-            ProductStatus: null,
-            ProductType: prodType.typeId,
-            EventType: null,
-            EventDateStart: null,
-            EventDateEnd: null,
-            CategoryId: (AppService.AppSettings.categories[Math.round(Math.random() * (AppService.AppSettings.categories.length - 1))]).categoryId,
-            ClassificationId: (AppService.AppSettings.classificationModels[Math.round(Math.random() * (AppService.AppSettings.classificationModels.length - 1))]).classificationId,
-            RequestUrl: 'https://www.github.com',
-            Customer: this._fakeCustomers[Math.round(Math.random() * (this._fakeCustomers.length - 1))],
-            Comments: '',
-            Active: true
-        };
+        const item = new ProductModel({
+            spId: Math.floor(Math.random() * 300),
+            spGuid: newItemGuid,
+            guid: newItemGuid,
+            title: (title ? title : this.mockTitles[Math.round(Math.random() * (this.mockTitles.length - 1))]),
+            description: this.mockSentences[Math.round(Math.random() * (this.mockSentences.length - 1))],
+            productType: prodType.typeId,
+            requestDate: beginWork,
+            customer: this._fakeCustomers[Math.round(Math.random() * (this._fakeCustomers.length - 1))],
+            categoryId: (AppService.AppSettings.categories[Math.round(Math.random() * (AppService.AppSettings.categories.length - 1))]).categoryId,
+            classificationId: (AppService.AppSettings.classificationModels[Math.round(Math.random() * (AppService.AppSettings.classificationModels.length - 1))]).classificationId,
+            requestUrl: 'https://www.github.com',
+            requestor: 'Some Requestor',
+            comments: [],
+            tasks: []
+        });
 
-        // const beginWork = startOfDay(reqDate);
         const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete']);
-        const tasks = prodType.defaultTeamTasks.map((d, i, e) => {
+        item.tasks = prodType.defaultTeamTasks.map((d, i, e) => {
             const xy = e.reduce((t, n, c) => c < i ? addDays(t, n.typicalTaskLength) : t, beginWork);
             const xx = e.reduce((t, n, c) => c <= i ? addDays(t, n.typicalTaskLength) : t, beginWork);
-            // return this.CreateFakeTask(d.teamId, d.taskDescription, addDays(beginWork, d.taskSuspenseDaysOffset), d.typicalTaskLength, taskState);
             return this.CreateFakeTask(d.teamId, d.taskDescription, xy, d.typicalTaskLength, taskState);
         });
-        item.AssignedTeamData = JSON.stringify(tasks);
-
-        item.ProductStatus = tasks.map(d => d.taskState)
-            .reduce((t, n) => t === 'closed' && n === TaskState.complete ? t : 'open', 'closed');
+        item.status = item.tasks
+            .map(d => d.taskState)
+            .reduce((t, n) => n === TaskState.complete && t === TaskState.complete ? t : TaskState.working, TaskState.complete) === TaskState.complete ? ProductStatus.closed : ProductStatus.open;
 
         const eventModel = prodType.defaultEventType ? AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === prodType.defaultEventType ? n : t, null) : null;
         if (eventModel) {
-            const lastCloseDate = item.ProductStatus === 'closed' ? (tasks.map(d => d.taskFinish).sort()[0]) : endDate;
-            item.EventType = eventModel.eventTypeId;
-            item.EventDateStart = addDays(lastCloseDate, 2).toJSON();
-            item.EventDateEnd = eventModel.defaultEventLength ? addDays(new Date(item.EventDateStart), eventModel.defaultEventLength).toJSON() : null;
+            const lastCloseDate = item.status === ProductStatus.closed ? (item.tasks.map(d => d.taskFinish).sort()[0]) : endDate;
+            item.eventType = eventModel.eventTypeId;
+            item.eventDateStart = addDays(lastCloseDate, 2);
+            item.eventDateEnd = eventModel.defaultEventLength ? addDays(item.eventDateStart, eventModel.defaultEventLength) : null;
         }
 
         // Create fake attachments for this fake item
-        prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.Guid, AppService.AppSettings.templateDocuments.reduce((t, n) => n.templateId === f ? n.documentName : t, '')));
-
-        return item;
+        prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.guid, AppService.AppSettings.templateDocuments.reduce((t, n) => n.templateId === f ? n.documentName : t, '')));
+        return MapperService.MapProductToItem(item);
     }
 
     private static mockSentences: Array<string> = [
@@ -336,9 +327,4 @@ export class Faker {
         `Sunrise Blademourner`,
         `Wind Fauna`
     ];
-
-    private static getRandomDate(baseDate: Date, window: number): Date {
-        const randomDays = Math.round(Math.random() * window);
-        return Math.round(Math.random()) ? addDays(baseDate, randomDays) : subDays(baseDate, randomDays);
-    }
 }

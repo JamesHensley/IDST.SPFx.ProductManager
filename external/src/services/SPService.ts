@@ -2,24 +2,66 @@ import { SPAuthor, SpListAttachment, SpProductItem } from '../models/SpListItem'
 import { ISPService } from './ISPService';
 import AppService from './AppService';
 import { FileService } from './FileService';
+import { MapperService } from './MapperService';
+import { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
 
 export class SPService implements ISPService {
-    SaveNewListRecord(listUrl: string, listRecord: string): Promise<string> {
-        return fetch(listUrl, {
-                method: 'POST',
-                headers: {
-                    'accept': 'application/json;odata=verbose',
-                    'content-type': 'application/json;odata=verbose',
-                    'X-RequestDigest': (document.querySelector('#__REQUESTDIGEST') as any).value,
-                    body: listRecord
-                }
-            })
-        .then(d => Promise.resolve(listRecord))
+    private get currentSiteUrl(): string { return AppService.AppContext.pageContext.site.absoluteUrl; }
+
+    private getListEntityTypeName(listTitle: string): Promise<string> {
+        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')?$select=ListItemEntityTypeFullName`,
+        { headers: { accept: 'application/json;odata=verbose' } })
+        .then(d => d.json())
+        .then(d => d.d.ListItemEntityTypeFullName);
+    }
+
+    private getDigestValue(url: string): Promise<string> {
+        return fetch(`${url}/_api/contextinfo`, { method: 'POST', headers: { 'accept': 'application/json;odata=verbose' } })
+        .then(ctx => ctx.json())
+        .then(ctx => Promise.resolve(ctx.d.GetContextWebInformation.FormDigestValue))
         .catch(e => Promise.reject(e));
     }
 
-    GetSingleFieldValues(listUrl: string, fieldName: string): Promise<string[]> {
-        throw new Error('Method not implemented.');
+    /** Shared method to save any list record to a list */
+    private saveListItem(listTitle: string, listRecord: any): Promise<any> {
+        return this.getListEntityTypeName(listTitle)
+        .then(enityType => {
+            return this.getDigestValue(this.currentSiteUrl + '/_api/contextinfo')
+            .then(digestVal => {
+                const record = JSON.stringify(Object.assign(listRecord, { __metaData: { type: enityType } }));
+                return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items`, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json;odata=verbose',
+                        'content-type': 'application/json;odata=verbose',
+                        'content-length': record.length.toString(),
+                        'X-RequestDigest': digestVal,
+                        'IF-MATCH': '*'
+                    },
+                    body: record
+                })
+                .then(d => d.json())
+                .then(d => Promise.resolve(d))
+                .catch(e => Promise.reject(e));
+            })
+            .catch(e => Promise.reject(e));
+        })
+        .catch(e => Promise.reject(e));
+    }
+
+    SaveAppSettings(listTitle: string, listRecord: IAppSettings): Promise<IAppSettings> {
+        return this.saveListItem(listTitle, { Title: new Date().getTime(), Data: JSON.stringify(listRecord) })
+        .then(d => (JSON.parse(d.Data) as IAppSettings))
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
+    }
+
+    GetSingleFieldValues(listTitle: string, fieldName: string): Promise<string[]> {
+        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items?$select=${fieldName}`, { headers: { 'accept': 'application/json;odata=verbose' } })
+        .then(d => d.json())
+        .then(d => d.d.results.map(m => m[fieldName]).filter((f, i, e) => e.indexOf(f) === i).sort())
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
     }
 
     GetAttachmentItems(listUrl: string): Promise<SpListAttachment[]> {
@@ -42,8 +84,19 @@ export class SPService implements ISPService {
         );
     }
 
-    AddListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
-        throw new Error('Method not implemented.');
+    AddListItem(listTitle: string, item: SpProductItem): Promise<SpProductItem> {
+        return this.saveListItem(listTitle, { Title: item.Title, ProdData: item.ProdData, Active: item.Active })
+        .then(d => new SpProductItem({
+            Id: d.Id,
+            GUID: d.GUID,
+            Title: d.Title,
+            ProdData: d.ProdData,
+            Active: d.Active,
+            Created: d.Created,
+            Modified: d.Modified
+        }))
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
     }
 
     UpdateListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
@@ -84,19 +137,6 @@ export class SPService implements ISPService {
             .then(data => data.json())
             .then(data => Promise.resolve(data.d['CopyTo'] === null))
             .catch(e => Promise.resolve(e));
-        })
-        .catch(e => Promise.reject(e));
-    }
-
-    private getDigestValue(url: string): Promise<string> {
-        const payload = { method: 'POST', headers: { 'accept': 'application/json;odata=verbose' } };
-
-        return new Promise<string>((resolve, reject) => {
-            return fetch(`${url}/_api/contextinfo`, payload)
-            .then(c => c.json())
-            .then(c => c.d.GetContextWebInformation.FormDigestValue)
-            .then((digestVal: string) => resolve(digestVal))
-            .catch(e => reject(e));
         })
         .catch(e => Promise.reject(e));
     }

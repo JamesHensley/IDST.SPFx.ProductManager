@@ -21,33 +21,16 @@ export class SpListAttachment {
     public LinkedProductGuid: string;
 }
 
-export class CustomSpFieldTeamTask {
-    public TeamId: string;
-}
-
 export class SpProductItem {
     public constructor(init?: Partial<SpProductItem>) {
         Object.assign(this, init);
     }
 
-    public Id: number;
+    public Id?: number;
+    public GUID?: string;
     public Title: string;
-    public Guid: string;
-    public Description: string;
-    public RequestDate: string;
-    public ReturnDateExpected: string;
-    public ReturnDateActual: string;
-    public Requestor: string;
-    public AssignedTeamData: string;
-    public ProductStatus: string;
-    public ProductType: string;
-    public CategoryId: string;
-    public EventType: string;
-    public EventDateStart: string;
-    public EventDateEnd: string;
-    public ClassificationId: string;
-    public RequestUrl: string;
-    public Customer: string;
-    public Comments: string;
+    public ProdData: string;
     public Active: boolean;
+    public Created: string;
+    public Modified: string;
 }

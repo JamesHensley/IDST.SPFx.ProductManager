@@ -1,4 +1,3 @@
-
 export class AttachmentModel {
     public constructor(init?: Partial<AttachmentModel>) {
         Object.assign(this, init);

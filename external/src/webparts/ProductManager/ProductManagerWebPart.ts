@@ -99,8 +99,6 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   }
 
   private getAppSettings(): Promise<IAppSettings> {
-    console.log('Getting application settings');
-
     // We can't really use any SP libraries here yet, so we'll just guess at the siteUrl
     const siteUrl = window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig);
     const settingsLoc = siteUrl ? `${siteUrl[1]}${this.properties.appSettingsListName}/Items?$orderby=Modified&$top=1` : '/dist/mockSettings.json';
@@ -137,11 +135,21 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     newRecord.appSettingsListName = this.properties.appSettingsListName;
     newRecord.isDebugging = this.isDebugging;
 
-    return RecordService.AddListRecord(this.properties.appSettingsListName, newRecord)
-    .then(d => JSON.parse(d))
-    .then(d => {
-      this.appSettings = d;
-      // this.render();
+    return RecordService.SaveAppSettings(this.properties.appSettingsListName, newRecord)
+    .then(data => {
+      const settings: IAppSettings = Object.assign({}, data);
+      // We never want JSON saved data to overwrite these fields, so make sure they come from the property-pane
+      settings.appSettingsListName = this.properties.appSettingsListName;
+      settings.isDebugging = this.isDebugging;
+
+      settings.teams = data.teams.map((d: TeamModel) => new TeamModel(d));
+      settings.teamMembers = data.teamMembers.map((d: TeamMemberModel) => new TeamMemberModel(d));
+      settings.templateDocuments = data.templateDocuments.map((d: TemplateDocumentModel) => new TemplateDocumentModel(d));
+      settings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
+      settings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
+      settings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
+      settings.classificationModels = data.classificationModels.map(d => new ClassificationModel(d));
+      this.appSettings = settings;
       return Promise.resolve(this.appSettings);
     })
     .catch(e => Promise.reject(e));

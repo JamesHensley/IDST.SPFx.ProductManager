@@ -16,6 +16,7 @@ import { ProductTypeModel } from '../models/ProductTypeModel';
 import { ClassificationModel } from '../models/ClassificationModel';
 import { format } from 'date-fns';
 import { CategoryModel } from '../models/CategoryModel';
+import { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
 
 export interface IResult {
     productModel: ProductModel;
@@ -32,15 +33,9 @@ export default class RecordService {
     }
 
     public static async GetProducts(): Promise<Array<ProductModel>> {
-        const spItems: Array<SpProductItem> = await this.spService.GetListItems(AppService.AppSettings.miscSettings.productListUrl);
+        const spItems: Array<SpProductItem> = await this.spService.GetListItems(AppService.AppSettings.miscSettings.productListTitle);
         const spAttachments: Array<SpListAttachment> = await this.spService.GetAttachmentItems(AppService.AppSettings.miscSettings.documentListUrl);
         return MapperService.MapItemsToProducts(spItems.filter(f => f.Active), spAttachments);
-    }
-
-    public static async GetProductByGUID(guid: string): Promise<ProductModel> {
-        const spItem: SpProductItem = await this.spService.GetListItemByGuid(AppService.AppSettings.miscSettings.productListUrl, guid);
-        const spAttachments = await this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, guid);
-        return MapperService.MapItemToProduct(spItem, spAttachments);
     }
 
     public static async GetAttachmentsForItem(guid: string): Promise<Array<AttachmentModel>> {
@@ -60,11 +55,11 @@ export default class RecordService {
         const resultStr = product.spId ? 'Updated' : 'Created';
         const newItem = MapperService.MapProductToItem(product);
 
-        return (product.spId ? this.spService.UpdateListItem(AppService.AppSettings.miscSettings.productListUrl, newItem) : this.spService.AddListItem(AppService.AppSettings.miscSettings.productListUrl, newItem))
+        return (product.spId ? this.spService.UpdateListItem(AppService.AppSettings.miscSettings.productListTitle, newItem) : this.spService.AddListItem(AppService.AppSettings.miscSettings.productListTitle, newItem))
         .then((newItem: SpProductItem) => {
             // When we create a NEW item, we need to upload template documents here
             // UPLOAD DOCUMENTS
-            return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, newItem.Guid)
+            return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, newItem.GUID)
             .then(attachments => {
                 AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product);
                 return Promise.resolve({
@@ -78,7 +73,7 @@ export default class RecordService {
     }
 
     public static async RemoveProduct(product: ProductModel): Promise<Array<ProductModel>> {
-        return this.spService.RemoveListItem(AppService.AppSettings.miscSettings.productListUrl, MapperService.MapProductToItem(product))
+        return this.spService.RemoveListItem(AppService.AppSettings.miscSettings.productListTitle, MapperService.MapProductToItem(product))
         .then(async () => {
             const items = await this.GetProducts();
             return Promise.resolve(items);
@@ -195,9 +190,9 @@ export default class RecordService {
         });
     }
 
-    public static AddListRecord(listName: string, record: any): Promise<any> {
-        const saveStr = JSON.stringify(record);
-
-        return this.spService.SaveNewListRecord(listName, saveStr);
+    public static SaveAppSettings(listName: string, record: IAppSettings): Promise<IAppSettings> {
+        return this.spService.SaveAppSettings(listName, record)
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
     }
 }

@@ -35,8 +35,8 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
                             <Text>{AppService.AppSettings.miscSettings.documentListUrl}</Text>
                         </Stack.Item>
                         <Stack.Item style={{ marginBottom: 10 }}>
-                            <Label>URL for product data</Label>
-                            <Text>{AppService.AppSettings.miscSettings.productListUrl}</Text>
+                            <Label>List name for product data</Label>
+                            <Text>{AppService.AppSettings.miscSettings.productListTitle}</Text>
                         </Stack.Item>
                         <Stack.Item style={{ marginBottom: 10 }}>
                             <Label>URL of library for publishing finished products</Label>
@@ -71,10 +71,10 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
                             onUpdated={this.updateVal.bind(this)}
                         />
                         <FormInputText
-                            labelValue={'URL for product data'}
+                            labelValue={'List name where product data will be stored'}
                             editing={true}
-                            fieldValue={this.state.draftModel.productListUrl}
-                            fieldRef={'productListUrl'}
+                            fieldValue={this.state.draftModel.productListTitle}
+                            fieldRef={'productListTitle'}
                             onUpdated={this.updateVal.bind(this)}
                         />
                         <FormInputText
