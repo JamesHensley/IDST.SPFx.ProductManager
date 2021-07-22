@@ -187,18 +187,16 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                             }
                         </Stack>
                         <Separator />
-                        <AttachmentComponent
-                            AttachmentItems={this.state.draftProduct.attachedDocuments}
-                            AddAttachmentCallback={this.addAttachment.bind(this)}
-                            canAddAttachments={this.state.draftProduct.guid ? true : false}
-                            readOnly={this.props.readOnly}
-                        />
-                        <Separator />
                         <TaskComponent
-                            key={new Date().getTime()}
                             TaskItems={this.state.draftProduct.tasks}
                             onUpdated={this.tasksUpdated.bind(this)}
                             isEditing={this.state.isEditing}
+                        />
+                        <Separator />
+                        <AttachmentComponent
+                            canAddAttachments={this.state.draftProduct.spGuid ? true : false}
+                            readOnly={this.props.readOnly}
+                            parentModel={this.state.draftProduct}
                         />
                         <Separator />
                         <CommentComponent comments={this.state.draftProduct.comments || []} />
@@ -285,29 +283,6 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         Object.assign(newDraft, this.state.draftProduct);
         newDraft.tasks = [].concat.apply(this.state.draftProduct.tasks, [newTask]);
         this.setState({ draftProduct: newDraft });
-    }
-
-    /**  */
-    private async addAttachment(files: FileList): Promise<void> {
-        if (this.state.draftProduct.guid) {
-            return RecordService.AddAttachmentsForItem(this.state.draftProduct, files)
-            .then(results => {
-                return RecordService.GetAttachmentsForItem(this.state.draftProduct.guid)
-                .then(allDocs => {
-                    const draftProduct: ProductModel = new ProductModel();
-                    Object.assign(draftProduct, this.props.currentProduct);
-                    draftProduct.attachedDocuments = allDocs;
-                    this.setState({ draftProduct: draftProduct });
-
-                    NotificationService.Notify(NotificationType.AttachAdd, this.state.draftProduct.title, results.map(d => d.Title).join(','));
-                    return Promise.resolve();
-                })
-                .catch(e => Promise.reject(e));
-            })
-            .catch(e => Promise.reject(e));
-        } else {
-            return Promise.reject('No Files Selected');
-        }
     }
 
     /** Returns a header for the detail pane with or without edit/save buttons */

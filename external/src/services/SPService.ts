@@ -48,8 +48,8 @@ export class SPService implements ISPService {
         .catch(e => Promise.reject(e));
     }
 
-    SaveAppSettings(listTitle: string, listRecord: IAppSettings): Promise<IAppSettings> {
-        return this.saveListItem(listTitle, { Title: new Date().getTime(), Data: JSON.stringify(listRecord) })
+    SaveAppSettings(listTitle: string, listRecord: IAppSettings, dataFieldName: string): Promise<IAppSettings> {
+        return this.saveListItem(listTitle, { Title: new Date().getTime(), [dataFieldName]: JSON.stringify(listRecord) })
         .then(d => (JSON.parse(d.Data) as IAppSettings))
         .then(d => Promise.resolve(d))
         .catch(e => Promise.reject(e));
@@ -64,16 +64,18 @@ export class SPService implements ISPService {
     }
 
     GetAttachmentItems(listTitle: string): Promise<Array<SpListAttachment>> {
-        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')`, { headers: { 'accept': 'application/json;odata=verbose' } })
+        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items?$expand=File`, { headers: { 'accept': 'application/json;odata=verbose' } })
         .then(d => d.json())
         .then(d => d.d.results)
         .then(d => d.map(m => new SpListAttachment({
             Id: m.Id,
             Title: m.Title,
+            DocName: m.File.Name,
             Updated: new Date(m.Modified),
             Author: null,
-            Url: '',
-            Version: null,
+            EditUrl: m.File.LinkingUrl,
+            Url: m.File.ServerRelativeUrl,
+            Version: m.File.MajorVersion,
             LinkedProductGuid: m.LinkedProductGuid
         })))
         .then(d => Promise.resolve(d))

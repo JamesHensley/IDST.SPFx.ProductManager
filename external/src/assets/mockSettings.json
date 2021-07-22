@@ -32,7 +32,7 @@
             "description": "Team 1 Description",
             "active": true,
             "shortName": "T1",
-            "teamColor": "rgb(100, 200, 200)"
+            "teamColor": "rgb(20, 168, 168)"
         },
         {
             "id": 2,
@@ -41,7 +41,7 @@
             "description": "Team 2 Description",
             "active": true,
             "shortName": "T2",
-            "teamColor": "rgb(200, 100, 200)"
+            "teamColor": "rgb(80, 80, 156)"
         },
         {
             "id": 3,
@@ -50,7 +50,7 @@
             "description": "Team 3 Description",
             "active": true,
             "shortName": "ST",
-            "teamColor": "rgb(200, 200, 100)"
+            "teamColor": "rgb(140, 0, 70)"
         },
         {
             "id": 4,
@@ -59,7 +59,7 @@
             "description": "Team 4 Description",
             "active": true,
             "shortName": "F",
-            "teamColor": "rgb(200, 100, 255)"
+            "teamColor": "rgb(140, 140, 80)"
         }        
     ],
     "templateDocuments": [

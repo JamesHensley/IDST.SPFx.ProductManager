@@ -5,6 +5,7 @@ import { FileService } from './FileService';
 import { ISPService } from './ISPService';
 import { v4 as uuidv4 } from 'uuid';
 import { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
+//
 
 export class MockSPService implements ISPService {
     private _mockedProductItems: Array<SpProductItem> = [];
@@ -19,25 +20,13 @@ export class MockSPService implements ISPService {
         return this._mockedProductItems.filter(f => f.Active);
     }
 
-    private get mockedAttachmentItems(): Array<SpListAttachment> {
-        if (this._mockedAttachmentItems.length === 0) {
-            // this._mockedAttachmentItems = [];
-        }
-
-        return this._mockedAttachmentItems;
-    }
-
-    private set mockedAttachmentItems(val: Array<SpListAttachment>) {
-        this._mockedAttachmentItems = val;
-    }
-
     GetSingleFieldValues(listUrl: string, fieldName: string): Promise<Array<string>> {
         const retVal = this._mockedProductItems.map(d => d[fieldName]).filter((f, i, e) => e.indexOf(f) === i).sort();
         return Promise.resolve(retVal);
     }
 
     GetAttachmentsForGuid(listUrl: string, guid: string): Promise<Array<SpListAttachment>> {
-        return Promise.resolve(this.mockedAttachmentItems.filter(f => f.LinkedProductGuid === guid));
+        return Promise.resolve(this._mockedAttachmentItems.filter(f => f.LinkedProductGuid === guid));
     }
 
     AddListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
@@ -87,7 +76,7 @@ export class MockSPService implements ISPService {
 
     GetAttachmentItems(listUrl: string): Promise<Array<SpListAttachment>> {
         return new Promise<Array<SpListAttachment>>((resolve, reject) => {
-            resolve(this.mockedAttachmentItems);
+            resolve(this._mockedAttachmentItems);
         });
     }
 
@@ -114,7 +103,7 @@ export class MockSPService implements ISPService {
         return Promise.resolve(true);
     }
 
-    SaveAppSettings(listTitle: string, listRecord: IAppSettings): Promise<IAppSettings> {
+    SaveAppSettings(listTitle: string, listRecord: IAppSettings, dataFieldName: string): Promise<IAppSettings> {
         return Promise.resolve(listRecord);
     }
 
@@ -138,7 +127,7 @@ export class MockSPService implements ISPService {
         });
         */
         const returnObj = Faker.CreateFakeAttachment(productGuid, fileName);
-        this.mockedAttachmentItems.push(returnObj);
+        this._mockedAttachmentItems.push(returnObj);
         return Promise.resolve(returnObj);
     }
 }

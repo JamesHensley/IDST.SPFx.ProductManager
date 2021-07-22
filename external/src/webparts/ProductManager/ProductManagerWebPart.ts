@@ -81,15 +81,20 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
       pages: [
         {
           header: {
-            description: 'Description'
+            description: 'Basic Application Settings'
           },
           groups: [
             {
               groupName: '',
               groupFields: [
                 PropertyPaneTextField('description', {
-                   label: this.properties.description
-                })
+                   label: 'Application Description',
+                    multiline: true,
+                    rows: 4
+                }),
+                PropertyPaneTextField('appSettingsListName', {
+                  label: 'List name for application settings'
+               })
               ]
             }
           ]
@@ -106,7 +111,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     return new Promise<IAppSettings>((resolve, reject) => {
       return fetch(settingsLoc, { headers : { accept: 'application/json;odata=verbose' } })
       .then(data => data.json())
-      .then(data => siteUrl ? data.d.results[0].configData : data)
+      .then(data => siteUrl ? data.d.results[0].Data : data)
       .then((data: IAppSettings) => {
         const settings: IAppSettings = Object.assign({}, data);
         // We never want JSON saved data to overwrite these fields, so make sure they come from the property-pane
@@ -135,7 +140,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     newRecord.appSettingsListName = this.properties.appSettingsListName;
     newRecord.isDebugging = this.isDebugging;
 
-    return RecordService.SaveAppSettings(this.properties.appSettingsListName, newRecord)
+    return RecordService.SaveAppSettings(this.properties.appSettingsListName, newRecord, 'Data')
     .then(data => {
       const settings: IAppSettings = Object.assign({}, data);
       // We never want JSON saved data to overwrite these fields, so make sure they come from the property-pane

@@ -14,8 +14,10 @@ export class SpListAttachment {
 
     public Id: string;
     public Title: string;
+    public DocName: string;
     public Updated: Date;
     public Author: SPAuthor;
+    public EditUrl: string;
     public Url: string;
     public Version: number;
     public LinkedProductGuid: string;

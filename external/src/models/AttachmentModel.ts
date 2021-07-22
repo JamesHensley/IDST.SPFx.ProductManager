@@ -5,9 +5,11 @@ export class AttachmentModel {
 
     Id: string;
     Title: string;
+    DocName: string;
     Updated: Date;
     Author: string;
     Url: string;
+    EditUrl: string;
     LinkedProductGuid: string;
     Version: number;
 }

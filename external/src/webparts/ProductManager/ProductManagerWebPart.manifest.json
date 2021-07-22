@@ -13,8 +13,8 @@
     "description": { "default": "Product Manager" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "IdstSpfxProductManager",
-      "appSettingsListName": ""
+      "description": "IDST SPFx Product Manager",
+      "appSettingsListName": "ProductManagerSettings"
     }
   }]
 }

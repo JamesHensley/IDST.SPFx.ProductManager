@@ -5,26 +5,29 @@ import { getFileTypeIconProps } from '@fluentui/react-file-type-icons';
 import * as styles from '../ProductManager.module.scss';
 
 import { AttachmentModel } from '../../../../models/AttachmentModel';
+import RecordService from '../../../../services/RecordService';
+import { ProductModel } from '../../../../models/ProductModel';
 
 export interface IAttachmentComponentProps {
     canAddAttachments: boolean;
     readOnly: boolean;
-    AttachmentItems: Array<AttachmentModel>;
-    AddAttachmentCallback: (files: FileList) => Promise<void>;
+    parentModel: ProductModel;
 }
 
 export interface IAttachmentComponentState {
-    lastUpdate: number;
+    attachments: Array<AttachmentModel>;
 }
 
 export class AttachmentComponent extends React.Component<IAttachmentComponentProps, IAttachmentComponentState> {
-    private grid = `${styles.grid} ${styles.attachmentManager}`;
-    private row = `${styles.gridRow} ${styles.clickableItem} ${styles.bordered}`;
+    constructor(props: IAttachmentComponentProps) {
+        super(props);
+        this.state = { attachments: [] };
+    }
 
     public render(): React.ReactElement<IAttachmentComponentProps> {
         const stackItemStyles = { root: { display: 'flex', minWidth: '50%', cursor: 'pointer' } };
         return (
-            <Stack key={new Date().getTime()}>
+            <Stack>
                 <Label>
                     Attachments
                     { !this.props.canAddAttachments && !this.props.readOnly &&
@@ -42,7 +45,7 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
                     <Stack.Item grow styles={stackItemStyles}><Label style={{ fontSize: '.9rem' }}>Author</Label></Stack.Item>
                 </Stack>
                 <Stack.Item styles={{ root: { paddingLeft: '20px' } }}>
-                    {(this.props.AttachmentItems || []).map(a => {
+                    {(this.state.attachments || []).map(a => {
                         const docIcon = getFileTypeIconProps({ extension: (a.Url.split('.').reverse()[0]), size: 16, imageFileType: 'png' });
                         return (
                             <Stack horizontal key={a.Id} onClick={this.attachmentClicked.bind(this, a)} className={styles.clickableItem}>
@@ -59,18 +62,27 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
         );
     }
 
+    public componentDidMount(): void {
+        if (this.props.parentModel.spGuid) {
+            RecordService.GetAttachmentsForItem(this.props.parentModel.spGuid)
+            .then(d => this.setState({ attachments: d }))
+        }
+    }
+
     private attachmentClicked(attachment: AttachmentModel): void {
-        console.log('Attachment Clicked: ', attachment);
+        window.open(attachment.EditUrl, '_blank');
     }
 
     private uploadFiles(): void {
         const files = (document.querySelector('#attachment') as HTMLInputElement).files;
         if (files.length > 0) {
-            this.props.AddAttachmentCallback(files)
-            .then(() => {
-                this.setState({ lastUpdate: new Date().getTime() });
+            RecordService.AddAttachmentsForItem(this.props.parentModel, files)
+            .then(results => {
+                return RecordService.GetAttachmentsForItem(this.props.parentModel.guid)
+                .then(allDocs => this.setState({ attachments: allDocs }))
+                .catch(e => Promise.reject(e));
             })
-            .catch(e => Promise.reject(e));
+            .catch(e => Promise.reject(e));            
         }
     }
 }

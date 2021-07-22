@@ -47,7 +47,10 @@ export default class RecordService {
     public static async AddAttachmentsForItem(product: ProductModel, files: FileList): Promise<Array<AttachmentModel>> {
         return this.spService.AddAttachment(AppService.AppSettings.miscSettings.documentListUrl, product.guid, files)
         .then(spAttachments => spAttachments.map(d => MapperService.MapSpAttachmentToAttachment(d)))
-        .then(attachments => Promise.resolve(attachments))
+        .then(attachments => {
+            NotificationService.Notify(NotificationType.AttachAdd, attachments.map(d => d.Title).join(','))
+            return Promise.resolve(attachments);
+        })
         .catch(e => Promise.reject(e));
     }
 
@@ -192,8 +195,8 @@ export default class RecordService {
         });
     }
 
-    public static SaveAppSettings(listName: string, record: IAppSettings): Promise<IAppSettings> {
-        return this.spService.SaveAppSettings(listName, record)
+    public static SaveAppSettings(listName: string, record: IAppSettings, dataFieldName: string): Promise<IAppSettings> {
+        return this.spService.SaveAppSettings(listName, record, dataFieldName)
         .then(d => Promise.resolve(d))
         .catch(e => Promise.reject(e));
     }

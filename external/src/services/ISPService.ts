@@ -31,5 +31,5 @@ export interface ISPService {
 
     CopyFile(srcUrl: string, destUrl: string, suffix: string): Promise<boolean>;
 
-    SaveAppSettings(listTitle: string, listRecord: IAppSettings): Promise<IAppSettings>;
+    SaveAppSettings(listTitle: string, listRecord: IAppSettings, dataFieldName: string): Promise<IAppSettings>;
 }
