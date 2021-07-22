@@ -35,11 +35,9 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
                             fieldRef={'taskState'}
                             onUpdated={this.fieldUpdated.bind(this)}
                             editing={this.props.isEditing}
-                            options={ [
-                                { key: TaskState.pending, value: 'Pending' } as KeyValPair,
-                                { key: TaskState.working, value: 'Working' } as KeyValPair,
-                                { key: TaskState.complete, value: 'Complete' } as KeyValPair
-                            ] }
+                            options={Object.keys(TaskState).map(d => {
+                                return { key: d, value: TaskState[d], selected: this.state.draftTask.taskState === TaskState[d] } as KeyValPair;
+                            })}
                             toolTip={`${this.state.draftTask.taskStart} - ${this.state.draftTask.taskFinish}`}
                             allowNull={false}
                             disabledKeys={[]}
@@ -76,9 +74,9 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
         Object.assign(newDraft, this.state.draftTask);
 
         newDraft[fieldRef] = fieldValue;
-        if (fieldRef === 'taskState' && fieldValue === 'Pending') { newDraft.taskStart = null; newDraft.taskFinish = null; }
-        if (fieldRef === 'taskState' && fieldValue === 'Working') { newDraft.taskStart = startOfDay(new Date()); newDraft.taskFinish = null; }
-        if (fieldRef === 'taskState' && fieldValue === 'Complete') {
+        if (fieldRef === 'taskState' && fieldValue === TaskState.Pending) { newDraft.taskStart = null; newDraft.taskFinish = null; }
+        if (fieldRef === 'taskState' && fieldValue === TaskState.Working) { newDraft.taskStart = startOfDay(new Date()); newDraft.taskFinish = null; }
+        if (fieldRef === 'taskState' && fieldValue === TaskState.Complete) {
             newDraft.taskFinish = startOfDay(new Date());
             newDraft.taskStart = newDraft.taskStart ? newDraft.taskStart : subHours(newDraft.taskFinish, 6);
             if (differenceInHours(newDraft.taskFinish, newDraft.taskStart) < 6) { newDraft.taskStart = subHours(newDraft.taskFinish, 6); }

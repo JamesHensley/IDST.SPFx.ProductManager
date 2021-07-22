@@ -188,6 +188,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                         </Stack>
                         <Separator />
                         <TaskComponent
+                            key={new Date().getTime()}
                             TaskItems={this.state.draftProduct.tasks}
                             onUpdated={this.tasksUpdated.bind(this)}
                             isEditing={this.state.isEditing}

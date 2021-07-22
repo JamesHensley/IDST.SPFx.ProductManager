@@ -38,34 +38,37 @@ export class TeamTasksPaneComponent extends React.Component<ITeamTasksPaneCompon
                 type={PanelType.medium}
                 headerText={this.props.teamModel.name}
             >
-                <Stack horizontal>
-                    <Stack.Item grow>
-                        <Stack horizontal tokens={{ childrenGap: 10 }}>
-                            {this.props.isEditing && <DefaultButton onClick={this.updateTasks.bind(this)} disabled={!this.props.isEditing}>Save</DefaultButton>}
-                            {this.props.isEditing && <DefaultButton onClick={this.cancelUpdateTasks.bind(this)} disabled={!this.props.isEditing}>Cancel</DefaultButton>}
-                        </Stack>
-                    </Stack.Item>
-                    <Stack.Item>
-                        {this.props.isEditing && <DefaultButton onClick={this.addTask.bind(this)} disabled={!this.props.isEditing}>Add Task</DefaultButton>}
+                <Stack>
+                    <Stack horizontal>
+                        <Stack.Item grow>
+                            <Stack horizontal tokens={{ childrenGap: 10 }}>
+                                {this.props.isEditing && <DefaultButton onClick={this.updateTasks.bind(this)} disabled={!this.props.isEditing}>Save</DefaultButton>}
+                                {this.props.isEditing && <DefaultButton onClick={this.cancelUpdateTasks.bind(this)} disabled={!this.props.isEditing}>Cancel</DefaultButton>}
+                            </Stack>
+                        </Stack.Item>
+                        <Stack.Item>
+                            {this.props.isEditing && <DefaultButton onClick={this.addTask.bind(this)} disabled={!this.props.isEditing}>Add Task</DefaultButton>}
+                        </Stack.Item>
+                    </Stack>
+                    <Stack.Item key={new Date().getTime()}>
+                        {
+                            this.state.draftTasks
+                            .sort((a, b) => a.taskSuspense > b.taskSuspense ? 1 : (a.taskSuspense < b.taskSuspense ? -1 : 0))
+                            .map(d => {
+                                return (
+                                    <div key={d.taskGuid}>
+                                        <Separator />
+                                        <TeamTaskFormComponent
+                                            committedTask={d}
+                                            isEditing={this.props.isEditing}
+                                            updateCallback={this.taskUpdated.bind(this)}
+                                        />
+                                    </div>
+                                );
+                            })
+                        }
                     </Stack.Item>
                 </Stack>
-                {
-                    this.state.draftTasks
-                    .sort((a, b) => a.taskSuspense > b.taskSuspense ? 1 : (a.taskSuspense < b.taskSuspense ? -1 : 0))
-                    .map(d => {
-                        return (
-                            <div key={d.taskGuid}>
-                                <Separator />
-                                <TeamTaskFormComponent
-                                    key={d.taskGuid}
-                                    committedTask={d}
-                                    isEditing={this.props.isEditing}
-                                    updateCallback={this.taskUpdated.bind(this)}
-                                />
-                            </div>
-                        );
-                    })
-                }
             </Panel>
         );
     }
@@ -75,7 +78,7 @@ export class TeamTasksPaneComponent extends React.Component<ITeamTasksPaneCompon
             taskedTeamId: this.props.teamModel.teamId,
             taskGuid: uuidv4(),
             taskDescription: 'New Task',
-            taskState: TaskState.pending,
+            taskState: TaskState.Pending,
             taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON()
         });
 

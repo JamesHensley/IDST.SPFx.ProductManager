@@ -5,6 +5,7 @@ import { TaskModel, TaskState } from '../models/TaskModel';
 import { subDays, addDays, startOfDay } from 'date-fns';
 import { ProductModel, ProductStatus } from '../models/ProductModel';
 import { MapperService } from './MapperService';
+import RecordService from './RecordService';
 
 export class Faker {
     private static _fakeCustomers = ['Doctor Creep', 'George Washington', 'Daniel Boone'];
@@ -34,11 +35,9 @@ export class Faker {
         // Gives us about a 30% chance this task will break it's suspense
         const willBustSuspense = (Math.random() * 10) >= 7;
 
-        const expectedStart = (TaskState[state] === TaskState.working || TaskState[state] === TaskState.complete) ? subDays(expectedFinish, expectedDaysToWork) : null;
-        const actualFinish = (TaskState[state] === TaskState.complete) ? (willBustSuspense ? addDays(expectedFinish, 1) : subDays(expectedFinish, 1)) : null;
-
-        return new TaskModel({
-            taskedTeamId: teamId,
+        const expectedStart = (TaskState[state] === TaskState.Working || TaskState[state] === TaskState.Complete) ? subDays(expectedFinish, expectedDaysToWork) : null;
+        const actualFinish = (TaskState[state] === TaskState.Complete) ? (willBustSuspense ? addDays(expectedFinish, 1) : subDays(expectedFinish, 1)) : null;
+        return Object.assign(RecordService.GetNewTask(teamId), {
             taskDescription: desc,
             taskState: TaskState[state],
             taskGuid: uuidv4(),
@@ -73,7 +72,7 @@ export class Faker {
             tasks: []
         });
 
-        const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['pending', 'working', 'working', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete', 'complete']);
+        const taskState = (states => states[Math.round(Math.random() * (states.length - 1))])(['Pending', 'Working', 'Working', 'Complete', 'Complete', 'Complete', 'Complete', 'Complete', 'Complete', 'Complete']);
         item.tasks = prodType.defaultTeamTasks.map((d, i, e) => {
             const xy = e.reduce((t, n, c) => c < i ? addDays(t, n.typicalTaskLength) : t, beginWork);
             const xx = e.reduce((t, n, c) => c <= i ? addDays(t, n.typicalTaskLength) : t, beginWork);
@@ -81,7 +80,7 @@ export class Faker {
         });
         item.status = item.tasks
             .map(d => d.taskState)
-            .reduce((t, n) => n === TaskState.complete && t === TaskState.complete ? t : TaskState.working, TaskState.complete) === TaskState.complete ? ProductStatus.closed : ProductStatus.open;
+            .reduce((t, n) => n === TaskState.Complete && t === TaskState.Complete ? t : TaskState.Working, TaskState.Complete) === TaskState.Complete ? ProductStatus.closed : ProductStatus.open;
 
         const eventModel = prodType.defaultEventType ? AppService.AppSettings.eventTypes.reduce((t, n) => n.eventTypeId === prodType.defaultEventType ? n : t, null) : null;
         if (eventModel) {

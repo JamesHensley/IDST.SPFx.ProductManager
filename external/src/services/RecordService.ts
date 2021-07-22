@@ -48,7 +48,7 @@ export default class RecordService {
         return this.spService.AddAttachment(AppService.AppSettings.miscSettings.documentListUrl, product.guid, files)
         .then(spAttachments => spAttachments.map(d => MapperService.MapSpAttachmentToAttachment(d)))
         .then(attachments => {
-            NotificationService.Notify(NotificationType.AttachAdd, attachments.map(d => d.Title).join(','))
+            NotificationService.Notify(NotificationType.AttachAdd, attachments.map(d => d.Title).join(','));
             return Promise.resolve(attachments);
         })
         .catch(e => Promise.reject(e));
@@ -109,13 +109,7 @@ export default class RecordService {
                 description: prodTypeModel.typeDescription,
                 tasks: prodTypeModel.defaultTeamTasks.map((d, i, e) => {
                     const taskSuspense = e.reduce((t, n, c) => c <= i ? addDays(t, n.typicalTaskLength) : t, new Date());
-                    return {
-                        taskedTeamId: d.teamId,
-                        taskDescription: d.taskDescription,
-                        taskSuspense: taskSuspense.toJSON(),
-                        taskState: TaskState.pending,
-                        taskGuid: uuidv4()
-                    } as TaskModel;
+                    return this.GetNewTask(d.teamId, d.taskDescription, taskSuspense);
                 }),
                 classificationId: AppService.AppSettings.classificationModels[0] ? AppService.AppSettings.classificationModels[0].classificationId : null,
                 eventType: prodTypeModel.defaultEventType,
@@ -192,6 +186,16 @@ export default class RecordService {
             categoryText: 'New Category',
             categoryDescription: 'New Category description',
             categoryId: uuidv4()
+        });
+    }
+
+    public static GetNewTask(teamId: string, taskDescription?: string, taskSuspense?: Date): TaskModel {
+        return new TaskModel({
+            taskedTeamId: teamId,
+            taskDescription: taskDescription || '',
+            taskSuspense: taskSuspense ? taskSuspense.toJSON() : null,
+            taskState: TaskState.Pending,
+            taskGuid: uuidv4()
         });
     }
 

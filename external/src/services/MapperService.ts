@@ -9,7 +9,7 @@ export class MapperService {
 
     public static MapItemToProduct(item: SpProductItem, attachments: Array<SpListAttachment>): ProductModel {
         const oModel: ProductModel = new ProductModel(Object.assign(JSON.parse(item.ProdData), { spId: item.Id, spGuid: item.GUID, active: item.Active }));
-        oModel.attachedDocuments = attachments.filter(f => f.LinkedProductGuid == oModel.guid).map(d => this.MapSpAttachmentToAttachment(d));
+        oModel.attachedDocuments = attachments.filter(f => f.LinkedProductGuid === oModel.guid).map(d => this.MapSpAttachmentToAttachment(d));
         return new ProductModel(oModel);
     }
 

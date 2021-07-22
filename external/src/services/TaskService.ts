@@ -22,11 +22,11 @@ export default class TaskService {
         const workingProduct = new ProductModel(product);
         const retObj = workingProduct.tasks.map(d => {
             switch (d.taskState) {
-                case TaskState.pending:
+                case TaskState.Pending:
                     d.taskStart = subDays(new Date(d.taskSuspense), 2);
                     d.taskFinish = new Date(d.taskSuspense);
                     break;
-                case TaskState.working:
+                case TaskState.Working:
                     d.taskFinish = addDays(new Date(), 1);
                     break;
             }

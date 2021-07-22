@@ -9,6 +9,7 @@ import { TaskModel, TaskState } from '../../../../models/TaskModel';
 import { TeamTaskRowComponent } from './TeamTaskRowComponent';
 import AppService from '../../../../services/AppService';
 import { TeamModel } from '../../../../models/TeamModel';
+import RecordService from '../../../../services/RecordService';
 
 export interface ITaskComponentProps {
     TaskItems: Array<TaskModel>;
@@ -100,13 +101,7 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
     }
 
     private teamSelected(teamId: string): void {
-        const newTask = new TaskModel({
-            taskedTeamId: teamId,
-            taskGuid: uuidv4(),
-            taskDescription: 'New Task',
-            taskState: TaskState.pending,
-            taskSuspense: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)).toJSON()
-        });
+        const newTask = RecordService.GetNewTask(teamId, 'New Task', new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 3)));
         const newDrafts = [].concat.apply(this.state.draftTasks, [newTask]);
         this.props.onUpdated(newDrafts);
     }

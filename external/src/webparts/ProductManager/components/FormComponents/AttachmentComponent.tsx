@@ -36,8 +36,12 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
                 </Label>
                 { this.props.canAddAttachments && !this.props.readOnly &&
                     <Stack horizontal>
-                        <Stack.Item grow styles={{ root: { display: 'flex' } }}><input id='attachment' type='file' multiple accept='.*' /></Stack.Item>
-                        <Stack.Item styles={{ root: { display: 'flex' } }}><DefaultButton onClick={this.uploadFiles.bind(this)}>Upload</DefaultButton></Stack.Item>
+                        <Stack.Item grow styles={{ root: { display: 'flex' } }}>
+                            <input id='attachment' type='file' multiple accept='.*' key={new Date().getTime()} />
+                        </Stack.Item>
+                        <Stack.Item styles={{ root: { display: 'flex' } }}>
+                            <DefaultButton onClick={this.uploadFiles.bind(this)}>Upload</DefaultButton>
+                        </Stack.Item>
                     </Stack>
                 }
                 <Stack horizontal>
@@ -66,6 +70,7 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
         if (this.props.parentModel.spGuid) {
             RecordService.GetAttachmentsForItem(this.props.parentModel.spGuid)
             .then(d => this.setState({ attachments: d }))
+            .catch(e => Promise.reject(e));
         }
     }
 
@@ -82,7 +87,7 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
                 .then(allDocs => this.setState({ attachments: allDocs }))
                 .catch(e => Promise.reject(e));
             })
-            .catch(e => Promise.reject(e));            
+            .catch(e => Promise.reject(e));
         }
     }
 }
