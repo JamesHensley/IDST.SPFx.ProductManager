@@ -147,7 +147,8 @@ export default class RecordService {
             name: 'New Team',
             shortName: 'NT',
             description: 'New team supporting something awesome',
-            active: true
+            active: true,
+            teamColor: 'rgb(100, 0, 0)'
         });
     }
 

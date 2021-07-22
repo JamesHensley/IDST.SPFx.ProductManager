@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Stack } from '@fluentui/react';
+import { Label, Stack } from '@fluentui/react';
 
 import TeamConfig from '../ConfigurationComponents/TeamConfig';
 import EventConfig from '../ConfigurationComponents/EventConfig';
@@ -12,6 +12,7 @@ export default class ConfigurationView extends React.Component <{}, {}> {
     public render(): React.ReactElement<{}> {
         return (
             <Stack tokens={{ childrenGap: 10 }}>
+                <Label style={{ fontSize: '1.5rem' }}>Application Configuration</Label>
                 <Stack.Item grow>
                     <TeamConfig />
                 </Stack.Item>

@@ -277,7 +277,6 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
         Object.assign(newDraft, this.state.draftProduct);
         newDraft.tasks = newVal;
         this.setState({ draftProduct: newDraft });
-        console.log('Updated Tasks for: ', newDraft);
     }
 
     /** Called when a user clicks the ADD TASK button from this PANE */

@@ -51,18 +51,14 @@ export class FormInputComboBox extends React.Component<IFormInputProps, IFormInp
     }
 
     private fieldUpdated(event: React.FormEvent<IComboBox>, option?: IComboBoxOption, index?: number, value?: string): void {
-        // console.log('ComboUpdate: ', event, option, index, value);
         if (!option && value) {
-            console.log('Adding value to options list', value);
             this.comboOptions = [].concat.apply(this.comboOptions, [{ key: value, text: value } as IComboBoxOption])
                 .sort((a: IComboBoxOption, b: IComboBoxOption) => a.key > b.key ? 1 : (a.key < b.key ? -1 : 0))
                 .filter((f, i, e) => e.indexOf(f) === i);
-            console.log('Setting new value', value);
             this.setState({ draftValue: value });
             this.props.onUpdated(value, this.props.fieldRef);
         }
         if (option) {
-            console.log('Setting previous menu value: ', option.text);
             this.setState({ draftValue: option.text });
             this.props.onUpdated(option.text, this.props.fieldRef);
         }

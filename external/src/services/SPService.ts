@@ -193,31 +193,31 @@ export class SPService implements ISPService {
     }
 
     private executeUpload(listUrl: string, productGuid: string, fileName: string, arrayBuffer: ArrayBuffer): Promise<SpListAttachment> {
-        // const documentLibrary = '';
-        const webUrl = AppService.AppContext.pageContext.web.absoluteUrl;
-        // const targetUrl =  `${AppService.AppContext.pageContext.web.serverRelativeUrl}/${documentLibrary}`;
         const targetUrl = listUrl;
-        const url = webUrl + "/_api/Web/GetFolderByServerRelativeUrl(@target)/Files/add(overwrite=true, url='" + fileName + "')?@target='" + targetUrl + "'&$expand=ListItemAllFields,Author";
 
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                'accept': 'application/json;odata=verbose',
-                'X-RequestDigest': (document.querySelector('#__REQUESTDIGEST') as any).value
-            },
-            body: arrayBuffer
-        })
-        .then(result => result.json())
-        .then(result => Promise.resolve(new SpListAttachment({
-                Id: result.d.ListItemAllFields.GUID,
-                Author: { Name: AppService.CurrentSpUser.displayName, Email: AppService.CurrentSpUser.email } as SPAuthor,
-                LinkedProductGuid: productGuid,
-                Title: result.d.Name,
-                Url: result.d.ServerRelativeUrl,
-                Version: result.d.MajorVersion,
-                Updated: result.d.Modified
+        return this.getDigestValue(this.currentSiteUrl + '/_api/contextinfo')
+        .then(digestVal => {
+            return fetch(`${this.currentSiteUrl}/_api/Web/GetFolderByServerRelativeUrl(@target)/Files/add(overwrite=true, url='${fileName}')?@target='${targetUrl}'&$expand=ListItemAllFields,Author`, {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json;odata=verbose',
+                    'X-RequestDigest': digestVal
+                },
+                body: arrayBuffer
             })
-        ))
+            .then(result => result.json())
+            .then(result => Promise.resolve(new SpListAttachment({
+                    Id: result.d.ListItemAllFields.GUID,
+                    Author: { Name: AppService.CurrentSpUser.displayName, Email: AppService.CurrentSpUser.email } as SPAuthor,
+                    LinkedProductGuid: productGuid,
+                    Title: result.d.Name,
+                    Url: result.d.ServerRelativeUrl,
+                    Version: result.d.MajorVersion,
+                    Updated: result.d.Modified
+                })
+            ))
+            .catch(e => Promise.reject(e));
+        })
         .catch(e => Promise.reject(e));
     }
 

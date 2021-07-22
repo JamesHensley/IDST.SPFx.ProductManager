@@ -68,7 +68,6 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
         if (files.length > 0) {
             this.props.AddAttachmentCallback(files)
             .then(() => {
-                console.log('Uploaded: ', files);
                 this.setState({ lastUpdate: new Date().getTime() });
             })
             .catch(e => Promise.reject(e));

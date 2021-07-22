@@ -44,13 +44,11 @@ export class MockSPService implements ISPService {
         item.GUID = uuidv4();
         item.Id = Math.max(...((this.mockedProductItems || []) as any).concat([{ Id: 0 }]).map(d => d.Id)) + 1;
         this._mockedProductItems.push(item);
-console.log('MockSPService.UpdateListItem: ', this._mockedProductItems);
         return Promise.resolve(item);
     }
 
     UpdateListItem(listUrl: string, item: SpProductItem): Promise<SpProductItem> {
         this._mockedProductItems = this._mockedProductItems.reduce((t, n) => n.GUID === item.GUID ? t.concat([item]) : t.concat([n]), []);
-console.log('MockSPService.UpdateListItem: ', this._mockedProductItems);
         return Promise.resolve(item);
     }
 

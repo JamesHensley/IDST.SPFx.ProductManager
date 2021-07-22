@@ -31,7 +31,8 @@
             "name": "Team 1 - BA",
             "description": "Team 1 Description",
             "active": true,
-            "shortName": "T1"
+            "shortName": "T1",
+            "teamColor": "rgb(100, 200, 200)"
         },
         {
             "id": 2,
@@ -39,7 +40,8 @@
             "name": "Team 2 - BS",
             "description": "Team 2 Description",
             "active": true,
-            "shortName": "T2"
+            "shortName": "T2",
+            "teamColor": "rgb(200, 100, 200)"
         },
         {
             "id": 3,
@@ -47,7 +49,8 @@
             "name": "Team 3 - S",
             "description": "Team 3 Description",
             "active": true,
-            "shortName": "ST"
+            "shortName": "ST",
+            "teamColor": "rgb(200, 200, 100)"
         },
         {
             "id": 4,
@@ -55,7 +58,8 @@
             "name": "Team 4 - F",
             "description": "Team 4 Description",
             "active": true,
-            "shortName": "F"
+            "shortName": "F",
+            "teamColor": "rgb(200, 100, 255)"
         }        
     ],
     "templateDocuments": [

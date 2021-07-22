@@ -96,7 +96,6 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
     }
 
     private addTeamTask(): void {
-        console.log('addTeamTask');
         this.setState({ isTeamDialogVisible: true });
     }
 

@@ -16,7 +16,9 @@ export interface IProductManagerCmdBarState { }
 
 export default class ProductManagerCmdBar extends React.Component <IProductManagerCmdBarProps, IProductManagerCmdBarState> {
     private get getNewMenuItems(): Array<IContextualMenuItem> {
-        return AppService.AppSettings.productTypes.map(d => {
+        return AppService.AppSettings.productTypes
+        .filter(f => f.active)
+        .map(d => {
             return {
                 key: d.typeId,
                 text: d.typeName,

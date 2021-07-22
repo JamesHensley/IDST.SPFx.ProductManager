@@ -9,6 +9,7 @@ import { FormInputText } from '../FormComponents/FormInputText';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
 import TeamMemberConfig from './TeamMemberConfig';
 import RecordService from '../../../../services/RecordService';
+import { FormInputColor } from '../FormComponents/FormInputColor';
 
 export interface ITeamConfigProps { }
 
@@ -65,16 +66,23 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                         onRenderHeader={this.getPaneHeader.bind(this)}
                     >
                         <Stack>
+                            <FormInputText
+                                labelValue={'Team Name'} editing={true}
+                                fieldValue={this.state.draftTeam.name}
+                                fieldRef={'name'}
+                                onUpdated={this.updateTeamField.bind(this)}
+                            />
                             <Stack horizontal tokens={{ childrenGap: 10 }}>
-                                <Stack.Item grow={4}>
-                                    <FormInputText
-                                        labelValue={'Team Name'} editing={true}
-                                        fieldValue={this.state.draftTeam.name}
-                                        fieldRef={'name'}
+                                <Stack.Item grow>
+                                    <FormInputColor
+                                        key={new Date().getTime()}
+                                        labelValue={'Event Color'} editing={true}
+                                        fieldValue={this.state.draftTeam.teamColor}
+                                        fieldRef={'teamColor'}
                                         onUpdated={this.updateTeamField.bind(this)}
                                     />
                                 </Stack.Item>
-                                <Stack.Item grow={1}>
+                                <Stack.Item grow>
                                     <FormInputText
                                         labelValue={'Team Initials'} editing={true}
                                         fieldValue={this.state.draftTeam.shortName}

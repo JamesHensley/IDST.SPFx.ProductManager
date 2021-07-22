@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from '../ProductManager.module.scss';
 import { ProductModel } from '../../../../models/ProductModel';
-import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, ICommandBarItemProps, IDetailsRowProps, IFacepilePersona, Label, SelectionMode, Stack, TextField } from '@fluentui/react';
+import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, ICommandBarItemProps, IDetailsRowProps, IFacepilePersona, IPersona, IPersonaSharedProps, Persona, PersonaCoin, PersonaInitialsColor, PersonaSize, SelectionMode, Stack, TextField } from '@fluentui/react';
 import { addDays, format } from 'date-fns';
 import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 import { TaskModel } from '../../../../models/TaskModel';
@@ -9,6 +9,7 @@ import { TeamModel } from '../../../../models/TeamModel';
 import { FilterService } from '../../../../services/FilterService';
 import RecordService from '../../../../services/RecordService';
 import ProductDetailPane from '../SharedComponents/ProductDetailPane';
+import ColorService from '../../../../services/ColorService';
 
 export interface IDocument {
 	key: string;
@@ -85,10 +86,20 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 			d.onRender = ((i: IDocument, idx, col) => {
 				switch (col.fieldName) {
                     case 'tasks':
-						const tasks: Array<string> = (i.tasks as Array<TaskModel> || new Array<TaskModel>()).map(t => t.taskedTeamId);
-						const personas: IFacepilePersona[] = AppService.AppSettings.teams.reduce((t: Array<TeamModel>, n: TeamModel) => tasks.indexOf(n.teamId) >= 0 ? t.concat(n) : t, [])
-							.map(d => { return { imageInitials: d.shortName, personaName: d.name } as IFacepilePersona; });
-						return <Facepile personas={personas} />;
+						return <Facepile
+							personas={
+								(i.tasks || []).map(m => m.taskedTeamId).filter((f,i,e) => e.indexOf(f) === i)
+								.map(m => AppService.AppSettings.teams.reduce((t, n) => n.teamId === m ? n : t, null))
+								.map(d => { return { imageInitials: d.shortName, personaName: d.name, data: d } as IFacepilePersona; })
+							}
+							// The number of coins determines which render method is used... read the documentation
+							onRenderPersona={(props: IFacepilePersona) => {
+								return <PersonaCoin {...props} size={PersonaSize.size32} initialsColor={props.data.teamColor} initialsTextColor={ColorService.GetTextColor(props.data.teamColor)} />;
+							}}
+							onRenderPersonaCoin={(props: IFacepilePersona) => {
+								return <PersonaCoin {...props} size={PersonaSize.size32} initialsColor={props.data.teamColor} initialsTextColor={ColorService.GetTextColor(props.data.teamColor)} />;
+							}}
+						/>;
 					default:
 						return <div>{i[col.fieldName]}</div>;
 				}

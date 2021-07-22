@@ -29,4 +29,5 @@ export class TeamModel {
     description: string;
     active: boolean;
     shortName: string;
+    teamColor: string;
 }

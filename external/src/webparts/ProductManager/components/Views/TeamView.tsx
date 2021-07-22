@@ -15,7 +15,6 @@ export interface ITeamViewState {
 export default class TeamView extends React.Component <ITeamViewProps, ITeamViewState> {
     constructor(props: ITeamViewProps) {
         super(props);
-        console.log('TeamView.constructor: ', props);
         this.state = {
             teamModel: this.props.teamModel
         };
