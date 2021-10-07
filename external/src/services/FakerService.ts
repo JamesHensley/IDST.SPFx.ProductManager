@@ -21,7 +21,7 @@ export class Faker {
             Id: uuidv4(),
             Updated: new Date(),
             Title: fileName ? fileName.split('.').reverse()[1] : `Attached Document ${Math.round(Math.random() * 300)}`,
-            Url: `${AppService.AppSettings.miscSettings.documentListUrl}/${attachmentName}.${extn}`,
+            Url: `${AppService.AppSettings.miscSettings.documentLibraryName}/${attachmentName}.${extn}`,
             Version: 1,
             LinkedProductGuid: linkedProductGuid
         });

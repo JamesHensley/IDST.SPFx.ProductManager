@@ -34,18 +34,18 @@ export default class RecordService {
 
     public static async GetProducts(): Promise<Array<ProductModel>> {
         const spItems: Array<SpProductItem> = await this.spService.GetListItems(AppService.AppSettings.miscSettings.productListTitle);
-        const spAttachments: Array<SpListAttachment> = await this.spService.GetAttachmentItems(AppService.AppSettings.miscSettings.documentListUrl);
+        const spAttachments: Array<SpListAttachment> = await this.spService.GetAttachmentItems(AppService.AppSettings.miscSettings.documentLibraryName);
         return MapperService.MapItemsToProducts(spItems.filter(f => f.Active), spAttachments);
     }
 
     public static async GetAttachmentsForItem(guid: string): Promise<Array<AttachmentModel>> {
-        const spItems = (await this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, guid))
+        const spItems = (await this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentLibraryName, guid))
             .map(d => MapperService.MapSpAttachmentToAttachment(d));
         return spItems;
     }
 
     public static async AddAttachmentsForItem(product: ProductModel, files: FileList): Promise<Array<AttachmentModel>> {
-        return this.spService.AddAttachment(AppService.AppSettings.miscSettings.documentListUrl, product.guid, files)
+        return this.spService.AddAttachment(AppService.AppSettings.miscSettings.documentLibraryName, product.guid, files)
         .then(spAttachments => spAttachments.map(d => MapperService.MapSpAttachmentToAttachment(d)))
         .then(attachments => {
             NotificationService.Notify(NotificationType.AttachAdd, attachments.map(d => d.Title).join(','));
@@ -62,7 +62,7 @@ export default class RecordService {
         .then((newItem: SpProductItem) => {
             // When we create a NEW item, we need to upload template documents here
             // UPLOAD DOCUMENTS
-            return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentListUrl, newItem.GUID)
+            return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentLibraryName, newItem.GUID)
             .then(attachments => {
                 AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product);
                 return Promise.resolve({

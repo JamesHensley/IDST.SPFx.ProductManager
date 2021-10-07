@@ -5,7 +5,10 @@ export class MiscSettingsModel {
     productListTitle: string;
 
     /** The location for the document-library where our attachments are saved */
-    documentListUrl: string;
+    documentLibraryName: string;
+
+    /** The name of the document library holding template documents */
+    documentTemplateLibraryName: string;
 
     /** The location for the document-library where our final products are published to */
     publishingLibraryUrl: string;

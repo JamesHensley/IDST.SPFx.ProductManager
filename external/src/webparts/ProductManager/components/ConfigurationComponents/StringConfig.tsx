@@ -32,7 +32,7 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
                         </Stack.Item>
                         <Stack.Item style={{ marginBottom: 10 }}>
                             <Label>URL for template documents</Label>
-                            <Text>{AppService.AppSettings.miscSettings.documentListUrl}</Text>
+                            <Text>{AppService.AppSettings.miscSettings.documentLibraryName}</Text>
                         </Stack.Item>
                         <Stack.Item style={{ marginBottom: 10 }}>
                             <Label>List name for product data</Label>
@@ -64,10 +64,17 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
                             onUpdated={this.updateVal.bind(this)}
                         />
                         <FormInputText
-                            labelValue={'URL for template documents'}
+                            labelValue={'Library name for product documents'}
                             editing={true}
-                            fieldValue={this.state.draftModel.documentListUrl}
-                            fieldRef={'documentListUrl'}
+                            fieldValue={this.state.draftModel.documentLibraryName}
+                            fieldRef={'documentLibraryName'}
+                            onUpdated={this.updateVal.bind(this)}
+                        />
+                        <FormInputText
+                            labelValue={'Library name for template documents'}
+                            editing={true}
+                            fieldValue={this.state.draftModel.documentTemplateLibraryName}
+                            fieldRef={'documentTemplateLibraryName'}
                             onUpdated={this.updateVal.bind(this)}
                         />
                         <FormInputText

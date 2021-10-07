@@ -20,7 +20,7 @@ import { AttachmentComponent } from '../FormComponents/AttachmentComponent';
 import { ProductModel, ProductStatus } from '../../../../models/ProductModel';
 import { TaskModel } from '../../../../models/TaskModel';
 import { CommentsModel } from '../../../../models/CommentsModel';
-import { debug } from 'interactjs';
+// import { debug } from 'interactjs';
 import { addDays } from 'date-fns';
 
 export interface IProductDetailPaneProps {

@@ -1,6 +1,6 @@
 {
   "name": "idst-spfx-product-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "idst-spfx-product-manager description",
   "main": "index.js",
   "scripts": {

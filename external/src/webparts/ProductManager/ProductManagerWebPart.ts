@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import { Version } from '@microsoft/sp-core-library';
+import { DisplayMode, Version } from '@microsoft/sp-core-library';
 import { BaseClientSideWebPart, WebPartContext, IPropertyPaneConfiguration, PropertyPaneTextField, IPropertyPaneCustomFieldProps } from '@microsoft/sp-webpart-base';
 import PnPTelemetry from '@pnp/telemetry-js';
 
@@ -11,6 +11,7 @@ import AppService from '../../services/AppService';
 import RecordService from '../../services/RecordService';
 
 import { IPageComponentProps } from './components/PageComponent';
+import { ConfigErrorComponent } from './components/ConfigErrorComponent';
 import { ProductManager } from './components/ProductManager';
 
 import { TeamMemberModel, TeamModel } from '../../models/TeamModel';
@@ -24,11 +25,13 @@ import { TemplateDocumentModel } from '../../models/TemplateDocumentModel';
 export interface IProductManagerWebPartProps {
   description: string;
   appSettingsListName: string;
+  siteRootUrl: string;
 }
 
 export interface IAppSettings {
   description: string;
   appSettingsListName: string;
+  siteRootUrl: string;
 
   isDebugging: boolean;
 
@@ -46,11 +49,18 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   private appSettings: IAppSettings;
 
   public render(): void {
-    const element: React.ReactElement<IPageComponentProps> = React.createElement(
-      ProductManager, { }
-    );
-
-    ReactDom.render(element, this.domElement);
+    console.log('ProductManagerWebPart.render: ', this.properties);
+    if (this.appSettings) {
+      const element: React.ReactElement<IPageComponentProps> = React.createElement(
+        ProductManager, { }
+      );
+      ReactDom.render(element, this.domElement);
+    } else {
+      const element: React.ReactElement<IPageComponentProps> = React.createElement(
+        ConfigErrorComponent, { displayStr: 'Application settings could not be loaded or are invalid' }
+      );
+      ReactDom.render(element, this.domElement);
+    }
   }
 
   protected onDispose(): void {
@@ -66,8 +76,31 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     initializeFileTypeIcons();
 
     AppService.Init(this);
-    this.appSettings = await this.getAppSettings();
+    this.appSettings = await this.getAppSettings()
+    .then(d => {
+      initializeIcons(`${d.siteRootUrl}/fabric/assets/icons/`);
+      initializeFileTypeIcons(`${d.siteRootUrl}/fabric/assets/icons/`);
+      return d;
+    })
+    .catch(e => {
+      console.log('onInit: ', e);
+      return null;
+    });
     return Promise.resolve();
+  }
+
+  protected onDisplayModeChanged(oldDisplayMode: DisplayMode): void {
+    if (oldDisplayMode === DisplayMode.Edit) {
+      this.getAppSettings()
+      .then(d => {
+        this.appSettings = d;
+        super.onDisplayModeChanged(oldDisplayMode);
+      })
+      .catch(e => {
+        this.appSettings = null;
+        super.onDisplayModeChanged(oldDisplayMode);
+      });
+    }
   }
 
   protected get dataVersion(): Version { return Version.parse('1.0'); }
@@ -92,6 +125,9 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
                     multiline: true,
                     rows: 4
                 }),
+                PropertyPaneTextField('siteRootUrl', {
+                  label: 'URL for the root of this site'
+               }),
                 PropertyPaneTextField('appSettingsListName', {
                   label: 'List name for application settings'
                })
@@ -103,34 +139,43 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     };
   }
 
+  /** Called when the application is first loading; used to read the app-settings from the settings list */
   private getAppSettings(): Promise<IAppSettings> {
-    // We can't really use any SP libraries here yet, so we'll just guess at the siteUrl
-    const siteUrl = window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig);
-    const settingsLoc = siteUrl ? `${siteUrl[1]}${this.properties.appSettingsListName}/Items?$orderby=Modified&$top=1` : '/dist/mockSettings.json';
+    if (!window.location.href.match(/^(.*\/sites\/\w+\/).*$/ig)) {
+      // Must be running in debug mode
+      return fetch('/dist/mockSettings.json', { headers: { accept: 'application/json;odata=verbose' } })
+      .then(d => d.json())
+      .then((d: IAppSettings) => Promise.resolve(d))
+      .catch(e => Promise.reject(e));
+    } else {
+      if (!this.properties.siteRootUrl) { return Promise.reject('No siteRootUrl defined in properties'); }
+      if (!this.properties.appSettingsListName) { return Promise.reject('No appSettingsListName defined in properties'); }
+      const listUrl = `${this.properties.siteRootUrl}/_api/web/lists/getbytitle('${this.properties.appSettingsListName}')/Items?$orderby=Modified&$top=1`;
 
-    return new Promise<IAppSettings>((resolve, reject) => {
-      return fetch(settingsLoc, { headers : { accept: 'application/json;odata=verbose' } })
-      .then(data => data.json())
-      .then(data => siteUrl ? data.d.results[0].Data : data)
+      return fetch(listUrl, { headers: { accept: 'application/json' } })
+      .then(d => d.status === 200 ? d.json() : null)
+      .then(d => d ? JSON.parse(d.d.results[0].Data) : null)
       .then((data: IAppSettings) => {
-        const settings: IAppSettings = Object.assign({}, data);
-        // We never want JSON saved data to overwrite these fields, so make sure they come from the property-pane
-        settings.appSettingsListName = this.properties.appSettingsListName;
-        settings.isDebugging = this.isDebugging;
+        if (data) {
+          const settings: IAppSettings = Object.assign({}, data);
+          // We never want JSON saved data to overwrite these fields, so make sure they come from the property-pane
+          settings.appSettingsListName = this.properties.appSettingsListName;
+          settings.isDebugging = this.isDebugging;
 
-        settings.teams = data.teams.map((d: TeamModel) => new TeamModel(d));
-        settings.teamMembers = data.teamMembers.map((d: TeamMemberModel) => new TeamMemberModel(d));
-        settings.templateDocuments = data.templateDocuments.map((d: TemplateDocumentModel) => new TemplateDocumentModel(d));
-        settings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
-        settings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
-        settings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
-        settings.classificationModels = data.classificationModels.map(d => new ClassificationModel(d));
-        return resolve(settings);
+          settings.teams = data.teams.map((d: TeamModel) => new TeamModel(d));
+          settings.teamMembers = data.teamMembers.map((d: TeamMemberModel) => new TeamMemberModel(d));
+          settings.templateDocuments = data.templateDocuments.map((d: TemplateDocumentModel) => new TemplateDocumentModel(d));
+          settings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
+          settings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
+          settings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
+          settings.classificationModels = data.classificationModels.map(d => new ClassificationModel(d));
+          return Promise.resolve(settings);
+        } else {
+          return Promise.reject(`Invalid url for settings list: ${listUrl}`);
+        }
       })
-      .catch(e => reject(e));
-    })
-    .then((settings: IAppSettings) => Promise.resolve(settings))
-    .catch(e => Promise.reject(e));
+      .catch(e => Promise.reject(e));
+    }
   }
 
   /** Updates one or more settings in the application */

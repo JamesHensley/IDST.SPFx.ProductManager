@@ -154,7 +154,7 @@ export class SPService implements ISPService {
     }
 
     GetListItems(listTitle: string): Promise<Array<SpProductItem>> {
-        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items`, {})
+        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items`, { headers: { accept: 'application/json;odata=verbose' } })
         .then(d => d.json())
         .then(d => d.d.results)
         .then(d => d.map(m => new SpProductItem({
