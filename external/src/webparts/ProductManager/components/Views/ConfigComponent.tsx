@@ -7,17 +7,34 @@ import StringConfig from '../ConfigurationComponents/StringConfig';
 import ClassificationConfig from '../ConfigurationComponents/ClassificationConfig';
 import CategoryConfig from '../ConfigurationComponents/CategoryConfig';
 import ProductTypeConfig from '../ConfigurationComponents/ProductTypeConfig';
+import { FormInputToggle } from '../FormComponents/FormInputToggle';
 
-export default class ConfigurationView extends React.Component <{}, {}> {
+export interface IConfigurationViewState {
+    showInactive: boolean;
+}
+export interface IConfigurationViewProps {}
+export default class ConfigurationView extends React.Component <{}, IConfigurationViewState> {
+    constructor(props: IConfigurationViewProps) {
+        super(props);
+        this.state = { showInactive: false }
+    }
+
     public render(): React.ReactElement<{}> {
         return (
             <Stack tokens={{ childrenGap: 10 }}>
                 <Label style={{ fontSize: '1.5rem' }}>Application Configuration</Label>
+                <FormInputToggle
+                    labelValue={'Show Inactive Settings'}
+                    fieldValue={this.state.showInactive}
+                    fieldRef={null}
+                    onUpdated={() => this.setState({ showInactive: !this.state.showInactive })}
+                    oneRow={true}
+                />                
                 <Stack.Item grow>
-                    <TeamConfig />
+                    <TeamConfig showInactive={this.state.showInactive} />
                 </Stack.Item>
                 <Stack.Item grow>
-                    <ProductTypeConfig />
+                    <ProductTypeConfig showInactive={this.state.showInactive} />
                 </Stack.Item>
                 <Stack.Item grow>
                     <Stack horizontal tokens={{ childrenGap: 10 }} verticalFill={true}>
@@ -25,13 +42,13 @@ export default class ConfigurationView extends React.Component <{}, {}> {
                             <StringConfig />
                         </Stack.Item>
                         <Stack.Item grow verticalFill={true} align={'stretch'}>
-                            <EventConfig />
+                            <EventConfig showInactive={this.state.showInactive} />
                         </Stack.Item>
                         <Stack.Item grow verticalFill={true} align={'stretch'}>
-                            <CategoryConfig />
+                            <CategoryConfig showInactive={this.state.showInactive} />
                         </Stack.Item>
                         <Stack.Item grow verticalFill={true} align={'stretch'}>
-                            <ClassificationConfig />
+                            <ClassificationConfig showInactive={this.state.showInactive} />
                         </Stack.Item>
                     </Stack>
                 </Stack.Item>

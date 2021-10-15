@@ -14,7 +14,7 @@
     "officeFabricIconFontName": "Page",
     "properties": {
       "description": "IDST SPFx Product Manager",
-      "appSettingsListName": "ProductManagerSettings",
+      "appSettingsListName": "",
       "siteRootUrl": ""
     }
   }]

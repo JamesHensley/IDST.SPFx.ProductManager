@@ -11,7 +11,7 @@ import TeamMemberConfig from './TeamMemberConfig';
 import RecordService from '../../../../services/RecordService';
 import { FormInputColor } from '../FormComponents/FormInputColor';
 
-export interface ITeamConfigProps { }
+export interface ITeamConfigProps { showInactive: boolean }
 
 export interface ITeamConfigState {
     draftTeam: TeamModel;
@@ -33,18 +33,21 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
     }
 
     public render(): React.ReactElement<ITeamConfigProps> {
+        // <Label className={`${styles.pointer} ${styles.padTop0}`}>{d.active ? 'Active Team' : 'InActive Team'}</Label>        
         return (
             <Stack className={styles.configZone}>
                 <Label style={{ fontSize: '1.5rem' }}>Teams</Label>
                 <Stack horizontal key={new Date().getTime()}>
                     {
-                        AppService.AppSettings.teams.map(d => {
+                        AppService.AppSettings.teams
+                        .filter(f => this.props.showInactive ? true : f.active)
+                        .sort((a,b) => a.name > b.name ? 1 : ( a.name < b.name ? -1 : 0))
+                        .map(d => {
                             return (
                                 <Stack.Item grow key={d.teamId}>
                                     <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }}>
                                         <Stack.Item onClick={this.showPane.bind(this, d)}>
                                             <Label className={`${styles.pointer} ${styles.padBottom0}`}>{d.name}</Label>
-                                            <Label className={`${styles.pointer} ${styles.padTop0}`}>{d.active ? 'Active Team' : 'InActive Team'}</Label>
                                         </Stack.Item>
                                         <TeamMemberConfig key={new Date().getTime()} teamId={d.teamId} canEditMembers={d.active} triggerUpdate={() => this.setState({ lastUpdated: new Date().getTime() })}/>
                                     </Stack>

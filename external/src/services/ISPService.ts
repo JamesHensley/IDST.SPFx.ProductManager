@@ -21,7 +21,7 @@ export interface ISPService {
     AddAttachment(listTitle: string, productGuid: string, fileList: FileList): Promise<Array<SpListAttachment>>;
 
     /** Gets an array of the attachments for a single product */
-    GetAttachmentsForGuid(listTitle: string, guid: string): Promise<Array<SpListAttachment>>;
+    GetAttachmentsForGuid(listTitle: string, spGuid: string): Promise<Array<SpListAttachment>>;
 
     /** Gets all the attachments in the document library */
     GetAttachmentItems(listTitle: string): Promise<Array<SpListAttachment>>;

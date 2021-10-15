@@ -35,6 +35,7 @@ export interface ITimelineItem {
 
 export interface IItemProps {
     productGuid?: string;
+    categoryId?: string;
     teamGuid?: string;
     taskId?: string;
     style: any;

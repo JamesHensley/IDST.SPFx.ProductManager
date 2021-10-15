@@ -3,7 +3,9 @@ export class CategoryModel {
         Object.assign(this, init);
     }
 
+    active: boolean;
     categoryId: string;
     categoryText: string;
+    categoryShortName: string;
     categoryDescription: string;
 }

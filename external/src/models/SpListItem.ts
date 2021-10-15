@@ -23,6 +23,7 @@ export class SpListAttachment {
     public LinkedProductGuid: string;
 }
 
+/**  */
 export class SpProductItem {
     public constructor(init?: Partial<SpProductItem>) {
         Object.assign(this, init);
@@ -35,4 +36,5 @@ export class SpProductItem {
     public Active: boolean;
     public Created: Date;
     public Modified: Date;
+    public __metadata: { uri: string };
 }

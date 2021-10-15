@@ -10,6 +10,7 @@ import { TeamTaskRowComponent } from './TeamTaskRowComponent';
 import AppService from '../../../../services/AppService';
 import { TeamModel } from '../../../../models/TeamModel';
 import RecordService from '../../../../services/RecordService';
+import { TeamDialog } from './TeamDialogComonent';
 
 export interface ITaskComponentProps {
     TaskItems: Array<TaskModel>;
@@ -127,38 +128,3 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
         this.setState({ taskPanes: newPanes });
     }
 }
-
-export interface ITeamDialogProps { teamSelectedCallback: (teamId: string) => void; teams: Array<TeamModel>; }
-
-export const TeamDialog: React.FunctionComponent<ITeamDialogProps> = (props) => {
-    const [team, setTeam] = React.useState('');
-
-    const okClicked = React.useCallback((): void => { props.teamSelectedCallback(team); }, [team]);
-
-    const cancelClicked = React.useCallback((): void => { props.teamSelectedCallback(null); }, []);
-
-    const dropdownOptions: Array<IDropdownOption> = props.teams
-        .map(d => { return { key: d.teamId, text: d.name }; })
-        .sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0));
-
-    return (
-        <>
-            <Dialog
-                hidden={false}
-                modalProps={{ isBlocking: true, isOpen: true }}
-                dialogContentProps={{ type: DialogType.normal, title: 'Team Selector' }}
-                styles={{ main: { width: '400px' } }}
-            >
-                <DialogContent>
-                    <Dropdown options={dropdownOptions} onChange={(e, o, i) => setTeam(o.key.toString())} label={'Select a team'} />
-                </DialogContent>
-                <DialogFooter>
-                    <Stack horizontal styles={{ root: { width: '100%' } }} tokens={{ childrenGap: 20 }}>
-                        <Stack.Item grow><DefaultButton onClick={okClicked} text={'Ok'} /></Stack.Item>
-                        <Stack.Item grow><DefaultButton onClick={cancelClicked} text={'Cancel'} /></Stack.Item>
-                    </Stack>
-                </DialogFooter>
-            </Dialog>
-        </>
-    );
-};

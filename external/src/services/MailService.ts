@@ -16,8 +16,8 @@ export class MailService {
         return {
             method: 'POST',
             headers: {
-                'accept': 'application/json;odata=nometadata',
-                'content-type': 'application/json;odata=nometadata',
+                'accept': 'application/json;odata=verbose',
+                'content-type': 'application/json;odata=verbose',
                 'X-RequestDigest': digestVal
             },
             body: ''
@@ -36,22 +36,19 @@ export class MailService {
         headers.body = JSON.stringify(payload);
 
         if (AppService.AppSettings.isDebugging) {
-            // console.log('EmailService.SendEmail: ', this.mailUrl);
-            // console.log('EmailService.SendEmail: ', JSON.stringify(headers, null, '  '));
             return Promise.resolve('');
         } else {
             return new Promise<string>((resolve, reject) => {
-                // this.spHttpClient.post(this.mailUrl, headers, SPHttpClient.configurations.v1)
                 fetch(this.mailUrl, headers)
                 .then(response => {
                     response.json()
                     .then((responseJSON: any) => responseJSON.value)
                     .then((responseJSON: any) => resolve(responseJSON))
-                    .catch(e => Promise.reject(e));
+                    .catch(e => reject(e));
                 })
                 .catch(e => {
                     console.log('Error occured in "MailService.SendEmail":', e);
-                    reject(e);
+                    return reject(e);
                 });
             });
         }

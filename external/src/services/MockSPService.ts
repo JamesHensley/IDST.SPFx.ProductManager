@@ -67,7 +67,8 @@ export class MockSPService implements ISPService {
                 return FileService.GetFileBuffer(d)
                 .then(buff => {
                     // Now that we have an arrayBuffer, we can upload this into SP
-                    return this.executeUpload(listUrl, productGuid, d.name, buff);
+                    return this.executeUpload(listUrl, productGuid, d.name, buff)
+                    .catch(e => Promise.reject(e));
                 })
                 .catch(e => Promise.reject(e));
             })

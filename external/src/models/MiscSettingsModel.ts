@@ -12,4 +12,7 @@ export class MiscSettingsModel {
 
     /** The location for the document-library where our final products are published to */
     publishingLibraryUrl: string;
+
+    /** The location for the FluentUI assets */
+    fluentUiCDN: string;
 }

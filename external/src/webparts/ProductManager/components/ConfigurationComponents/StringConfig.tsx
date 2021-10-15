@@ -42,6 +42,10 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
                             <Label>URL of library for publishing finished products</Label>
                             <Text>{AppService.AppSettings.miscSettings.publishingLibraryUrl}</Text>
                         </Stack.Item>
+                        <Stack.Item style={{ marginBottom: 10 }}>
+                            <Label>URL of library where FluentUI assets are held</Label>
+                            <Text>{AppService.AppSettings.miscSettings.fluentUiCDN}</Text>
+                        </Stack.Item>
                     </Stack>
                 </Stack>
                 <Panel
@@ -89,6 +93,13 @@ export default class StringConfig extends React.Component <IStringConfigProps, I
                             editing={true}
                             fieldValue={this.state.draftModel.publishingLibraryUrl}
                             fieldRef={'publishingLibraryUrl'}
+                            onUpdated={this.updateVal.bind(this)}
+                        />
+                        <FormInputText
+                            labelValue={'URL of library where FluentUI assets are held'}
+                            editing={true}
+                            fieldValue={this.state.draftModel.fluentUiCDN}
+                            fieldRef={'fluentUiCDN'}
                             onUpdated={this.updateVal.bind(this)}
                         />
                     </Stack>

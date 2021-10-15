@@ -7,7 +7,7 @@ import { ClassificationModel } from '../../../../models/ClassificationModel';
 import RecordService from '../../../../services/RecordService';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
 
-export interface IClassificationConfigProps { }
+export interface IClassificationConfigProps { showInactive: boolean; }
 
 export interface IClassificationConfigState {
     draftModel: ClassificationModel;
@@ -32,9 +32,12 @@ export default class ClassificationConfig extends React.Component <IClassificati
                 <Stack className={styles.configZone} verticalFill={true}>
                     <Label style={{ fontSize: '1.5rem' }}>Classifications</Label>
                     {
-                        AppService.AppSettings.classificationModels.map(d => {
+                        AppService.AppSettings.classificationModels
+                        .filter(f => this.props.showInactive ? true : f.active)
+                        .sort((a,b) => a.classificationTitle > b.classificationTitle ? 1 : ( a.classificationTitle < b.classificationTitle ? -1 : 0))
+                        .map(d => {
                             return (
-                                <Stack className={styles.card} key={d.classificationId}>
+                                <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }} key={d.classificationId}>
                                     <Label onClick={this.showPane.bind(this, d)} className={`${styles.pointer}`}>{d.classificationTitle}</Label>
                                 </Stack>
                             );
@@ -72,7 +75,7 @@ export default class ClassificationConfig extends React.Component <IClassificati
         );
     }
 
-    private updateVal(fieldVal: string, fieldRef: string): void {
+    private updateVal(fieldVal: any, fieldRef: string): void {
         this.hasUpdates = true;
         const newModel = Object.assign(new ClassificationModel(), this.state.draftModel);
         newModel[fieldRef] = fieldVal;
@@ -139,6 +142,13 @@ export default class ClassificationConfig extends React.Component <IClassificati
                             </Stack>
                         </Stack.Item>
                     </Stack>
+                    <FormInputToggle
+                        labelValue={'Active'}
+                        fieldValue={this.state.draftModel.active}
+                        fieldRef={'active'}
+                        onUpdated={this.updateVal.bind(this)}
+                        oneRow={true}
+                    />                    
                 </Stack>
             </div>
         );

@@ -28,7 +28,7 @@ export interface IProductDetailPaneProps {
     isVisible: boolean;
     isEditing: boolean;
     readOnly: boolean;
-    saveProduct: (newProd: ProductModel, keepPaneOpen?: boolean) => void;
+    saveProduct: (newProd: ProductModel, keepPaneOpen?: boolean, notificationType?: NotificationType) => void;
     closePane: () => void;
 }
 
@@ -233,7 +233,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
         this.setState({ draftProduct: newDraft, showCommentDialog: false });
         if (!this.state.isEditing) {
-            this.props.saveProduct(newDraft, true);
+            this.props.saveProduct(newDraft, true, NotificationType.CommentAdd);
         }
     }
 

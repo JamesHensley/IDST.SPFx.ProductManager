@@ -6,6 +6,7 @@ import { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
 
 export class SPService implements ISPService {
     private get currentSiteUrl(): string { return AppService.AppContext.pageContext.site.absoluteUrl; }
+    private get productListTitle(): string { return AppService.AppSettings.miscSettings.productListTitle; }
 
     private getListEntityTypeName(listTitle: string): Promise<string> {
         return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')?$select=ListItemEntityTypeFullName`,
@@ -25,21 +26,40 @@ export class SPService implements ISPService {
     private saveListItem(listTitle: string, listRecord: any): Promise<any> {
         return this.getListEntityTypeName(listTitle)
         .then(enityType => {
-            return this.getDigestValue(this.currentSiteUrl + '/_api/contextinfo')
+            return this.getDigestValue(this.currentSiteUrl)
             .then(digestVal => {
+                // If the listRecord has an Id, then it is existing...otherwise, it's new
+                const urlSfx = listRecord.Id ? `(${listRecord.Id})` : '';
+                const postUrl = `${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items${urlSfx}`;
                 const record = JSON.stringify(Object.assign(listRecord, { __metaData: { type: enityType } }));
-                return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items`, {
+                let headers = Object.assign({
+                    'accept': 'application/json;odata=verbose',
+                    'content-type': 'application/json;odata=verbose',
+                    'content-length': record.length.toString(),
+                    'X-RequestDigest': digestVal,
+                    'IF-MATCH': '*'
+                }, listRecord.Id ? { 'X-Http-Method': 'MERGE' } : {})
+                return fetch(postUrl, {
                     method: 'POST',
-                    headers: {
-                        'accept': 'application/json;odata=verbose',
-                        'content-type': 'application/json;odata=verbose',
-                        'content-length': record.length.toString(),
-                        'X-RequestDigest': digestVal,
-                        'IF-MATCH': '*'
-                    },
+                    headers: headers,
                     body: record
                 })
-                .then(d => d.json())
+                .then(result => {
+                    // Record Created
+                    if (result.status === 201) {
+                        return result.json()
+                        .then(d => Promise.resolve(d));
+                    }
+                    // Record updated
+                    if (result.status === 204) {
+                        return fetch(postUrl, { headers: { accept: 'application/json;odata=verbose'}})
+                        .then(d => d.json())
+                        .then(d => d.d)
+                        .catch(e => Promise.reject(e));
+                    } else {
+                        return Promise.reject(result);
+                    }
+                })
                 .then(d => Promise.resolve(d))
                 .catch(e => Promise.reject(e));
             })
@@ -49,8 +69,8 @@ export class SPService implements ISPService {
     }
 
     SaveAppSettings(listTitle: string, listRecord: IAppSettings, dataFieldName: string): Promise<IAppSettings> {
-        return this.saveListItem(listTitle, { Title: new Date().getTime(), [dataFieldName]: JSON.stringify(listRecord) })
-        .then(d => (JSON.parse(d.Data) as IAppSettings))
+        return this.saveListItem(listTitle, { Title: `Update_${new Date().getTime()}`, [dataFieldName]: JSON.stringify(listRecord) })
+        .then(d => (JSON.parse(d.d.Data) as IAppSettings))
         .then(d => Promise.resolve(d))
         .catch(e => Promise.reject(e));
     }
@@ -64,7 +84,7 @@ export class SPService implements ISPService {
     }
 
     GetAttachmentItems(listTitle: string): Promise<Array<SpListAttachment>> {
-        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items?$expand=File`, { headers: { 'accept': 'application/json;odata=verbose' } })
+        return fetch(`${this.currentSiteUrl}/_api/web/lists/GetByTitle('${listTitle}')/items?$select=*,$expand=File,File/Author`, { headers: { 'accept': 'application/json;odata=verbose' } })
         .then(d => d.json())
         .then(d => d.d.results)
         .then(d => d.map(m => new SpListAttachment({
@@ -72,7 +92,7 @@ export class SPService implements ISPService {
             Title: m.Title,
             DocName: m.File.Name,
             Updated: new Date(m.Modified),
-            Author: null,
+            Author: m.File.Author && m.File.Author.Title ? new SPAuthor({ Name: m.File.Author.Title, Email: m.File.Author.Email })  : null,
             EditUrl: m.File.LinkingUrl,
             Url: m.File.ServerRelativeUrl,
             Version: m.File.MajorVersion,
@@ -82,27 +102,39 @@ export class SPService implements ISPService {
         .catch(e => Promise.reject(e));
     }
 
-    GetAttachmentsForGuid(listTitle: string, guid: string): Promise<Array<SpListAttachment>> {
+    GetAttachmentsForGuid(listTitle: string, spGuid: string): Promise<Array<SpListAttachment>> {
         return this.GetAttachmentItems(listTitle)
-        .then(d => d.filter(f => f.LinkedProductGuid === guid))
+        .then(d => d.filter(f => f.LinkedProductGuid === spGuid))
         .then(d => Promise.resolve(d))
         .catch(e => Promise.reject(e));
     }
 
-    AddAttachment(listUrl: string, productGuid: string, fileList: FileList): Promise<Array<SpListAttachment>> {
-        return Promise.all(
-            Array.from(fileList).map(d => {
-                return FileService.GetFileBuffer(d)
-                .then(buff => {
-                    // Now that we have an arrayBuffer, we can upload this into SP
-                    return this.executeUpload(listUrl, productGuid, d.name, buff);
-                });
-            })
-        );
+    AddAttachment(listUrl: string, productSpGuid: string, fileList: FileList): Promise<Array<SpListAttachment>> {
+        return this.GetAttachmentsForGuid(listUrl, productSpGuid)
+        .then(attachments => {
+            return Promise.all(
+                Array.from(fileList).map(d => {
+                    const matchFileName = attachments.reduce((t: string, n: SpListAttachment) => n.Title == d.name ? n.DocName : t, null);
+                    const uploadFileName = matchFileName ? matchFileName : (new Date().getTime().toString() + d.name);
+        
+                    return FileService.GetFileBuffer(d)
+                    .then(buff => {
+                        return this.executeUpload(listUrl, productSpGuid, uploadFileName, d.name, buff)
+                        .then(d => Promise.resolve(d))
+                        .catch(e => Promise.reject(e));
+                     })
+                    .then(d => Promise.resolve(d))
+                    .catch(e => Promise.reject(e));
+                })
+            )
+            .catch(e => Promise.reject(e));
+        })
+        .catch(e => Promise.reject(e));
     }
 
     AddListItem(listTitle: string, item: SpProductItem): Promise<SpProductItem> {
         return this.saveListItem(listTitle, { Title: item.Title, ProdData: item.ProdData, Active: item.Active })
+        .then(d => d.d ? d.d : d)
         .then(d => new SpProductItem({
             Id: d.Id,
             GUID: d.GUID,
@@ -110,7 +142,8 @@ export class SPService implements ISPService {
             ProdData: d.ProdData,
             Active: d.Active,
             Created: new Date(d.Created),
-            Modified: new Date(d.Modified)
+            Modified: new Date(d.Modified),
+            __metadata: d.__metadata
         }))
         .then(d => Promise.resolve(d))
         .catch(e => Promise.reject(e));
@@ -125,7 +158,8 @@ export class SPService implements ISPService {
             ProdData: d.ProdData,
             Active: d.Active,
             Created: new Date(d.Created),
-            Modified: new Date(d.Modified)
+            Modified: new Date(d.Modified),
+            __metadata: d.__metadata
         }))
         .then(d => Promise.resolve(d))
         .catch(e => Promise.reject(e));
@@ -164,7 +198,8 @@ export class SPService implements ISPService {
             ProdData: m.ProdData,
             Active: m.Active,
             Created: new Date(m.Created),
-            Modified: new Date(m.Modified)
+            Modified: new Date(m.Modified),
+            __metadata: m.__metadata
         })))
         .then(d => Promise.resolve(d))
         .catch(e => Promise.reject(e));
@@ -194,12 +229,14 @@ export class SPService implements ISPService {
         .catch(e => Promise.reject(e));
     }
 
-    private executeUpload(listUrl: string, productGuid: string, fileName: string, arrayBuffer: ArrayBuffer): Promise<SpListAttachment> {
-        const targetUrl = listUrl;
-
-        return this.getDigestValue(this.currentSiteUrl + '/_api/contextinfo')
+    private executeUpload(listUrl: string, productSpGuid: string, fileName: string, fileTitle: string, arrayBuffer: ArrayBuffer): Promise<SpListAttachment> {
+        /*
+            We dont want to overwrite files with the same names from different products so we add a timestamp to the beginning of the filename
+            But we also dont want every upload to be unique  ie: we do want to overwrite files with the same name when they belong to the same product
+        */
+        return this.getDigestValue(this.currentSiteUrl)
         .then(digestVal => {
-            return fetch(`${this.currentSiteUrl}/_api/Web/GetFolderByServerRelativeUrl(@target)/Files/add(overwrite=true, url='${fileName}')?@target='${targetUrl}'&$expand=ListItemAllFields,Author`, {
+            return fetch(`${this.currentSiteUrl}/_api/Web/GetFolderByServerRelativeUrl(@target)/Files/add(overwrite=true, url='${fileName}')?@target='${listUrl}'&$expand=ListItemAllFields,Author`, {
                 method: 'POST',
                 headers: {
                     'accept': 'application/json;odata=verbose',
@@ -208,16 +245,30 @@ export class SPService implements ISPService {
                 body: arrayBuffer
             })
             .then(result => result.json())
-            .then(result => Promise.resolve(new SpListAttachment({
-                    Id: result.d.ListItemAllFields.GUID,
-                    Author: { Name: AppService.CurrentSpUser.displayName, Email: AppService.CurrentSpUser.email } as SPAuthor,
-                    LinkedProductGuid: productGuid,
-                    Title: result.d.Name,
-                    Url: result.d.ServerRelativeUrl,
-                    Version: result.d.MajorVersion,
-                    Updated: result.d.Modified
+            .then(uploadResult => {
+                // Because the productlist is a library with some list fields, we have to update the fields
+                //  seperately from the upload process
+                return this.saveListItem(AppService.AppSettings.miscSettings.productListTitle, {
+                    Id: uploadResult.d.ListItemAllFields.Id,
+                    Title: fileTitle,
+                    LinkedProductGuid: productSpGuid
                 })
-            ))
+                .then(saveResult => {
+                    return Promise.resolve(new SpListAttachment({
+                        Id: uploadResult.d.ListItemAllFields.GUID,
+                        Author: new SPAuthor({
+                            Name: AppService.CurrentSpUser.displayName,
+                            Email: AppService.CurrentSpUser.email
+                        }),
+                        LinkedProductGuid: productSpGuid,
+                        Title: uploadResult.d.Name,
+                        Url: uploadResult.d.ServerRelativeUrl,
+                        Version: uploadResult.d.MajorVersion,
+                        Updated: uploadResult.d.Modified
+                    }));
+                })
+                .catch(e => Promise.reject(e));
+            })
             .catch(e => Promise.reject(e));
         })
         .catch(e => Promise.reject(e));

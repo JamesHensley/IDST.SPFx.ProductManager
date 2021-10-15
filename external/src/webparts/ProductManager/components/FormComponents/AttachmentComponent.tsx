@@ -68,7 +68,7 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
 
     public componentDidMount(): void {
         if (this.props.parentModel.spGuid) {
-            RecordService.GetAttachmentsForItem(this.props.parentModel.spGuid)
+            RecordService.GetAttachmentsForItem(this.props.parentModel)
             .then(d => this.setState({ attachments: d }))
             .catch(e => Promise.reject(e));
         }
@@ -82,8 +82,8 @@ export class AttachmentComponent extends React.Component<IAttachmentComponentPro
         const files = (document.querySelector('#attachment') as HTMLInputElement).files;
         if (files.length > 0) {
             RecordService.AddAttachmentsForItem(this.props.parentModel, files)
-            .then(results => {
-                return RecordService.GetAttachmentsForItem(this.props.parentModel.guid)
+            .then(() => {
+                return RecordService.GetAttachmentsForItem(this.props.parentModel)
                 .then(allDocs => this.setState({ attachments: allDocs }))
                 .catch(e => Promise.reject(e));
             })

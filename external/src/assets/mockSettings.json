@@ -6,7 +6,8 @@
         "productListTitle": "mockProductList.json",
         "documentTemplateLibraryName": "",
         "documentListName": "/dist/mockDocumentList.json",
-        "publishingLibraryUrl": ""
+        "publishingLibraryUrl": "",
+        "fluentUiCDN": "/sites/coolsite/FluentAssets/"
     },
     "teamMembers": [
         { "spId": "d0b97c7a5429", "name": "Person 1", "email": "person1@email.com", "role": "Lead", "active": true, "memberId": "232fe7d0-a1b5-4c0d-98dc-17eb7c804b86", "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a" },
@@ -157,9 +158,9 @@
         }
     ],
     "categories": [
-        { "categoryId": "category1Guid", "categoryText": "Cat 1", "description": ""},
-        { "categoryId": "category2Guid", "categoryText": "Cat 2", "description": ""},
-        { "categoryId": "category3Guid", "categoryText": "Cat 3", "description": ""}
+        { "active": true, "categoryId": "category1Guid", "categoryText": "Cat 1", "description": ""},
+        { "active": true, "categoryId": "category2Guid", "categoryText": "Cat 2", "description": ""},
+        { "active": true, "categoryId": "category3Guid", "categoryText": "Cat 3", "description": ""}
     ],
     "eventTypes": [
         {
@@ -188,8 +189,8 @@
         }
     ],
     "classificationModels": [
-        { "classificationId": "1", "classificationTitle": "Not Classy" },
-        { "classificationId": "2", "classificationTitle": "Classy but a little dirty" },
-        { "classificationId": "3", "classificationTitle": "Audrey Hepburn Classy" }
+        { "active": true, "classificationId": "1", "classificationTitle": "Not Classy" },
+        { "active": true, "classificationId": "2", "classificationTitle": "Classy but a little dirty" },
+        { "active": true, "classificationId": "3", "classificationTitle": "Audrey Hepburn Classy" }
     ]
 }

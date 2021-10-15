@@ -72,14 +72,11 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     telemetry.optOut();
     (window as any).disableBeaconLogToConsole = true;
 
-    initializeIcons();
-    initializeFileTypeIcons();
-
     AppService.Init(this);
     this.appSettings = await this.getAppSettings()
     .then(d => {
-      initializeIcons(`${d.siteRootUrl}/fabric/assets/icons/`);
-      initializeFileTypeIcons(`${d.siteRootUrl}/fabric/assets/icons/`);
+      initializeIcons(`${d.miscSettings.fluentUiCDN}/fabric/assets/icons/`);
+      initializeFileTypeIcons(`${d.miscSettings.fluentUiCDN}/fabric/assets/item-types/`);
       return d;
     })
     .catch(e => {
@@ -150,11 +147,11 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     } else {
       if (!this.properties.siteRootUrl) { return Promise.reject('No siteRootUrl defined in properties'); }
       if (!this.properties.appSettingsListName) { return Promise.reject('No appSettingsListName defined in properties'); }
-      const listUrl = `${this.properties.siteRootUrl}/_api/web/lists/getbytitle('${this.properties.appSettingsListName}')/Items?$orderby=Modified&$top=1`;
+      const listUrl = `${this.properties.siteRootUrl}/_api/web/lists/getbytitle('${this.properties.appSettingsListName}')/Items?$orderby=Modified desc&$top=1`;
 
       return fetch(listUrl, { headers: { accept: 'application/json' } })
       .then(d => d.status === 200 ? d.json() : null)
-      .then(d => d ? JSON.parse(d.d.results[0].Data) : null)
+      .then(d => d ? JSON.parse(d.value[0].Data) : null)
       .then((data: IAppSettings) => {
         if (data) {
           const settings: IAppSettings = Object.assign({}, data);

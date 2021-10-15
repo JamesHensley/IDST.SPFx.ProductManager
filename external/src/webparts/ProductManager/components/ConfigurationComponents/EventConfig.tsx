@@ -9,7 +9,7 @@ import { FormInputText } from '../FormComponents/FormInputText';
 import RecordService from '../../../../services/RecordService';
 import { FormInputColor } from '../FormComponents/FormInputColor';
 
-export interface IEventConfigProps { }
+export interface IEventConfigProps { showInactive: boolean; }
 
 export interface IEventConfigState {
     draftEvent: EventModel;
@@ -29,19 +29,20 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
     }
 
     public render(): React.ReactElement<IEventConfigProps> {
+        // <Label className={`${styles.pointer} ${styles.padTop0}`}>{d.active ? 'Active' : 'InActive'}</Label>
         return (
             <Stack className={styles.configZone} verticalFill={true}>
                 <Label style={{ fontSize: '1.5rem' }}>Event Types</Label>
                 <Stack key={new Date().getTime()}>
                     {
                         AppService.AppSettings.eventTypes
+                        .filter(f => this.props.showInactive ? true : f.active)
                         .sort((a, b) => a.eventTitle > b.eventTitle ? 1 : (a.eventTitle < b.eventTitle ? -1 : 0))
                         .map(d => {
                             return (
                                 <Stack.Item grow key={d.eventTypeId} onClick={this.showPane.bind(this, d)}>
                                     <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }}>
                                         <Label className={`${styles.pointer} ${styles.padBottom0}`}>{d.eventTitle}</Label>
-                                        <Label className={`${styles.pointer} ${styles.padTop0}`}>{d.active ? 'Active' : 'InActive'}</Label>
                                     </Stack>
                                 </Stack.Item>
                             );

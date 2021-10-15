@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as styles from '../ProductManager.module.scss';
 
-import { DefaultButton, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack, Text } from '@fluentui/react';
-import { ProductTypeModel } from '../../../../models/ProductTypeModel';
+import { DefaultButton, ICommandBarItemProps, IconButton, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack, Text } from '@fluentui/react';
+import { ProductTypeModel, TaskTemplate } from '../../../../models/ProductTypeModel';
 
 import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 import RecordService from '../../../../services/RecordService';
@@ -10,12 +10,15 @@ import { FormInputToggle } from '../FormComponents/FormInputToggle';
 import { FormInputText } from '../FormComponents/FormInputText';
 import { FormInputDropDown, KeyValPair } from '../FormComponents/FormInputDropDown';
 import { FormInputColor } from '../FormComponents/FormInputColor';
+import { TeamDialog } from '../FormComponents/TeamDialogComonent';
+import { TaskModel } from '../../../../models/TaskModel';
 
-export interface IProductTypeConfigProps {}
+export interface IProductTypeConfigProps { showInactive: boolean; }
 
 export interface IProductTypeConfigState {
     draftModel: ProductTypeModel;
     showPane: boolean;
+    isTeamDialogVisible: boolean;
 }
 
 export default class ProductTypeConfig extends React.Component <IProductTypeConfigProps, IProductTypeConfigState> {
@@ -26,24 +29,26 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
         super(props);
         this.state = {
             draftModel: null,
-            showPane: false
+            showPane: false,
+            isTeamDialogVisible: false
         };
     }
 
     public render(): React.ReactElement<IProductTypeConfigProps> {
+        // <Label className={`${styles.pointer} ${styles.padTop0}`}>{d.active ? 'Active' : 'InActive'}</Label>
         return (
             <Stack className={styles.configZone} verticalFill={true}>
                 <Label style={{ fontSize: '1.5rem' }}>Product Types</Label>
                 <Stack horizontal key={new Date().getTime()}>
                     {
                         AppService.AppSettings.productTypes
+                        .filter(f => this.props.showInactive ? true : f.active)
                         .sort((a, b) => a.typeName > b.typeName ? 1 : (a.typeName < b.typeName ? -1 : 0))
                         .map(d => {
                             return (
                                 <Stack.Item grow key={d.typeId} onClick={this.showPane.bind(this, d)}>
                                     <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }}>
                                         <Label className={`${styles.pointer} ${styles.padBottom0}`}>{d.typeName}</Label>
-                                        <Label className={`${styles.pointer} ${styles.padTop0}`}>{d.active ? 'Active' : 'InActive'}</Label>
                                     </Stack>
                                 </Stack.Item>
                             );
@@ -55,7 +60,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                     <Panel
                         className={styles.productDetailPane}
                         isHiddenOnDismiss={false}
-                        isLightDismiss={!this.hasUpdates}
+                        isLightDismiss={!this.hasUpdates && !this.state.isTeamDialogVisible}
                         isOpen={this.state.showPane}
                         onDismiss={this.closePane.bind(this)}
                         closeButtonAriaLabel='Close'
@@ -91,7 +96,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                                 <FormInputDropDown
                                     labelValue='Default Event Type'
                                     editing={true}
-                                    fieldRef={'teamId'}
+                                    fieldRef={'defaultEventType'}
                                     fieldValue={this.state.draftModel.defaultEventType}
                                     onUpdated={this.updateField.bind(this)}
                                     allowNull={true}
@@ -110,10 +115,38 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                             </Stack>
                             <Separator />
                             <Stack horizontal tokens={{ childrenGap: 5 }}>
-                                <Stack.Item grow><Text>Team Tasks</Text></Stack.Item>
+                                <Stack.Item grow>
+                                    <Stack>
+                                        <Stack.Item grow><Text>Team Tasks</Text></Stack.Item>
+                                        {this.state.draftModel.defaultTeamTasks.map((d,i,e) => {
+                                            const teamName = AppService.AppSettings.teams.reduce((t,n) => n.teamId == d.teamId ? n.name : t, '');
+                                            return (
+                                                <Stack.Item grow key={`${d.teamId}-${i}`}>
+                                                    <Text>{teamName}</Text><br />
+                                                    <Text className={styles.padLeft2}>{d.taskDescription}</Text>
+                                                </Stack.Item>
+                                            )
+                                        })}
+                                    </Stack>
+                                </Stack.Item>
+                                <Stack.Item>
+                                    <IconButton iconProps={{ iconName: 'add' }} className={styles.appIcon} title='' ariaLabel='' onClick={this.addTeamTask.bind(this)} />
+                                </Stack.Item>
                                 <Stack.Item grow><Text>Template Documents</Text></Stack.Item>
                             </Stack>
                         </Stack>
+                        {
+                            this.state.isTeamDialogVisible &&
+                            <TeamDialog
+                                key={new Date().getTime()}
+                                teamSelectedCallback={this.teamSelected.bind(this)}
+                                teams={AppService.AppSettings.teams}
+                                selectedTeam={''}
+                                showInputText={true}
+                                extraTextLabel={'Task Description'}
+                                extraText={''}
+                            />
+                        }
                     </Panel>
                 }
             </Stack>
@@ -196,5 +229,19 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                 </Stack>
             </div>
         );
+    }
+
+    private addTeamTask(): void {
+        this.setState({ isTeamDialogVisible: true });
+    }
+
+    private teamSelected(teamId: string, taskDescription?: string): void {
+        const newTask = new TaskTemplate({
+            teamId: teamId,
+            taskDescription: taskDescription ? taskDescription : 'New Task'
+        });
+        this.state.draftModel.defaultTeamTasks = [].concat.apply((this.state.draftModel.defaultTeamTasks || []), [newTask]);
+        const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
+        this.setState({ draftModel: newModel, isTeamDialogVisible: false });
     }
 }

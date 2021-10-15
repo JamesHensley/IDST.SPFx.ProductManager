@@ -7,7 +7,7 @@ import { CategoryModel } from '../../../../models/CategoryModel';
 import RecordService from '../../../../services/RecordService';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
 
-export interface ICategoryConfigProps { }
+export interface ICategoryConfigProps { showInactive: boolean; }
 
 export interface CategoryConfigState {
     draftModel: CategoryModel;
@@ -31,9 +31,12 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
             <Stack className={styles.configZone} verticalFill={true}>
                 <Label style={{ fontSize: '1.5rem' }}>Categories</Label>
                 {
-                    AppService.AppSettings.categories.map(d => {
+                    AppService.AppSettings.categories
+                    .filter(f => this.props.showInactive ? true : f.active)
+                    .sort((a,b) => a.categoryText > b.categoryText ? 1 : ( a.categoryText < b.categoryText ? -1 : 0))
+                    .map(d => {
                         return (
-                            <Stack className={styles.card} key={d.categoryId}>
+                            <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }} key={d.categoryId}>
                                 <Label onClick={this.showPane.bind(this, d)} className={`${styles.pointer}`}>{d.categoryText}</Label>
                             </Stack>
                         );
@@ -55,6 +58,13 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
                             editing={true}
                             fieldValue={this.state.draftModel.categoryText}
                             fieldRef={'categoryText'}
+                            onUpdated={this.updateVal.bind(this)}
+                        />
+                        <FormInputText
+                            labelValue={'Initials'}
+                            editing={true}
+                            fieldValue={this.state.draftModel.categoryShortName}
+                            fieldRef={'categoryShortName'}
                             onUpdated={this.updateVal.bind(this)}
                         />
                         <FormInputText
@@ -85,7 +95,7 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
         return Promise.resolve();
     }
 
-    private updateVal(fieldVal: string, fieldRef: string): void {
+    private updateVal(fieldVal: any, fieldRef: string): void {
         this.hasUpdates = true;
         const newModel = Object.assign(new CategoryModel(), this.state.draftModel);
         newModel[fieldRef] = fieldVal;
@@ -135,6 +145,13 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
                             </Stack>
                         </Stack.Item>
                     </Stack>
+                    <FormInputToggle
+                        labelValue={'Active'}
+                        fieldValue={this.state.draftModel.active}
+                        fieldRef={'active'}
+                        onUpdated={this.updateVal.bind(this)}
+                        oneRow={true}
+                    />                    
                 </Stack>
             </div>
         );

@@ -29,6 +29,7 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
     }
 
     public render(): React.ReactElement<ITeamMemberConfigProps> {
+        // - {d.active ? 'Active' : 'InActive'}
         const teamMembers = AppService.AppSettings.teamMembers.filter(f => f.teamId === this.props.teamId);
         return (
             <Stack>
@@ -46,7 +47,7 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
                         return (
                             <Stack horizontal key={d.memberId}>
                                 <div className={styles.pointer} onClick={this.showDetailPane.bind(this, d)} style={{ paddingLeft: 10, color: d.active ? '#000' : '#ccc', fontSize: '0.8rem' }}>
-                                    {d.name} - {d.role} - {d.active ? 'Active' : 'InActive'}
+                                    {d.name} - {d.role}
                                 </div>
                             </Stack>
                         );

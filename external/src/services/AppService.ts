@@ -12,6 +12,10 @@ export interface ICmdBarListenerProps {
     btnKeys?: Array<string>;
 }
 
+export interface IEmailObj {
+    subject: string;
+    body: string;
+}
 export default class AppService {
     private static _webpart: ProductManagerWebPart;
     private static _productListeners: Array<() => Promise<void>> = [];
@@ -42,9 +46,40 @@ export default class AppService {
         NotificationService.Notify(notificationType, product.title);
 
         const teamIds = (product.tasks || []).map(d => d.taskedTeamId);
-        const teamEmails = AppService.AppSettings.teamMembers.filter(f => teamIds.indexOf(f.teamId) >= 0).map(m => m.email);
-        MailService.SendEmail('Update', teamEmails, `A product has been ${notificationType.toString()}`)
-        .catch(e => Promise.reject(e));
+        const activeTeams = AppService.AppSettings.teams.filter(f => f.active).map(d => d.teamId)
+        const teamEmails = AppService.AppSettings.teamMembers
+            .filter(f => teamIds.indexOf(f.teamId) >= 0 && activeTeams.indexOf(f.teamId))
+            .filter(f => f.active)
+            .map(m => m.email);
+        let emailObj = {
+            body: '',
+            subject: ''
+        } as IEmailObj;
+
+        switch (notificationType) {
+            case NotificationType.Create:
+                emailObj = {
+                    subject: `New Product: ${product.title}`,
+                    body: `A new product has been created: ${product.title}`
+                } as IEmailObj
+                break;
+            case NotificationType.Update:
+                emailObj = {
+                    subject: `Updated Product: ${product.title}`,
+                    body: `An update was made to: ${product.title}`
+                } as IEmailObj
+                break;
+            case NotificationType.CommentAdd:
+                emailObj = {
+                    subject: `Comment Added: ${product.title}`,
+                    body: `A comment was added to: ${product.title}`
+                } as IEmailObj
+                break;
+        }
+        if (emailObj.subject && emailObj.body && teamEmails.length > 0) {
+            MailService.SendEmail(emailObj.subject, teamEmails, emailObj.body)
+            .catch(e => Promise.reject(e));
+        }
     }
 
     public static RegisterCmdBarListener(p: ICmdBarListenerProps): void {

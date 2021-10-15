@@ -38,23 +38,24 @@ export default class RecordService {
         return MapperService.MapItemsToProducts(spItems.filter(f => f.Active), spAttachments);
     }
 
-    public static async GetAttachmentsForItem(guid: string): Promise<Array<AttachmentModel>> {
-        const spItems = (await this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentLibraryName, guid))
+    public static async GetAttachmentsForItem(item: ProductModel): Promise<Array<AttachmentModel>> {
+        const spItems = (await this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentLibraryName, item.spGuid))
             .map(d => MapperService.MapSpAttachmentToAttachment(d));
         return spItems;
     }
 
-    public static async AddAttachmentsForItem(product: ProductModel, files: FileList): Promise<Array<AttachmentModel>> {
-        return this.spService.AddAttachment(AppService.AppSettings.miscSettings.documentLibraryName, product.guid, files)
-        .then(spAttachments => spAttachments.map(d => MapperService.MapSpAttachmentToAttachment(d)))
-        .then(attachments => {
-            NotificationService.Notify(NotificationType.AttachAdd, attachments.map(d => d.Title).join(','));
-            return Promise.resolve(attachments);
+    public static async AddAttachmentsForItem(product: ProductModel, files: FileList): Promise<void> {
+        return this.spService.AddAttachment(AppService.AppSettings.miscSettings.documentLibraryName, product.spGuid, files)
+        .then(() => {
+            NotificationService.Notify(
+                NotificationType.AttachAdd, 
+                Array.from(files).map(d => d.name).join(',')
+            );
         })
         .catch(e => Promise.reject(e));
     }
 
-    public static async SaveProduct(product: ProductModel): Promise<IResult> {
+    public static async SaveProduct(product: ProductModel, notificationType?: NotificationType): Promise<IResult> {
         const resultStr = product.spId ? 'Updated' : 'Created';
         const newItem = MapperService.MapProductToItem(product);
 
@@ -64,7 +65,8 @@ export default class RecordService {
             // UPLOAD DOCUMENTS
             return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentLibraryName, newItem.GUID)
             .then(attachments => {
-                AppService.ProductChanged((product.guid ? NotificationType.Update : NotificationType.Create), product);
+                const nType = notificationType ? notificationType : (product.guid ? NotificationType.Update : NotificationType.Create);
+                AppService.ProductChanged(nType, product);
                 return Promise.resolve({
                     productModel: MapperService.MapItemToProduct(newItem, attachments),
                     resultStr: resultStr

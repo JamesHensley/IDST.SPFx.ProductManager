@@ -10,6 +10,7 @@ import { FilterService } from '../../../../services/FilterService';
 import RecordService from '../../../../services/RecordService';
 import ProductDetailPane from '../SharedComponents/ProductDetailPane';
 import ColorService from '../../../../services/ColorService';
+import { NotificationType } from '../../../../services/NotificationService';
 
 export interface IDocument {
 	key: string;
@@ -152,8 +153,8 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		);
 	}
 
-	private saveProduct(newModel: ProductModel, keepPaneOpen?: boolean): void {
-		RecordService.SaveProduct(newModel)
+	private saveProduct(newModel: ProductModel, keepPaneOpen?: boolean, notificationType?: NotificationType): void {
+		RecordService.SaveProduct(newModel, notificationType)
 		.then(result => result.productModel)
 		.then(model => {
 			RecordService.GetProducts()
