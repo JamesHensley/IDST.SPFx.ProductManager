@@ -49,7 +49,13 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
                                         <Stack.Item onClick={this.showPane.bind(this, d)}>
                                             <Label className={`${styles.pointer} ${styles.padBottom0}`}>{d.name}</Label>
                                         </Stack.Item>
-                                        <TeamMemberConfig key={new Date().getTime()} teamId={d.teamId} canEditMembers={d.active} triggerUpdate={() => this.setState({ lastUpdated: new Date().getTime() })}/>
+                                        <TeamMemberConfig
+                                            showInactive={this.props.showInactive}
+                                            key={new Date().getTime()}
+                                            teamId={d.teamId}
+                                            canEditMembers={d.active}
+                                            triggerUpdate={() => this.setState({ lastUpdated: new Date().getTime() })}
+                                        />
                                     </Stack>
                                 </Stack.Item>
                             );

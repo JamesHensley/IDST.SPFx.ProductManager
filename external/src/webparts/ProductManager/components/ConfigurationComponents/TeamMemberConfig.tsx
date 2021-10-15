@@ -14,6 +14,7 @@ export interface ITeamMemberConfigProps {
     teamId: string;
     canEditMembers: boolean;
     triggerUpdate: () => void;
+    showInactive: boolean;
 }
 
 export interface ITeamMemberConfigState {
@@ -30,7 +31,9 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
 
     public render(): React.ReactElement<ITeamMemberConfigProps> {
         // - {d.active ? 'Active' : 'InActive'}
-        const teamMembers = AppService.AppSettings.teamMembers.filter(f => f.teamId === this.props.teamId);
+        const teamMembers = AppService.AppSettings.teamMembers
+        .filter(f => f.teamId === this.props.teamId)
+        .filter(f => this.props.showInactive ? f : f.active);
         return (
             <Stack>
                 <Stack horizontal verticalAlign={'center'}>

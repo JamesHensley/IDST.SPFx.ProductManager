@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from '../ProductManager.module.scss';
-import { ProductModel } from '../../../../models/ProductModel';
+import { ProductModel, ProductStatus } from '../../../../models/ProductModel';
 import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, ICommandBarItemProps, IDetailsRowProps, IFacepilePersona, IPersona, IPersonaSharedProps, Persona, PersonaCoin, PersonaInitialsColor, PersonaSize, SelectionMode, Stack, TextField } from '@fluentui/react';
 import { addDays, format } from 'date-fns';
 import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
@@ -11,6 +11,7 @@ import RecordService from '../../../../services/RecordService';
 import ProductDetailPane from '../SharedComponents/ProductDetailPane';
 import ColorService from '../../../../services/ColorService';
 import { NotificationType } from '../../../../services/NotificationService';
+import { FormInputToggle } from '../FormComponents/FormInputToggle';
 
 export interface IDocument {
 	key: string;
@@ -30,7 +31,11 @@ export interface IDocument {
 }
 
 export interface IProductListProps { }
-export interface IProductListState { allProducts: Array<ProductModel>; lastUpdate: number; showingColumnMenu: boolean; currentProd: ProductModel; isEditing: boolean; }
+export interface IProductListState {
+	allProducts: Array<ProductModel>; lastUpdate: number; showingColumnMenu: boolean; currentProd: ProductModel; isEditing: boolean;
+	showCanceled: boolean;
+	showClosed: boolean;
+}
 
 export default class ProductList extends React.Component<IProductListProps, IProductListState> {
     private menuReceiver: any = null;
@@ -48,13 +53,22 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 			{ key: 'tasks', name: 'Tasked Teams', minWidth: 100, maxWidth: 300, fieldName: 'tasks', isRowHeader: true, isSorted: false, isSortedDescending: false, data: { type: 'object', colCount: 1, displayed: true } }
 		]);
 
-        this.state = { allProducts: [], lastUpdate: new Date().getTime(), showingColumnMenu: false, currentProd: null, isEditing: false };
+        this.state = {
+			allProducts: [],
+			lastUpdate: new Date().getTime(),
+			showingColumnMenu: false,
+			currentProd: null,
+			isEditing: false,
+			showCanceled: false,
+			showClosed: false
+		};
 	}
 
 	/** Data displayed in the list */
 	private get allItems(): Array<IDocument> {
-		// return (this.props.allProducts || [])
 		return (this.state.allProducts || [])
+		.filter(f => this.state.showCanceled ? f : f.status != ProductStatus.canceled)
+		.filter(f => this.state.showClosed ? f : f.status != ProductStatus.closed)
 		.filter(i => (i.filterString.toLowerCase().indexOf(FilterService.FilterText.toLowerCase()) >= 0))
 		.map(d => {
 			const lastSuspense = d.tasks.reduce((t: Date, n) => new Date(n.taskSuspense) > t ? new Date(n.taskSuspense) : t, new Date(null));
@@ -113,6 +127,24 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		const items = this.allItems;
 		return (
 			<Stack>
+				<Stack.Item>
+					<Stack horizontal>
+						<FormInputToggle
+							labelValue={'Show Canceled Products'}
+							fieldValue={this.state.showCanceled}
+							fieldRef={null}
+							onUpdated={() => this.setState({ showCanceled: !this.state.showCanceled })}
+							oneRow={true}
+						/>
+						<FormInputToggle
+							labelValue={'Show Closed Products'}
+							fieldValue={this.state.showClosed}
+							fieldRef={null}
+							onUpdated={() => this.setState({ showClosed: !this.state.showClosed })}
+							oneRow={true}
+						/>
+					</Stack>
+				</Stack.Item>
 				<Stack.Item grow>
 					<TextField
 						styles={{ root: { width: '100%' } }}
