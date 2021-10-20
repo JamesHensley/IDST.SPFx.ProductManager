@@ -116,7 +116,7 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
     private saveCategories(): void {
         const categories = AppService.AppSettings.categories
         .filter(f => f.categoryId !== this.state.draftModel.categoryId)
-        .concat([this.state.draftModel])
+        .concat(this.state.draftModel)
         .sort((a, b) => a.categoryText > b.categoryText ? 1 : (a.categoryText < b.categoryText ? -1 : 0));
 
         AppService.UpdateAppSetting({ categories: categories })

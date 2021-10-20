@@ -212,7 +212,8 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
         this.hasUpdates = true;
         const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
         newModel.defaultTeamTasks = this.state.draftModel.defaultTeamTasks
-        .map(d => d.taskId === newTask.taskId ? newTask : d);
+            .filter(f => f.taskId !== newTask.taskId)
+            .concat(newTask);
         this.setState({ draftModel: newModel });
     }
 
@@ -220,7 +221,9 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
         this.hasUpdates = true;
         const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
         newModel.defaultTemplateDocs = this.state.draftModel.defaultTemplateDocs
-        .map(d => d.docId === newDoc.docId ? newDoc : d);
+            .filter(f => f.docId !== newDoc.docId)
+            .concat(newDoc)
+            .sort((a, b) => a.destDocName > b.destDocName ? 1 : (a.destDocName < b.destDocName ? -1 : 0));
         this.setState({ draftModel: newModel });
     }
 
@@ -237,9 +240,9 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
 
     private saveProductType(): void {
         const prodTypes = AppService.AppSettings.productTypes
-        .filter(f => f.typeId !== this.state.draftModel.typeId)
-        .concat([this.state.draftModel])
-        .sort((a, b) => a.typeName > b.typeName ? 1 : (a.typeName < b.typeName ? -1 : 0));
+            .filter(f => f.typeId !== this.state.draftModel.typeId)
+            .concat(this.state.draftModel)
+            .sort((a, b) => a.typeName > b.typeName ? 1 : (a.typeName < b.typeName ? -1 : 0));
 
         AppService.UpdateAppSetting({ productTypes: prodTypes })
         .then(newSettings => {

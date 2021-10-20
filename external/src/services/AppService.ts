@@ -12,6 +12,7 @@ export enum GlobalMsg {
     ProductSaveFailed,
     ProductTemplateDocCopied,
     ProductCommentAdded,
+    EmailSending,
     EmailSent,
     EmailFailed,
     DocumentUploading,

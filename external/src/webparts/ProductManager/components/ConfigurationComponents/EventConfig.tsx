@@ -147,7 +147,7 @@ export default class EventConfig extends React.Component <IEventConfigProps, IEv
     private saveEvents(): void {
         const events = AppService.AppSettings.eventTypes
         .filter(f => f.eventTypeId !== this.state.draftEvent.eventTypeId)
-        .concat([this.state.draftEvent])
+        .concat(this.state.draftEvent)
         .sort((a, b) => a.eventTitle > b.eventTitle ? 1 : (a.eventTitle < b.eventTitle ? -1 : 0));
 
         AppService.UpdateAppSetting({ eventTypes: events })

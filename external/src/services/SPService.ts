@@ -234,6 +234,7 @@ export class SPService implements ISPService {
                 })
                 .then(d => d.json())
                 .then(d => d.d.results.reduce((t, n) => n.File.Name === newName ? n.ID : t))
+                .then(d => d.Id)
                 .then(id => {
                     return this.getDigestValue(this.currentSiteUrl)
                     .then(digestVal => {

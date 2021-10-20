@@ -110,7 +110,8 @@ export default class DocumentTemplateConfig extends React.Component <IDocumentTe
 
     private saveDocumentTemplate(): void {
         const tempDocs = AppService.AppSettings.templateDocuments
-        .map(d => d.templateId !== this.state.draftModel.templateId ? d : this.state.draftModel)
+        .filter(f => f.templateId !== this.state.draftModel.templateId)
+        .concat(this.state.draftModel)
         .sort((a, b) => a.title > b.title ? 1 : (a.title < b.title ? -1 : 0));
 
         AppService.UpdateAppSetting({ templateDocuments: tempDocs })

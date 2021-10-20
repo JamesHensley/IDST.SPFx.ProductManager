@@ -190,7 +190,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		RecordService.SaveProduct(newModel)
 		.then(result => result.productModel)
 		.then(model => {
-			const toList = AppService.AppSettings.teamMembers.filter(f => f.teamId in newModel.tasks.map(d => d.taskedTeamId)).map(d => d.email);
+			const toList = AppService.AppSettings.teamMembers.filter(f => newModel.tasks.map(d => d.taskedTeamId).indexOf(f.teamId) >= 0).map(d => d.email);
 			if (newModel.spGuid) {
 				MailService.SendEmail(`Product Updated: "${model.title}"`, toList, `${model.title} Has Been Updated By ${AppService.CurrentSpUser.email}"`)
 				.catch(e => console.log('MailService returned a rejected promise: ', e));

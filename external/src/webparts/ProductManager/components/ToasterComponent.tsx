@@ -12,6 +12,7 @@ export default class ToasterComponent extends React.Component<{}, {}> {
     private receiverDocUploading: any;
     private receiverDocUploaded: any;
     private receiverDocUploadFailed: any;
+    private receiverEmailSending: any;
     private receiverEmailSent: any;
     private receiverEmailFailed: any;
     private receivers: Array<any>;
@@ -26,13 +27,14 @@ export default class ToasterComponent extends React.Component<{}, {}> {
         this.receiverDocUploaded = this.toastDocUploaded.bind(this);
         this.receiverDocUploadFailed = this.toastDocUploadFailed.bind(this);
 
+        this.receiverEmailSending = this.toastEmailSending.bind(this);
         this.receiverEmailSent = this.toastEmailSent.bind(this);
         this.receiverEmailFailed = this.toastEmailFailed.bind(this);
 
         this.receivers = [
             this.receiverProdCreated, this.receiverProdUpdated, this.receiverProdSaveFailed,
             this.receiverDocUploading, this.receiverDocUploaded, this.receiverDocUploadFailed,
-            this.receiverEmailSent, this.receiverEmailFailed
+            this.receiverEmailSending, this.receiverEmailSent, this.receiverEmailFailed
         ];
     }
 
@@ -45,6 +47,7 @@ export default class ToasterComponent extends React.Component<{}, {}> {
         AppService.RegisterGlobalListener({ msg: GlobalMsg.DocumentUploaded, callback: this.receiverDocUploaded } as IGlobalListenerProps);
         AppService.RegisterGlobalListener({ msg: GlobalMsg.DocumentUploadFailed, callback: this.receiverDocUploadFailed } as IGlobalListenerProps);
 
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.EmailSending, callback: this.toastEmailSending } as IGlobalListenerProps);
         AppService.RegisterGlobalListener({ msg: GlobalMsg.EmailSent, callback: this.toastEmailSent } as IGlobalListenerProps);
         AppService.RegisterGlobalListener({ msg: GlobalMsg.EmailFailed, callback: this.toastEmailFailed } as IGlobalListenerProps);
     }
@@ -53,32 +56,27 @@ export default class ToasterComponent extends React.Component<{}, {}> {
         this.receivers.forEach(x => AppService.UnRegisterGlobalListener(x));
     }
 
-    private toastProdCreated([prod]): void { this.toast('Product Created', prod.title); }
-    private toastProdUpdated([prod]): void { this.toast('Product Updated', prod.title); }
+    private toastProdCreated([prod]): void { this.toastSuccess('Product Created', prod.title); }
+    private toastProdUpdated([prod]): void { this.toastSuccess('Product Updated', prod.title); }
     private toastProdSaveFailed(): void { this.toastFailed('Failed to save product'); }
 
     private toastDocUploading([prod, files]): void { this.toastPending('Document(s) Uploading...'); }
-    private toastDocUploaded([prod, files]): void { this.toast('...document(s) Uploaded', prod.title, files); }
+    private toastDocUploaded([prod, files]): void { this.toastSuccess('...document(s) Uploaded', prod.title, files); }
     private toastDocUploadFailed(): void { this.toastFailed('Failed to upload document(s)'); }
 
-    private toastEmailSent(): void { this.toast('Email Notifications Sent'); }
+    private toastEmailSending(): void { this.toastPending('Sending Email Notifications'); }
+    private toastEmailSent(): void { this.toastSuccess('Email Notifications Sent'); }
     private toastEmailFailed(): void { this.toastFailed('Failed to send email notifications'); }
 
     private toastFailed(msg: string): void {
-        const toastMsg = (
-            <div>{msg}</div>
-        );
-        toast.error(toastMsg);
+        toast.error(<div>{msg}</div>);
     }
 
     private toastPending(msg: string): void {
-        const toastMsg = (
-            <div>{msg}</div>
-        );
-        toast.info(toastMsg);
+        toast.info(<div>{msg}</div>);
     }
 
-    private toast(title: string, msg?: string, extraMsg?: string): void {
+    private toastSuccess(title: string, msg?: string, extraMsg?: string): void {
         const toastMsg = (
             <>
                 <div>{title}</div>

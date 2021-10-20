@@ -98,7 +98,7 @@ export default class ClassificationConfig extends React.Component <IClassificati
     private saveClassifications(): void {
         const classifications = AppService.AppSettings.classificationModels
         .filter(f => f.classificationId !== this.state.draftModel.classificationId)
-        .concat([this.state.draftModel])
+        .concat(this.state.draftModel)
         .sort((a, b) => a.classificationTitle > b.classificationTitle ? 1 : (a.classificationTitle < b.classificationTitle ? -1 : 0));
 
         AppService.UpdateAppSetting({ classificationModels: classifications })
