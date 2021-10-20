@@ -24,7 +24,9 @@
     "typedef": false,
     "typedef-whitespace": false,
     "use-named-parameter": true,
-    "variable-name": false,
+    "variable-name": {
+      "options": [ "check-format", "allow-pascal-case", "allow-leading-underscore", "ban-keywords" ]
+    },
     "whitespace": false
   }
 }

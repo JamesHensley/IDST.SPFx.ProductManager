@@ -7,7 +7,7 @@ import PnPTelemetry from '@pnp/telemetry-js';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 
-import AppService from '../../services/AppService';
+import AppService, { GlobalMsg } from '../../services/AppService';
 import RecordService from '../../services/RecordService';
 
 import { IPageComponentProps } from './components/PageComponent';
@@ -21,6 +21,7 @@ import { ClassificationModel } from '../../models/ClassificationModel';
 import { CategoryModel } from '../../models/CategoryModel';
 import { MiscSettingsModel } from '../../models/MiscSettingsModel';
 import { TemplateDocumentModel } from '../../models/TemplateDocumentModel';
+import { IIconOptions } from '@fluentui/style-utilities';
 
 export interface IProductManagerWebPartProps {
   description: string;
@@ -50,17 +51,11 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
 
   public render(): void {
     console.log('ProductManagerWebPart.render: ', this.properties);
-    if (this.appSettings) {
-      const element: React.ReactElement<IPageComponentProps> = React.createElement(
-        ProductManager, { }
-      );
-      ReactDom.render(element, this.domElement);
-    } else {
-      const element: React.ReactElement<IPageComponentProps> = React.createElement(
+    const element: React.ReactElement<IPageComponentProps> = this.appSettings ? React.createElement(ProductManager, {}) :
+      React.createElement(
         ConfigErrorComponent, { displayStr: 'Application settings could not be loaded or are invalid' }
       );
-      ReactDom.render(element, this.domElement);
-    }
+    ReactDom.render(element, this.domElement);
   }
 
   protected onDispose(): void {
@@ -68,20 +63,20 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   }
 
   protected async onInit(): Promise<void> {
-    const telemetry = PnPTelemetry.getInstance();
-    telemetry.optOut();
+    PnPTelemetry.getInstance().optOut();
     (window as any).disableBeaconLogToConsole = true;
 
     AppService.Init(this);
     this.appSettings = await this.getAppSettings()
     .then(d => {
-      initializeIcons(`${d.miscSettings.fluentUiCDN}/fabric/assets/icons/`);
-      initializeFileTypeIcons(`${d.miscSettings.fluentUiCDN}/fabric/assets/item-types/`);
+      initializeIcons(`${d.miscSettings.fluentUiCDN}/icons/`, { disableWarnings: true } as IIconOptions);
+      initializeFileTypeIcons(`${d.miscSettings.fluentUiCDN}/item-types/`, { disableWarnings: true } as IIconOptions);
+      AppService.TriggerGlobalMessage(GlobalMsg.IconsInitialized);
       return d;
     })
     .catch(e => {
-      console.log('onInit: ', e);
-      return null;
+      console.log('onInit-Failed to get AppSettings: ', e);
+      return Promise.reject(e);
     });
     return Promise.resolve();
   }
@@ -94,13 +89,14 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
         super.onDisplayModeChanged(oldDisplayMode);
       })
       .catch(e => {
+        console.log('onDisplayModeChanged-Failed to get app settings: ', e);
         this.appSettings = null;
         super.onDisplayModeChanged(oldDisplayMode);
       });
     }
   }
 
-  protected get dataVersion(): Version { return Version.parse('1.0'); }
+  protected get dataVersion(): Version { return Version.parse('1.1'); }
   public get AppProps(): IAppSettings { return this.appSettings; }
   public set AppProps(val: IAppSettings) { this.appSettings = val; }
   public get AppContext(): WebPartContext { return this.context; }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as styles from '../ProductManager.module.scss';
 
 import { DefaultButton, ICommandBarItemProps, IconButton, IPanelHeaderRenderer, Label, Panel, PanelType, Separator, Stack, Text } from '@fluentui/react';
-import { ProductTypeModel, TaskTemplate } from '../../../../models/ProductTypeModel';
+import { ProductTypeModel } from '../../../../models/ProductTypeModel';
 
 import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 import RecordService from '../../../../services/RecordService';
@@ -10,8 +10,11 @@ import { FormInputToggle } from '../FormComponents/FormInputToggle';
 import { FormInputText } from '../FormComponents/FormInputText';
 import { FormInputDropDown, KeyValPair } from '../FormComponents/FormInputDropDown';
 import { FormInputColor } from '../FormComponents/FormInputColor';
-import { TeamDialog } from '../FormComponents/TeamDialogComonent';
-import { TaskModel } from '../../../../models/TaskModel';
+import { ConfigDialogComponent } from '../FormComponents/ConfigDialogComponent';
+import { TaskTemplate } from '../../../../models/TaskTemplate';
+import TaskTemplateConfig from './TaskTemplateConfig';
+import DocumentConfig from './DocumentConfig';
+import { DocumentTemplate } from '../../../../models/DocumentTemplate';
 
 export interface IProductTypeConfigProps { showInactive: boolean; }
 
@@ -19,6 +22,7 @@ export interface IProductTypeConfigState {
     draftModel: ProductTypeModel;
     showPane: boolean;
     isTeamDialogVisible: boolean;
+    isDocDialogVisible: boolean;
 }
 
 export default class ProductTypeConfig extends React.Component <IProductTypeConfigProps, IProductTypeConfigState> {
@@ -30,7 +34,8 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
         this.state = {
             draftModel: null,
             showPane: false,
-            isTeamDialogVisible: false
+            isTeamDialogVisible: false,
+            isDocDialogVisible: false
         };
     }
 
@@ -117,33 +122,59 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                             <Stack horizontal tokens={{ childrenGap: 5 }}>
                                 <Stack.Item grow>
                                     <Stack>
-                                        <Stack.Item grow><Text>Team Tasks</Text></Stack.Item>
-                                        {this.state.draftModel.defaultTeamTasks.map((d,i,e) => {
-                                            const teamName = AppService.AppSettings.teams.reduce((t,n) => n.teamId == d.teamId ? n.name : t, '');
-                                            return (
-                                                <Stack.Item grow key={`${d.teamId}-${i}`}>
-                                                    <Text>{teamName}</Text><br />
-                                                    <Text className={styles.padLeft2}>{d.taskDescription}</Text>
-                                                </Stack.Item>
-                                            )
-                                        })}
+                                        <Stack horizontal tokens={{ childrenGap: 5 }}>
+                                            <Stack.Item grow><Text>Team Tasks</Text></Stack.Item>
+                                            <IconButton iconProps={{ iconName: 'add' }} className={styles.appIcon} title='' ariaLabel='' onClick={this.addTeamTask.bind(this)} />
+                                        </Stack>
+                                        {this.state.draftModel.defaultTeamTasks
+                                        .sort((a,b) => a.taskOrder > b.taskOrder ? 1 : (a.taskOrder < b.taskOrder ? -1 : 0))
+                                        .map((d,i,e) => <TaskTemplateConfig task={d} key={`${d.taskOrder}-${i}`} saveTask={this.updateTask.bind(this)} />)}
                                     </Stack>
                                 </Stack.Item>
-                                <Stack.Item>
-                                    <IconButton iconProps={{ iconName: 'add' }} className={styles.appIcon} title='' ariaLabel='' onClick={this.addTeamTask.bind(this)} />
+                                <Stack.Item grow>
+                                    <Stack>
+                                        <Stack horizontal>
+                                            <Stack.Item grow><Text>Template Documents</Text></Stack.Item>
+                                            <IconButton iconProps={{ iconName: 'add' }} className={styles.appIcon} title='' ariaLabel='' onClick={this.addDocTemplate.bind(this)} />
+                                        </Stack>
+                                        {this.state.draftModel.defaultTemplateDocs
+                                        .sort((a,b) => a.destDocName > b.destDocName ? 1 : (a.destDocName < b.destDocName ? -1 : 0))
+                                        .map((d,i,e) => <DocumentConfig model={d} key={i} saveModel={this.updateDoc.bind(this)} />)}
+                                    </Stack>
                                 </Stack.Item>
-                                <Stack.Item grow><Text>Template Documents</Text></Stack.Item>
                             </Stack>
                         </Stack>
                         {
                             this.state.isTeamDialogVisible &&
-                            <TeamDialog
+                            <ConfigDialogComponent
                                 key={new Date().getTime()}
-                                teamSelectedCallback={this.teamSelected.bind(this)}
-                                teams={AppService.AppSettings.teams}
-                                selectedTeam={''}
+                                optSelectedCallback={this.teamSelected.bind(this)}
+                                title='Team Selector'
+                                opts={
+                                    AppService.AppSettings.teams
+                                    .map(d => { return { key: d.teamId, text: d.name }; })
+                                    .sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0))
+                                }
+                                selectedOpt={''}
                                 showInputText={true}
                                 extraTextLabel={'Task Description'}
+                                extraText={''}
+                            />
+                        }
+                        {
+                            this.state.isDocDialogVisible &&
+                            <ConfigDialogComponent
+                                key={new Date().getTime()}
+                                optSelectedCallback={this.docSelected.bind(this)}
+                                title='Document Selector'
+                                opts={
+                                    AppService.AppSettings.templateDocuments
+                                    .map(d => { return { key: d.templateId, text: d.title }; })
+                                    .sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0))
+                                }
+                                selectedOpt={''}
+                                showInputText={true}
+                                extraTextLabel={'Document Name'}
                                 extraText={''}
                             />
                         }
@@ -177,6 +208,22 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
         this.setState({ draftModel: newModel });
     }
 
+    private updateTask(newTask: TaskTemplate): void {
+        this.hasUpdates = true;
+        const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
+        newModel.defaultTeamTasks = this.state.draftModel.defaultTeamTasks
+        .map(d => d.taskId === newTask.taskId ? newTask : d);
+        this.setState({ draftModel: newModel });
+    }
+
+    private updateDoc(newDoc: DocumentTemplate): void {
+        this.hasUpdates = true;
+        const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
+        newModel.defaultTemplateDocs = this.state.draftModel.defaultTemplateDocs
+        .map(d => d.docId === newDoc.docId ? newDoc : d);
+        this.setState({ draftModel: newModel });
+    }
+
     private showPane(model: ProductTypeModel): void { this.setState({ showPane: true, draftModel: model }); }
 
     private closePane(ignoreChanges?: boolean): void {
@@ -196,6 +243,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
 
         AppService.UpdateAppSetting({ productTypes: prodTypes })
         .then(newSettings => {
+            this.hasUpdates = false;
             this.setState({ showPane: false, draftModel: null });
         })
         .catch(e => Promise.reject(e));
@@ -232,16 +280,33 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
     }
 
     private addTeamTask(): void {
-        this.setState({ isTeamDialogVisible: true });
+        this.setState({ isTeamDialogVisible: true, isDocDialogVisible: false });
+    }
+
+    private addDocTemplate(): void {
+        this.setState({ isTeamDialogVisible: false, isDocDialogVisible: true });
     }
 
     private teamSelected(teamId: string, taskDescription?: string): void {
+        this.hasUpdates = true;
         const newTask = new TaskTemplate({
             teamId: teamId,
+            taskOrder: (this.state.draftModel.defaultTeamTasks || []).length,
             taskDescription: taskDescription ? taskDescription : 'New Task'
         });
         this.state.draftModel.defaultTeamTasks = [].concat.apply((this.state.draftModel.defaultTeamTasks || []), [newTask]);
         const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
         this.setState({ draftModel: newModel, isTeamDialogVisible: false });
+    }
+
+    private docSelected(templateId: string, docName?: string): void {
+        this.hasUpdates = true;
+        const newDoc = new DocumentTemplate({
+            templateId: templateId,
+            destDocName: docName
+        });
+        this.state.draftModel.defaultTemplateDocs = [].concat.apply((this.state.draftModel.defaultTemplateDocs || []), [newDoc]);
+        const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
+        this.setState({ draftModel: newModel, isDocDialogVisible: false });
     }
 }

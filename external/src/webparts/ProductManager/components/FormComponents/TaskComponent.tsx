@@ -10,7 +10,7 @@ import { TeamTaskRowComponent } from './TeamTaskRowComponent';
 import AppService from '../../../../services/AppService';
 import { TeamModel } from '../../../../models/TeamModel';
 import RecordService from '../../../../services/RecordService';
-import { TeamDialog } from './TeamDialogComonent';
+import { ConfigDialogComponent } from './ConfigDialogComponent';
 
 export interface ITaskComponentProps {
     TaskItems: Array<TaskModel>;
@@ -87,10 +87,14 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
                     </Stack.Item>
                 </Stack>
                 {this.state.isTeamDialogVisible &&
-                    <TeamDialog
+                    <ConfigDialogComponent
+                        title='Team Selector'
                         key={new Date().getTime()}
-                        teamSelectedCallback={this.teamSelected.bind(this)}
-                        teams={AppService.AppSettings.teams}
+                        optSelectedCallback={this.teamSelected.bind(this)}
+                        opts={AppService.AppSettings.teams
+                            .map(d => { return { key: d.teamId, text: d.name }; })
+                            .sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0))
+                        }
                     />
                 }
             </>

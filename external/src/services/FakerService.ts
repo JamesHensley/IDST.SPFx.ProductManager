@@ -91,7 +91,7 @@ export class Faker {
         }
 
         // Create fake attachments for this fake item
-        prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.guid, AppService.AppSettings.templateDocuments.reduce((t, n) => n.templateId === f ? n.documentName : t, '')));
+        prodType.defaultTemplateDocs.forEach(f => this.CreateFakeAttachment(item.guid, AppService.AppSettings.templateDocuments.reduce((t, n) => n.templateId === f.templateId ? n.title : t, '')));
         return MapperService.MapProductToItem(item);
     }
 

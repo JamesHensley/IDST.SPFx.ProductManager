@@ -2,24 +2,40 @@ import { ICommandBarItemProps } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 import ProductManagerWebPart, { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
-import { NotificationService, NotificationType } from './NotificationService';
 import { SPUser } from '@microsoft/sp-page-context';
-import { ProductModel } from '../models/ProductModel';
-import { MailService } from './MailService';
+
+export enum GlobalMsg {
+    IconsInitialized,
+    AppSettingsUpdated,
+    ProductCreated,
+    ProductUpdated,
+    ProductTemplateDocCopied,
+    ProductCommentAdded,
+    EmailSent,
+    DocumentUploading,
+    DocumentUploaded
+}
 
 export interface ICmdBarListenerProps {
     callback: () => Promise<void>;
     btnKeys?: Array<string>;
 }
 
+export interface IGlobalListenerProps {
+    callback: () => Promise<void>;
+    msg: GlobalMsg;
+}
+
 export interface IEmailObj {
     subject: string;
     body: string;
 }
+
 export default class AppService {
     private static _webpart: ProductManagerWebPart;
     private static _productListeners: Array<() => Promise<void>> = [];
     private static _cmdBarListeners: Array<ICmdBarListenerProps> = [];
+    private static _globalListeners: Array<IGlobalListenerProps> = [];
 
     public static Init(webpart: ProductManagerWebPart): void { this._webpart = webpart; }
 
@@ -28,58 +44,32 @@ export default class AppService {
     public static get AppContext(): WebPartContext { return this._webpart.context; }
 
     public static async UpdateAppSetting(val: Partial<IAppSettings>): Promise<IAppSettings> {
-        const settings = await this._webpart.UpdateAppSettings(val);
-        return Promise.resolve(settings);
+        const settings = await this._webpart.UpdateAppSettings(val)
+        .then(d => Promise.resolve(d))
+        .catch(e => Promise.reject(e));
+
+        return settings;
     }
 
     //#region Emitters
+    public static TriggerGlobalMessage(msgType: GlobalMsg, params?: any): void {
+        this._globalListeners.filter(f => f.msg === msgType).forEach(x => x.callback.call(x.callback, params));
+    }
+
+    public static RegisterGlobalListener(p: IGlobalListenerProps): void {
+        this._globalListeners.push(p);
+    }
+
+    public static UnRegisterGlobalListener(callback: () => void): void {
+        this._globalListeners = this._globalListeners.filter(f => f.callback !== callback);
+    }
+
     public static RegisterProductListener(callback: () => Promise<void>): void {
         this._productListeners.push(callback);
     }
 
     public static UnRegisterProductListener(callback: () => void): void {
         this._productListeners = this._productListeners.filter(f => f !== callback);
-    }
-
-    public static ProductChanged(notificationType: NotificationType, product: ProductModel): void {
-        this._productListeners.forEach(l => l.call(l));
-        NotificationService.Notify(notificationType, product.title);
-
-        const teamIds = (product.tasks || []).map(d => d.taskedTeamId);
-        const activeTeams = AppService.AppSettings.teams.filter(f => f.active).map(d => d.teamId)
-        const teamEmails = AppService.AppSettings.teamMembers
-            .filter(f => teamIds.indexOf(f.teamId) >= 0 && activeTeams.indexOf(f.teamId))
-            .filter(f => f.active)
-            .map(m => m.email);
-        let emailObj = {
-            body: '',
-            subject: ''
-        } as IEmailObj;
-
-        switch (notificationType) {
-            case NotificationType.Create:
-                emailObj = {
-                    subject: `New Product: ${product.title}`,
-                    body: `A new product has been created: ${product.title}`
-                } as IEmailObj
-                break;
-            case NotificationType.Update:
-                emailObj = {
-                    subject: `Updated Product: ${product.title}`,
-                    body: `An update was made to: ${product.title}`
-                } as IEmailObj
-                break;
-            case NotificationType.CommentAdd:
-                emailObj = {
-                    subject: `Comment Added: ${product.title}`,
-                    body: `A comment was added to: ${product.title}`
-                } as IEmailObj
-                break;
-        }
-        if (emailObj.subject && emailObj.body && teamEmails.length > 0) {
-            MailService.SendEmail(emailObj.subject, teamEmails, emailObj.body)
-            .catch(e => Promise.reject(e));
-        }
     }
 
     public static RegisterCmdBarListener(p: ICmdBarListenerProps): void {

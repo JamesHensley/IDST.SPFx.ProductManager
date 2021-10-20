@@ -198,7 +198,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         const textColor = item.isEvent ? 'rgb(0, 0, 0)' : ColorService.GetTextColor(backgroundColor);
         const borderColor = 'rgb(0, 0, 0)';
         const itemCatName = AppService.AppSettings.categories.reduce((t,n) => {
-            return n.categoryId === (item as ProductModel).categoryId ? n.categoryShortName : t
+            return n.categoryId === (item as ProductModel).categoryId ? n.categoryShortName : t;
         }, '');
 
         return (

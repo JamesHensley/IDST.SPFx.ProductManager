@@ -88,9 +88,9 @@ export class MockSPService implements ISPService {
         });
     }
 
-    CopyFile(srcUrl: string, destUrl: string, suffix: string): Promise<boolean> {
-        console.log('MockSPService.CopyFile: ', srcUrl, destUrl, suffix);
-        const dest: string = destUrl.split('.').map((d, i, e) => (i === e.length - 2) ? d += suffix : d).join('.');
+    CopyTemplateDocToProdDocs(srcUrl: string, destUrl: string, linkedProductGuid: string): Promise<boolean> {
+        console.log('MockSPService.CopyFile: ', srcUrl, destUrl, linkedProductGuid);
+        const dest: string = destUrl.split('.').map((d, i, e) => (i === e.length - 2) ? d += linkedProductGuid : d).join('.');
 
         this._mockedAttachmentItems.push(new SpListAttachment({
             Id: '',
@@ -99,7 +99,7 @@ export class MockSPService implements ISPService {
             Author: new SPAuthor({ Name: AppService.CurrentSpUser.displayName, Email: AppService.CurrentSpUser.email }),
             Url: dest,
             Version: 1,
-            LinkedProductGuid: suffix
+            LinkedProductGuid: linkedProductGuid
         }));
         return Promise.resolve(true);
     }

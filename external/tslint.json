@@ -1,33 +1,18 @@
 {
-    "extends": [
-      "tslint-config-standard"
-    ],
+    "extends": [ "tslint-config-standard" ],
     "comment-format": [false, "always"],
     "rules": {
+      "variable-name": [ "check-format", "allow-pascal-case", "allow-leading-underscore", "ban-keywords" ],
       "deprecation": [false, "always"],
-      "semicolon": [
-        true,
-        "always"
-      ],
-      "typedef": [
-        true,
-        "call-signature"
-      ],
+      "semicolon": [ true, "always" ],
+      "typedef": [ true, "call-signature" ],
       "prefer-const": true,
       "no-unnecessary-type-assertion": false,
-      "space-before-function-paren": [
-        false
-      ],
-      "ter-indent": [
-        false
-      ],
+      "space-before-function-paren": [ false ],
+      "ter-indent": [ false ],
       "no-inferrable-types": true,
       "strict-type-predicates": false,
-      "indent": [
-        false,
-        "spaces",
-        4
-      ]
+      "indent": [ false, "spaces", 4 ]
     }
   }
   

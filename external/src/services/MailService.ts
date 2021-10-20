@@ -1,4 +1,4 @@
-import AppService from './AppService';
+import AppService, { GlobalMsg } from './AppService';
 import { SPHttpClient, SPHttpClientConfiguration } from '@microsoft/sp-http';
 
 export class MailService {
@@ -25,6 +25,10 @@ export class MailService {
     }
 
     public static async SendEmail(subject: string, toList: Array<string>, msgBody: string): Promise<string> {
+        if (toList.length === 0) {
+            return Promise.reject(`No Email Recipients For Notification: ${msgBody}`);
+        }
+
         const payload = {
             __metadata: { type: 'SP.Utilities.EmailProperties' },
             From: AppService.AppSettings.miscSettings.emailSenderName,
@@ -36,20 +40,20 @@ export class MailService {
         headers.body = JSON.stringify(payload);
 
         if (AppService.AppSettings.isDebugging) {
+            AppService.TriggerGlobalMessage(GlobalMsg.EmailSent);
             return Promise.resolve('');
         } else {
-            return new Promise<string>((resolve, reject) => {
+            return new Promise<string>(() => {
                 fetch(this.mailUrl, headers)
-                .then(response => {
-                    response.json()
-                    .then((responseJSON: any) => responseJSON.value)
-                    .then((responseJSON: any) => resolve(responseJSON))
-                    .catch(e => reject(e));
-                })
+                .then(response => response.json().then(d => Promise.resolve(d.value).catch(e => Promise.reject(e))))
                 .catch(e => {
                     console.log('Error occured in "MailService.SendEmail":', e);
-                    return reject(e);
+                    return Promise.reject(e);
                 });
+            })
+            .then(d => {
+                AppService.TriggerGlobalMessage(GlobalMsg.EmailSent);
+                return Promise.resolve(d);
             });
         }
     }

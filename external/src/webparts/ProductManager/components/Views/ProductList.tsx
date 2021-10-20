@@ -10,8 +10,9 @@ import { FilterService } from '../../../../services/FilterService';
 import RecordService from '../../../../services/RecordService';
 import ProductDetailPane from '../SharedComponents/ProductDetailPane';
 import ColorService from '../../../../services/ColorService';
-import { NotificationType } from '../../../../services/NotificationService';
+// import { ProductNotificationType } from '../../../../services/NotificationService';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
+import { MailService } from '../../../../services/MailService';
 
 export interface IDocument {
 	key: string;
@@ -67,8 +68,8 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 	/** Data displayed in the list */
 	private get allItems(): Array<IDocument> {
 		return (this.state.allProducts || [])
-		.filter(f => this.state.showCanceled ? f : f.status != ProductStatus.canceled)
-		.filter(f => this.state.showClosed ? f : f.status != ProductStatus.closed)
+		.filter(f => this.state.showCanceled ? f : f.status !== ProductStatus.canceled)
+		.filter(f => this.state.showClosed ? f : f.status !== ProductStatus.closed)
 		.filter(i => (i.filterString.toLowerCase().indexOf(FilterService.FilterText.toLowerCase()) >= 0))
 		.map(d => {
 			const lastSuspense = d.tasks.reduce((t: Date, n) => new Date(n.taskSuspense) > t ? new Date(n.taskSuspense) : t, new Date(null));
@@ -128,7 +129,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		return (
 			<Stack>
 				<Stack.Item>
-					<Stack horizontal>
+					<Stack horizontal gap={10}>
 						<FormInputToggle
 							labelValue={'Show Canceled Products'}
 							fieldValue={this.state.showCanceled}
@@ -185,16 +186,27 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		);
 	}
 
-	private saveProduct(newModel: ProductModel, keepPaneOpen?: boolean, notificationType?: NotificationType): void {
-		RecordService.SaveProduct(newModel, notificationType)
+	private saveProduct(newModel: ProductModel, keepPaneOpen?: boolean): void {
+		RecordService.SaveProduct(newModel)
 		.then(result => result.productModel)
 		.then(model => {
+			const toList = AppService.AppSettings.teamMembers.filter(f => f.teamId in newModel.tasks.map(d => d.taskedTeamId)).map(d => d.email);
+			if (newModel.spGuid) {
+				MailService.SendEmail(`Product Updated: "${model.title}"`, toList, `${model.title} Has Been Updated By ${AppService.CurrentSpUser.email}"`)
+				.catch(e => console.log('MailService returned a rejected promise: ', e));
+			} else {
+				MailService.SendEmail(`Product Created: "${model.title}"`, toList, `${model.title} Has Been Updated By ${AppService.CurrentSpUser.email}"`)
+				.catch(e => console.log('MailService returned a rejected promise: ', e));
+			}
+
 			RecordService.GetProducts()
-			.then(prods => this.setState({
-                allProducts: prods,
-                isEditing: false,
-                currentProd: keepPaneOpen ? (prods.reduce((t, n) => n.guid === newModel.guid ? n : t, null)) : null
-            }))
+			.then(prods => {
+				this.setState({
+					allProducts: prods,
+					isEditing: false,
+					currentProd: keepPaneOpen ? (prods.reduce((t, n) => n.guid === newModel.guid ? n : t, null)) : null
+            	});
+			})
 			.catch(e => Promise.reject(e));
 		})
 		.catch(e => Promise.reject(e));

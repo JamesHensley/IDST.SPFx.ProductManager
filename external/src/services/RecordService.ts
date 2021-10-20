@@ -1,13 +1,13 @@
 import { ProductModel, ProductStatus } from '../models/ProductModel';
 import { SpListAttachment, SpProductItem } from '../models/SpListItem';
-import AppService from './AppService';
+import AppService, { GlobalMsg } from './AppService';
 import { ISPService } from './ISPService';
 import { MapperService } from './MapperService';
 import { MockSPService } from './MockSPService';
 import { SPService } from './SPService';
 import { AttachmentModel } from '../models/AttachmentModel';
 import { v4 as uuidv4 } from 'uuid';
-import { NotificationService, NotificationType } from './NotificationService';
+// import { NotificationService, ProductNotificationType } from './NotificationService';
 import { TaskModel, TaskState } from '../models/TaskModel';
 import addDays from 'date-fns/addDays';
 import { EventModel } from '../models/EventModel';
@@ -45,17 +45,16 @@ export default class RecordService {
     }
 
     public static async AddAttachmentsForItem(product: ProductModel, files: FileList): Promise<void> {
+        AppService.TriggerGlobalMessage(GlobalMsg.DocumentUploading);
         return this.spService.AddAttachment(AppService.AppSettings.miscSettings.documentLibraryName, product.spGuid, files)
         .then(() => {
-            NotificationService.Notify(
-                NotificationType.AttachAdd, 
-                Array.from(files).map(d => d.name).join(',')
-            );
+            AppService.TriggerGlobalMessage(GlobalMsg.DocumentUploaded, [product, Array.from(files).map(d => d.name).join(',')]);
+            return Promise.resolve();
         })
         .catch(e => Promise.reject(e));
     }
 
-    public static async SaveProduct(product: ProductModel, notificationType?: NotificationType): Promise<IResult> {
+    public static async SaveProduct(product: ProductModel): Promise<IResult> {
         const resultStr = product.spId ? 'Updated' : 'Created';
         const newItem = MapperService.MapProductToItem(product);
 
@@ -63,17 +62,30 @@ export default class RecordService {
         .then((newItem: SpProductItem) => {
             // When we create a NEW item, we need to upload template documents here
             // UPLOAD DOCUMENTS
-            return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentLibraryName, newItem.GUID)
-            .then(attachments => {
-                const nType = notificationType ? notificationType : (product.guid ? NotificationType.Update : NotificationType.Create);
-                AppService.ProductChanged(nType, product);
-                return Promise.resolve({
-                    productModel: MapperService.MapItemToProduct(newItem, attachments),
-                    resultStr: resultStr
-                } as IResult);
+            return Promise.all(
+                AppService.AppSettings.productTypes.reduce((t: ProductTypeModel, n) => n.typeId === product.productType ? n : t, null)
+                .defaultTemplateDocs.map(d => Object.assign(d, {
+                    srcDocUrl: AppService.AppSettings.templateDocuments.reduce((t: string, n) => n.templateId === d.templateId ? n.documentUrl : t, null)
+                }))
+                .map(d => product.spId ? Promise.resolve(true) : this.spService.CopyTemplateDocToProdDocs(d.srcDocUrl, d.destDocName, newItem.GUID)
+                .then(d => Promise.resolve(d)
+                .catch(e => Promise.reject(e)))
+            ))
+            .then(() => {
+                return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentLibraryName, newItem.GUID)
+                .then(attachments => {
+                    AppService.TriggerGlobalMessage((product.spId ? GlobalMsg.ProductUpdated : GlobalMsg.ProductCreated), [product]);
+
+                    return Promise.resolve({
+                        productModel: MapperService.MapItemToProduct(newItem, attachments),
+                        resultStr: resultStr
+                    } as IResult);
+                })
+                .catch(e => Promise.reject(e));
             })
             .catch(e => Promise.reject(e));
-        })
+            })
+        .then(d => Promise.resolve(d))
         .catch(e => Promise.reject(e));
     }
 
@@ -109,7 +121,9 @@ export default class RecordService {
                 status: ProductStatus.open,
                 title: `NEW ${prodTypeModel.typeName}`,
                 description: prodTypeModel.typeDescription,
-                tasks: prodTypeModel.defaultTeamTasks.map((d, i, e) => {
+                tasks: prodTypeModel.defaultTeamTasks
+                .sort((a,b) => a.taskOrder > b.taskOrder ? 1 : (a.taskOrder < b.taskOrder ? -1 : 0))
+                .map((d, i, e) => {
                     const taskSuspense = e.reduce((t, n, c) => c <= i ? addDays(t, n.typicalTaskLength) : t, new Date());
                     return this.GetNewTask(d.teamId, d.taskDescription, taskSuspense);
                 }),

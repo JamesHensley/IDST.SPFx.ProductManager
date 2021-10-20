@@ -33,7 +33,7 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
                 {
                     AppService.AppSettings.categories
                     .filter(f => this.props.showInactive ? true : f.active)
-                    .sort((a,b) => a.categoryText > b.categoryText ? 1 : ( a.categoryText < b.categoryText ? -1 : 0))
+                    .sort((a,b) => a.categoryText > b.categoryText ? 1 : (a.categoryText < b.categoryText ? -1 : 0))
                     .map(d => {
                         return (
                             <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }} key={d.categoryId}>
@@ -151,7 +151,7 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
                         fieldRef={'active'}
                         onUpdated={this.updateVal.bind(this)}
                         oneRow={true}
-                    />                    
+                    />
                 </Stack>
             </div>
         );

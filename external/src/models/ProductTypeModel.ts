@@ -1,15 +1,5 @@
-export class TaskTemplate {
-    public constructor(init?: Partial<TaskTemplate>) {
-        Object.assign(this, init);
-    }
-
-    public teamId: string;
-    public taskDescription: string;
-
-    /** Typical days offset for this tasks suspense from the start of the product */
-    // public taskSuspenseDaysOffset: number;
-    public typicalTaskLength: number;
-}
+import { DocumentTemplate } from './DocumentTemplate';
+import { TaskTemplate } from './TaskTemplate';
 
 export class ProductTypeModel {
     public constructor(init?: Partial<ProductTypeModel>) {
@@ -23,7 +13,7 @@ export class ProductTypeModel {
     public typeDescription: string;
 
     /** GUIDs of default document templates */
-    public defaultTemplateDocs: Array<string>;
+    public defaultTemplateDocs: Array<DocumentTemplate>;
 
     /** Guids of default task templates for this product */
     public defaultTeamTasks: Array<TaskTemplate>;

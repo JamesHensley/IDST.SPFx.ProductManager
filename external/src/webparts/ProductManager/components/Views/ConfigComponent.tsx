@@ -8,6 +8,7 @@ import ClassificationConfig from '../ConfigurationComponents/ClassificationConfi
 import CategoryConfig from '../ConfigurationComponents/CategoryConfig';
 import ProductTypeConfig from '../ConfigurationComponents/ProductTypeConfig';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
+import DocumentTemplateConfig from '../ConfigurationComponents/DocumentTemplateConfig';
 
 export interface IConfigurationViewState {
     showInactive: boolean;
@@ -16,7 +17,7 @@ export interface IConfigurationViewProps {}
 export default class ConfigurationView extends React.Component <{}, IConfigurationViewState> {
     constructor(props: IConfigurationViewProps) {
         super(props);
-        this.state = { showInactive: false }
+        this.state = { showInactive: false };
     }
 
     public render(): React.ReactElement<{}> {
@@ -29,9 +30,12 @@ export default class ConfigurationView extends React.Component <{}, IConfigurati
                     fieldRef={null}
                     onUpdated={() => this.setState({ showInactive: !this.state.showInactive })}
                     oneRow={true}
-                />                
+                />
                 <Stack.Item grow>
                     <TeamConfig showInactive={this.state.showInactive} />
+                </Stack.Item>
+                <Stack.Item grow>
+                    <DocumentTemplateConfig showInactive={this.state.showInactive} />
                 </Stack.Item>
                 <Stack.Item grow>
                     <ProductTypeConfig showInactive={this.state.showInactive} />

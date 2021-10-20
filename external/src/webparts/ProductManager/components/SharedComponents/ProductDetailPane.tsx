@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as styles from '../ProductManager.module.scss';
 
-import AppService from '../../../../services/AppService';
+import AppService, { GlobalMsg } from '../../../../services/AppService';
 import RecordService from '../../../../services/RecordService';
-import { NotificationService, NotificationType } from '../../../../services/NotificationService';
+
 import { v4 as uuidv4 } from 'uuid';
 
 import { Panel, PanelType, Separator, Stack, DefaultButton, Label, IStackItemStyles, IPanelHeaderRenderer } from '@fluentui/react';
@@ -28,7 +28,7 @@ export interface IProductDetailPaneProps {
     isVisible: boolean;
     isEditing: boolean;
     readOnly: boolean;
-    saveProduct: (newProd: ProductModel, keepPaneOpen?: boolean, notificationType?: NotificationType) => void;
+    saveProduct: (newProd: ProductModel, keepPaneOpen?: boolean) => void;
     closePane: () => void;
 }
 
@@ -225,7 +225,6 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
     private updateComment(commentStr: string): void {
         const newDraft = Object.assign(new ProductModel(), this.state.draftProduct);
         newDraft.comments.push(new CommentsModel({
-            commentGuid: uuidv4(),
             commentAuthor: AppService.CurrentUser,
             commentDate: new Date().toJSON(),
             commentValue: commentStr
@@ -233,7 +232,8 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
 
         this.setState({ draftProduct: newDraft, showCommentDialog: false });
         if (!this.state.isEditing) {
-            this.props.saveProduct(newDraft, true, NotificationType.CommentAdd);
+            this.props.saveProduct(newDraft, true);
+            AppService.TriggerGlobalMessage(GlobalMsg.ProductCommentAdded);
         }
     }
 

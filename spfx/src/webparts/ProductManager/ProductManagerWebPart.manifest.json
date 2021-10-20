@@ -17,8 +17,8 @@
     "officeFabricIconFontName": "Page",
     "properties": {
       "description": "IDST SPFx Product Manager",
-      "appSettingsListName": "",
-      "siteRootUrl": ""
+      "appSettingsListName": "JiseToolAppSettings",
+      "siteRootUrl": "/sites/jise"
     }
   }]
 }

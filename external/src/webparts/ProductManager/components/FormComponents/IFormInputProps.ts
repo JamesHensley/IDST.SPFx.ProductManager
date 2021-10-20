@@ -1,6 +1,6 @@
 export interface IFormInputProps {
     labelValue: string;
-    fieldValue: string;
+    fieldValue: any;
     fieldRef: string;
     editing: boolean;
     editLines?: number;

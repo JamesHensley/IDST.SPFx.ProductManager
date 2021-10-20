@@ -62,9 +62,9 @@
         }        
     ],
     "templateDocuments": [
-        { "templateId": "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10", "documentUrl": "/", "documentName": "docType1.txt" },
-        { "templateId": "0ca8e54b-cf78-44e3-880d-723e3e3d7473", "documentUrl": "/", "documentName": "docType2.txt" },
-        { "templateId": "b28fab67-2863-45b0-93bf-932fa5f28645", "documentUrl": "/", "documentName": "docType3.txt" }
+        { "templateId": "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10", "documentUrl": "/", "documentName": "docType1.txt", "active": true },
+        { "templateId": "0ca8e54b-cf78-44e3-880d-723e3e3d7473", "documentUrl": "/", "documentName": "docType2.txt", "active": true },
+        { "templateId": "b28fab67-2863-45b0-93bf-932fa5f28645", "documentUrl": "/", "documentName": "docType3.txt", "active": true }
     ],
     "productTypes": [
         {
@@ -74,30 +74,49 @@
             "colorValue": "rgb(100, 100, 250)",
             "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 7 day suspense and a default event type of eventType 1",
             "defaultSuspenseDays": 7,
-            "defaultTemplateDocs": [ "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10", "b28fab67-2863-45b0-93bf-932fa5f28645" ],
+            "defaultTemplateDocs": [ 
+                {
+                    "templateId": "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10",
+                    "docId": "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10",
+                    "destDocName": "Document 1"
+                },
+                {
+                    "templateId": "b28fab67-2863-45b0-93bf-932fa5f28645",
+                    "docId": "b28fab67-2863-45b0-93bf-932fa5f28645",
+                    "destDocName": "Document 2"
+                }
+            ],
             "defaultEventType": "1",
             "defaultTeamTasks": [
                 {
+                    "taskId": "f3bd47e5-54ef-414a-9fc0-501d64ec0001",
                     "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
                     "taskDescription": "Review 1",
+                    "taskOrder": 1,
                     "taskSuspenseDaysOffset": 1,
                     "typicalTaskLength": 2
                 },
                 {
+                    "taskId": "f3bd47e5-54ef-414a-9fc0-501d64ec0002",
                     "teamId": "f3bd47e5-54ef-414a-9fc0-501d64ecc80a",
                     "taskDescription": "Review 2",
+                    "taskOrder": 2,
                     "taskSuspenseDaysOffset": 3,
                     "typicalTaskLength": 2
                 },
                 {
+                    "taskId": "f3bd47e5-54ef-414a-9fc0-501d64ec0003",
                     "teamId": "625d64ec-f3bd-0495d-c80a-0cfd1d22797b",
                     "taskDescription": "Final Review",
+                    "taskOrder": 3,
                     "taskSuspenseDaysOffset": 5,
                     "typicalTaskLength": 2
                 },
                 {
+                    "taskId": "f3bd47e5-54ef-414a-9fc0-501d64ec0004",
                     "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
                     "taskDescription": "Magic",
+                    "taskOrder": 4,
                     "taskSuspenseDaysOffset": 7,
                     "typicalTaskLength": 2
                 }
@@ -110,30 +129,49 @@
             "colorValue": "rgb(210, 210, 0)",
             "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 14 day suspense and no default event type",
             "defaultSuspenseDays": 14,
-            "defaultTemplateDocs": [ "0ca8e54b-cf78-44e3-880d-723e3e3d7473", "b28fab67-2863-45b0-93bf-932fa5f28645" ],
+            "defaultTemplateDocs": [
+                {
+                    "templateId": "0ca8e54b-cf78-44e3-880d-723e3e3d7473",
+                    "docId": "0ca8e54b-cf78-44e3-880d-723e3e3d7473",
+                    "destDocName": "Document 3"
+                },
+                {
+                    "templateId": "b28fab67-2863-45b0-93bf-932fa5f28645",
+                    "docId": "b28fab67-2863-45b0-93bf-932fa5f28645",
+                    "destDocName": "Document 4"
+                }
+            ],
             "defaultEventType": "2",
             "defaultTeamTasks": [
                 {
+                    "taskId": "501d64ec-c80a-f3bd-47e5-54ef414a0001",
                     "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
                     "taskDescription": "Review 1",
+                    "taskOrder": 1,
                     "taskSuspenseDaysOffset": 1,
                     "typicalTaskLength": 2
                 },
                 {
+                    "taskId": "501d64ec-c80a-f3bd-47e5-54ef414a0002",
                     "teamId": "501d64ec-c80a-f3bd-47e5-54ef414a9fc0",
                     "taskDescription": "Review 2",
+                    "taskOrder": 2,
                     "taskSuspenseDaysOffset": 3,
                     "typicalTaskLength": 2
                 },
                 {
+                    "taskId": "501d64ec-c80a-f3bd-47e5-54ef414a0003",
                     "teamId": "625d64ec-f3bd-0495d-c80a-0cfd1d22797b",
                     "taskDescription": "Final Review",
+                    "taskOrder": 3,
                     "taskSuspenseDaysOffset": 5,
                     "typicalTaskLength": 2
                 },
                 {
+                    "taskId": "501d64ec-c80a-f3bd-47e5-54ef414a0004",
                     "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
                     "taskDescription": "Magic",
+                    "taskOrder": 4,
                     "taskSuspenseDaysOffset": 7,
                     "typicalTaskLength": 2
                 }
@@ -146,11 +184,29 @@
             "colorValue": "rgb(133, 0, 0)",
             "typeDescription": "This is a detailed explaination of the product and could include instructions to the teams.  This one has a 21 day suspense and no default event type",
             "defaultSuspenseDays": 21,
-            "defaultTemplateDocs": [ "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10", "0ca8e54b-cf78-44e3-880d-723e3e3d7473", "b28fab67-2863-45b0-93bf-932fa5f28645" ],
+            "defaultTemplateDocs": [
+                {
+                    "templateId": "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10",
+                    "docId": "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10",
+                    "destDocName": "Document 5"
+                },
+                {
+                    "templateId": "0ca8e54b-cf78-44e3-880d-723e3e3d7473",
+                    "docId": "0ca8e54b-cf78-44e3-880d-723e3e3d7473",
+                    "destDocName": "Document 6"
+                },
+                {
+                    "templateId": "b28fab67-2863-45b0-93bf-932fa5f28645",
+                    "docId": "b28fab67-2863-45b0-93bf-932fa5f28645",
+                    "destDocName": "Document 7"
+                }
+            ],
             "defaultTeamTasks": [
                 {
+                    "taskId": "b9563296-df65-4054-916d-ed7f39f90001",
                     "teamId": "b9563296-df65-4054-916d-ed7f39f90ac6",
                     "taskDescription": "Magic",
+                    "taskOrder": 1,
                     "taskSuspenseDaysOffset": 1,
                     "typicalTaskLength": 5
                 }

@@ -32,6 +32,7 @@ interface CssExports {
   'ms-Grid': string;
   'muted': string;
   'padBottom0': string;
+  'padBottom1': string;
   'padLeft1': string;
   'padLeft2': string;
   'padLeft3': string;

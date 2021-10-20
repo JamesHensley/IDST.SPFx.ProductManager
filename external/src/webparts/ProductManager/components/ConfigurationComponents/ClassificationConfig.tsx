@@ -34,7 +34,7 @@ export default class ClassificationConfig extends React.Component <IClassificati
                     {
                         AppService.AppSettings.classificationModels
                         .filter(f => this.props.showInactive ? true : f.active)
-                        .sort((a,b) => a.classificationTitle > b.classificationTitle ? 1 : ( a.classificationTitle < b.classificationTitle ? -1 : 0))
+                        .sort((a,b) => a.classificationTitle > b.classificationTitle ? 1 : (a.classificationTitle < b.classificationTitle ? -1 : 0))
                         .map(d => {
                             return (
                                 <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }} key={d.classificationId}>
@@ -148,7 +148,7 @@ export default class ClassificationConfig extends React.Component <IClassificati
                         fieldRef={'active'}
                         onUpdated={this.updateVal.bind(this)}
                         oneRow={true}
-                    />                    
+                    />
                 </Stack>
             </div>
         );

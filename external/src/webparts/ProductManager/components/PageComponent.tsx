@@ -2,10 +2,7 @@ import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 import { ICommandBarItemProps, Stack } from '@fluentui/react';
 
-import RecordService from '../../../services/RecordService';
-import AppService, { ICmdBarListenerProps } from '../../../services/AppService';
-
-import { ProductModel } from '../../../models/ProductModel';
+import AppService, { GlobalMsg, ICmdBarListenerProps, IGlobalListenerProps } from '../../../services/AppService';
 
 import ProductList from './Views/ProductList';
 import RollupView from './Views/RollupView';
@@ -20,17 +17,20 @@ export interface IPageComponentState {
     chosenTeamId: string;
 	view: string;
 	lastUpdated: number;
+	iconsInitialized: boolean;
 }
 
 export default class PageComponent extends React.Component <IPageComponentProps, IPageComponentState> {
 	private menuReceiver = null;
+	private globalReceiver = null;
 
 	constructor(props: IPageComponentProps) {
 		super(props);
 		this.state = {
             chosenTeamId: null,
 			view: 'ProductList',
-			lastUpdated: new Date().getTime()
+			lastUpdated: new Date().getTime(),
+			iconsInitialized: false
 		};
 	}
 
@@ -38,7 +38,9 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 		return(
 			<Stack className={styles.productManager}>
 				<Stack.Item grow>
-					<ProductManagerCmdBar appView={this.state.view} />
+					{ this.state.iconsInitialized &&
+						<ProductManagerCmdBar appView={this.state.view} />
+					}
 				</Stack.Item>
 				<Stack.Item grow>
 					{this.state.view === 'ProductList' &&
@@ -64,10 +66,16 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 	public componentDidMount(): void {
 		this.menuReceiver = this.cmdBarItemClicked.bind(this);
 		AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps);
+		this.globalReceiver = this.globalMessageReceived.bind(this);
+		AppService.RegisterGlobalListener({ callback: this.globalReceiver, msg: GlobalMsg.IconsInitialized } as IGlobalListenerProps);
+		setTimeout(() => {
+			this.setState({ iconsInitialized: true });
+		}, 10);
 	}
 
 	public componentWillUnmount(): void {
 		AppService.UnRegisterCmdBarListener(this.menuReceiver);
+		AppService.UnRegisterGlobalListener(this.globalReceiver);
 	}
 
 	//#region Emitter receivers
@@ -89,6 +97,11 @@ export default class PageComponent extends React.Component <IPageComponentProps,
 				break;
 		}
 		return Promise.resolve();
+	}
+
+	/** Receives messages from the global message emitter in the AppService */
+	private async globalMessageReceived(): Promise<void> {
+		this.setState({ iconsInitialized: true });
 	}
 	//#endregion
 }

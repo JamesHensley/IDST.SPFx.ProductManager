@@ -29,7 +29,7 @@ export interface ISPService {
     /** Returns a single field for all the products in SharePoint */
     GetSingleFieldValues(listTitle: string, fieldName: string): Promise<Array<string>>;
 
-    CopyFile(srcUrl: string, destUrl: string, suffix: string): Promise<boolean>;
+    CopyTemplateDocToProdDocs(srcUrl: string, destUrl: string, linkedProductGuid: string): Promise<boolean>;
 
     SaveAppSettings(listTitle: string, listRecord: IAppSettings, dataFieldName: string): Promise<IAppSettings>;
 }

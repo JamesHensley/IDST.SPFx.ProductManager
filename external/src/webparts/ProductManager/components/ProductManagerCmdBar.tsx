@@ -38,6 +38,14 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
                 className: this.props.appView !== 'ConfigView' ? styles.hidden : ''
             } as IContextualMenuItem,
             {
+                key: 'newTemplateDocument',
+                text: 'Template Document',
+                iconProps: { iconName: 'AddToShoppingList' },
+                ['data-automation-id']: 'newTemplateDocument',
+                onClick: this.itemClicked.bind(this),
+                className: this.props.appView !== 'ConfigView' ? styles.hidden : ''
+            } as IContextualMenuItem,
+            {
                 key: 'newProductType',
                 text: 'Product Type',
                 iconProps: { iconName: 'PageAdd' },
