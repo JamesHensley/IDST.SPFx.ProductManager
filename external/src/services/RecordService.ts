@@ -51,7 +51,10 @@ export default class RecordService {
             AppService.TriggerGlobalMessage(GlobalMsg.DocumentUploaded, [product, Array.from(files).map(d => d.name).join(',')]);
             return Promise.resolve();
         })
-        .catch(e => Promise.reject(e));
+        .catch(e => {
+            AppService.TriggerGlobalMessage(GlobalMsg.DocumentUploadFailed, [product, Array.from(files).map(d => d.name).join(',')]);
+            return Promise.reject(e);
+        });
     }
 
     public static async SaveProduct(product: ProductModel): Promise<IResult> {
@@ -74,8 +77,6 @@ export default class RecordService {
             .then(() => {
                 return this.spService.GetAttachmentsForGuid(AppService.AppSettings.miscSettings.documentLibraryName, newItem.GUID)
                 .then(attachments => {
-                    AppService.TriggerGlobalMessage((product.spId ? GlobalMsg.ProductUpdated : GlobalMsg.ProductCreated), [product]);
-
                     return Promise.resolve({
                         productModel: MapperService.MapItemToProduct(newItem, attachments),
                         resultStr: resultStr
@@ -85,8 +86,14 @@ export default class RecordService {
             })
             .catch(e => Promise.reject(e));
             })
-        .then(d => Promise.resolve(d))
-        .catch(e => Promise.reject(e));
+        .then(d => {
+            AppService.TriggerGlobalMessage((product.spId ? GlobalMsg.ProductUpdated : GlobalMsg.ProductCreated), [product]);
+            return Promise.resolve(d);
+        })
+        .catch(e => {
+            AppService.TriggerGlobalMessage(GlobalMsg.ProductSaveFailed);
+            return Promise.reject(e);
+        });
     }
 
     public static async RemoveProduct(product: ProductModel): Promise<Array<ProductModel>> {

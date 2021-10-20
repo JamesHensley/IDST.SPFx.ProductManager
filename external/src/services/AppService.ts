@@ -9,11 +9,14 @@ export enum GlobalMsg {
     AppSettingsUpdated,
     ProductCreated,
     ProductUpdated,
+    ProductSaveFailed,
     ProductTemplateDocCopied,
     ProductCommentAdded,
     EmailSent,
+    EmailFailed,
     DocumentUploading,
-    DocumentUploaded
+    DocumentUploaded,
+    DocumentUploadFailed
 }
 
 export interface ICmdBarListenerProps {
