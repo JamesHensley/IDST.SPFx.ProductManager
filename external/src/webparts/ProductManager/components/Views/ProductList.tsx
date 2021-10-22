@@ -129,7 +129,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		return (
 			<Stack>
 				<Stack.Item>
-					<Stack horizontal gap={10}>
+					<Stack horizontal tokens={{ childrenGap: 10 }}>
 						<FormInputToggle
 							labelValue={'Show Canceled Products'}
 							fieldValue={this.state.showCanceled}
@@ -192,10 +192,10 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		.then(model => {
 			const toList = AppService.AppSettings.teamMembers.filter(f => newModel.tasks.map(d => d.taskedTeamId).indexOf(f.teamId) >= 0).map(d => d.email);
 			if (newModel.spGuid) {
-				MailService.SendEmail(`Product Updated: "${model.title}"`, toList, `${model.title} Has Been Updated By ${AppService.CurrentSpUser.email}"`)
+				MailService.SendEmail(`Product Updated: "${model.title}"`, toList, `${model.title} Has Been Updated By ${AppService.CurrentSpUser.displayName}`)
 				.catch(e => console.log('MailService returned a rejected promise: ', e));
 			} else {
-				MailService.SendEmail(`Product Created: "${model.title}"`, toList, `${model.title} Has Been Updated By ${AppService.CurrentSpUser.email}"`)
+				MailService.SendEmail(`Product Created: "${model.title}"`, toList, `${model.title} Has Been Updated By ${AppService.CurrentSpUser.displayName}`)
 				.catch(e => console.log('MailService returned a rejected promise: ', e));
 			}
 

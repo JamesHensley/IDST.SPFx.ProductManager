@@ -9,6 +9,9 @@ export class EventModel {
     /** Pretty title for event */
     eventTitle: string;
 
+    /** Abbreviated name for event type */
+    eventShortName: string;
+
     /** Description of event */
     eventDescription: string;
 

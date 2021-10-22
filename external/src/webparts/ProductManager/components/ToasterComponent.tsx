@@ -38,24 +38,6 @@ export default class ToasterComponent extends React.Component<{}, {}> {
         ];
     }
 
-    componentDidMount(): void {
-        AppService.RegisterGlobalListener({ msg: GlobalMsg.ProductCreated, callback: this.receiverProdCreated } as IGlobalListenerProps);
-        AppService.RegisterGlobalListener({ msg: GlobalMsg.ProductUpdated, callback: this.receiverProdUpdated } as IGlobalListenerProps);
-        AppService.RegisterGlobalListener({ msg: GlobalMsg.ProductSaveFailed, callback: this.receiverProdSaveFailed } as IGlobalListenerProps);
-
-        AppService.RegisterGlobalListener({ msg: GlobalMsg.DocumentUploading, callback: this.receiverDocUploading } as IGlobalListenerProps);
-        AppService.RegisterGlobalListener({ msg: GlobalMsg.DocumentUploaded, callback: this.receiverDocUploaded } as IGlobalListenerProps);
-        AppService.RegisterGlobalListener({ msg: GlobalMsg.DocumentUploadFailed, callback: this.receiverDocUploadFailed } as IGlobalListenerProps);
-
-        AppService.RegisterGlobalListener({ msg: GlobalMsg.EmailSending, callback: this.toastEmailSending } as IGlobalListenerProps);
-        AppService.RegisterGlobalListener({ msg: GlobalMsg.EmailSent, callback: this.toastEmailSent } as IGlobalListenerProps);
-        AppService.RegisterGlobalListener({ msg: GlobalMsg.EmailFailed, callback: this.toastEmailFailed } as IGlobalListenerProps);
-    }
-
-    componentWillUnmount(): void {
-        this.receivers.forEach(x => AppService.UnRegisterGlobalListener(x));
-    }
-
     private toastProdCreated([prod]): void { this.toastSuccess('Product Created', prod.title); }
     private toastProdUpdated([prod]): void { this.toastSuccess('Product Updated', prod.title); }
     private toastProdSaveFailed(): void { this.toastFailed('Failed to save product'); }
@@ -64,7 +46,7 @@ export default class ToasterComponent extends React.Component<{}, {}> {
     private toastDocUploaded([prod, files]): void { this.toastSuccess('...document(s) Uploaded', prod.title, files); }
     private toastDocUploadFailed(): void { this.toastFailed('Failed to upload document(s)'); }
 
-    private toastEmailSending(): void { this.toastPending('Sending Email Notifications'); }
+    private toastEmailSending([]): void { this.toastPending('Sending Email Notifications'); }
     private toastEmailSent(): void { this.toastSuccess('Email Notifications Sent'); }
     private toastEmailFailed(): void { this.toastFailed('Failed to send email notifications'); }
 
@@ -85,6 +67,24 @@ export default class ToasterComponent extends React.Component<{}, {}> {
             </>
         );
         toast.success(toastMsg);
+    }
+
+    componentDidMount(): void {
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.ProductCreated, callback: this.receiverProdCreated } as IGlobalListenerProps);
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.ProductUpdated, callback: this.receiverProdUpdated } as IGlobalListenerProps);
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.ProductSaveFailed, callback: this.receiverProdSaveFailed } as IGlobalListenerProps);
+
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.DocumentUploading, callback: this.receiverDocUploading } as IGlobalListenerProps);
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.DocumentUploaded, callback: this.receiverDocUploaded } as IGlobalListenerProps);
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.DocumentUploadFailed, callback: this.receiverDocUploadFailed } as IGlobalListenerProps);
+
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.EmailSending, callback: this.receiverEmailSending } as IGlobalListenerProps);
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.EmailSent, callback: this.receiverEmailSent } as IGlobalListenerProps);
+        AppService.RegisterGlobalListener({ msg: GlobalMsg.EmailFailed, callback: this.receiverEmailFailed } as IGlobalListenerProps);
+    }
+
+    componentWillUnmount(): void {
+        this.receivers.forEach(x => AppService.UnRegisterGlobalListener(x));
     }
 
     render(): JSX.Element {

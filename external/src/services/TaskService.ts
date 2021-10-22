@@ -40,7 +40,7 @@ export default class TaskService {
                 teamGuid: d.taskedTeamId,
                 itemProps: {
                     productGuid: product.guid,
-                    categoryId: product.categoryId,
+                    eventTypeId: product.eventType,
                     teamGuid: d.taskedTeamId,
                     taskId: d.taskGuid,
                     style: {
@@ -92,7 +92,7 @@ export default class TaskService {
                 teamGuid: teamId,
                 itemProps: {
                     productGuid: d.guid,
-                    categoryId: d.categoryId,
+                    eventTypeId: d.eventType,
                     style: {
                         backgroundColor: eModel.eventBackgroundColor,
                         selectedBgColor: eModel.eventBackgroundColor

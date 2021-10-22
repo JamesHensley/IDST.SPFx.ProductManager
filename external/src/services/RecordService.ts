@@ -15,7 +15,7 @@ import { TeamMemberModel, TeamMemberRole, TeamModel } from '../models/TeamModel'
 import { ProductTypeModel } from '../models/ProductTypeModel';
 import { ClassificationModel } from '../models/ClassificationModel';
 import { format } from 'date-fns';
-import { CategoryModel } from '../models/CategoryModel';
+import { PirModel } from '../models/PirModel';
 import { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
 
 export interface IResult {
@@ -204,11 +204,11 @@ export default class RecordService {
         });
     }
 
-    public static GetNewCategoryModel(): CategoryModel {
-        return new CategoryModel({
-            categoryText: 'New Category',
-            categoryDescription: 'New Category description',
-            categoryId: uuidv4()
+    public static GetNewCategoryModel(): PirModel {
+        return new PirModel({
+            pirText: 'New Category',
+            pirDescription: 'New Category description',
+            pirId: uuidv4()
         });
     }
 

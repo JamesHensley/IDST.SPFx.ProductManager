@@ -50,7 +50,7 @@ export default class TaskTemplateConfig extends React.Component <ITaskConfigProp
                             labelValue='Tasked Team'
                             editing={true}
                             fieldRef={'teamId'}
-                            fieldValue={this.state.draftModel.teamId}
+                            fieldValue={[this.state.draftModel.teamId]}
                             onUpdated={this.updateField.bind(this)}
                             allowNull={true}
                             options={

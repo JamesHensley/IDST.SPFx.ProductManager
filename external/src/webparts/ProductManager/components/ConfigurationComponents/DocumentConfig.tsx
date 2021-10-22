@@ -46,7 +46,7 @@ export default class DocumentConfig extends React.Component <IDocumentConfigProp
                             labelValue='Document Template'
                             editing={true}
                             fieldRef={'docId'}
-                            fieldValue={this.state.draftModel.docId}
+                            fieldValue={[this.state.draftModel.docId]}
                             onUpdated={this.updateField.bind(this)}
                             allowNull={true}
                             options={

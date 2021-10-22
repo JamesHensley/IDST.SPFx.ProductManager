@@ -102,7 +102,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                                     labelValue='Default Event Type'
                                     editing={true}
                                     fieldRef={'defaultEventType'}
-                                    fieldValue={this.state.draftModel.defaultEventType}
+                                    fieldValue={[this.state.draftModel.defaultEventType]}
                                     onUpdated={this.updateField.bind(this)}
                                     allowNull={true}
                                     options={

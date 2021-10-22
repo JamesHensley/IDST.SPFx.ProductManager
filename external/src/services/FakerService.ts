@@ -64,7 +64,7 @@ export class Faker {
             productType: prodType.typeId,
             requestDate: beginWork,
             customer: this._fakeCustomers[Math.round(Math.random() * (this._fakeCustomers.length - 1))],
-            categoryId: (AppService.AppSettings.categories[Math.round(Math.random() * (AppService.AppSettings.categories.length - 1))]).categoryId,
+            pirIds: [(AppService.AppSettings.pirs[Math.round(Math.random() * (AppService.AppSettings.pirs.length - 1))]).pirId],
             classificationId: (AppService.AppSettings.classificationModels[Math.round(Math.random() * (AppService.AppSettings.classificationModels.length - 1))]).classificationId,
             requestUrl: 'https://www.github.com',
             requestor: 'Some Requestor',

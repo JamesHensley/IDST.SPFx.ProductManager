@@ -5,7 +5,7 @@ import TeamConfig from '../ConfigurationComponents/TeamConfig';
 import EventConfig from '../ConfigurationComponents/EventConfig';
 import StringConfig from '../ConfigurationComponents/StringConfig';
 import ClassificationConfig from '../ConfigurationComponents/ClassificationConfig';
-import CategoryConfig from '../ConfigurationComponents/CategoryConfig';
+import PirConfig from '../ConfigurationComponents/PirConfig';
 import ProductTypeConfig from '../ConfigurationComponents/ProductTypeConfig';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
 import DocumentTemplateConfig from '../ConfigurationComponents/DocumentTemplateConfig';
@@ -49,7 +49,7 @@ export default class ConfigurationView extends React.Component <{}, IConfigurati
                             <EventConfig showInactive={this.state.showInactive} />
                         </Stack.Item>
                         <Stack.Item grow verticalFill={true} align={'stretch'}>
-                            <CategoryConfig showInactive={this.state.showInactive} />
+                            <PirConfig showInactive={this.state.showInactive} />
                         </Stack.Item>
                         <Stack.Item grow verticalFill={true} align={'stretch'}>
                             <ClassificationConfig showInactive={this.state.showInactive} />

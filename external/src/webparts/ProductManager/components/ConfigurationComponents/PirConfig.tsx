@@ -3,22 +3,22 @@ import { DefaultButton, ICommandBarItemProps, IPanelHeaderRenderer, Label, Panel
 import * as styles from '../ProductManager.module.scss';
 import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 import { FormInputText } from '../FormComponents/FormInputText';
-import { CategoryModel } from '../../../../models/CategoryModel';
+import { PirModel } from '../../../../models/PirModel';
 import RecordService from '../../../../services/RecordService';
 import { FormInputToggle } from '../FormComponents/FormInputToggle';
 
-export interface ICategoryConfigProps { showInactive: boolean; }
+export interface IPirConfigProps { showInactive: boolean; }
 
-export interface CategoryConfigState {
-    draftModel: CategoryModel;
+export interface IPirConfigState {
+    draftModel: PirModel;
     showPane: boolean;
 }
 
-export default class CategoryConfig extends React.Component <ICategoryConfigProps, CategoryConfigState> {
+export default class PirConfig extends React.Component <IPirConfigProps, IPirConfigState> {
     private hasUpdates = false;
     private menuReceiver = null;
 
-    constructor(props: ICategoryConfigProps) {
+    constructor(props: IPirConfigProps) {
         super(props);
         this.state = {
             draftModel: null,
@@ -26,18 +26,18 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
         };
     }
 
-    public render(): React.ReactElement<ICategoryConfigProps> {
+    public render(): React.ReactElement<IPirConfigProps> {
         return (
             <Stack className={styles.configZone} verticalFill={true}>
-                <Label style={{ fontSize: '1.5rem' }}>Categories</Label>
+                <Label style={{ fontSize: '1.5rem' }}>PIRs</Label>
                 {
-                    AppService.AppSettings.categories
+                    AppService.AppSettings.pirs
                     .filter(f => this.props.showInactive ? true : f.active)
-                    .sort((a,b) => a.categoryText > b.categoryText ? 1 : (a.categoryText < b.categoryText ? -1 : 0))
+                    .sort((a,b) => a.pirText > b.pirText ? 1 : (a.pirText < b.pirText ? -1 : 0))
                     .map(d => {
                         return (
-                            <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }} key={d.categoryId}>
-                                <Label onClick={this.showPane.bind(this, d)} className={`${styles.pointer}`}>{d.categoryText}</Label>
+                            <Stack className={styles.card} style={{ opacity: d.active ? 1 : 0.4 }} key={d.pirId}>
+                                <Label onClick={this.showPane.bind(this, d)} className={`${styles.pointer}`}>{d.pirText}</Label>
                             </Stack>
                         );
                     })
@@ -56,21 +56,14 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
                         <FormInputText
                             labelValue={'Title'}
                             editing={true}
-                            fieldValue={this.state.draftModel.categoryText}
+                            fieldValue={this.state.draftModel.pirText}
                             fieldRef={'categoryText'}
-                            onUpdated={this.updateVal.bind(this)}
-                        />
-                        <FormInputText
-                            labelValue={'Initials'}
-                            editing={true}
-                            fieldValue={this.state.draftModel.categoryShortName}
-                            fieldRef={'categoryShortName'}
                             onUpdated={this.updateVal.bind(this)}
                         />
                         <FormInputText
                             labelValue={'Description'}
                             editing={true}
-                            fieldValue={this.state.draftModel.categoryDescription}
+                            fieldValue={this.state.draftModel.pirDescription}
                             fieldRef={'categoryDescription'}
                             onUpdated={this.updateVal.bind(this)}
                         />
@@ -97,12 +90,12 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
 
     private updateVal(fieldVal: any, fieldRef: string): void {
         this.hasUpdates = true;
-        const newModel = Object.assign(new CategoryModel(), this.state.draftModel);
+        const newModel = Object.assign(new PirModel(), this.state.draftModel);
         newModel[fieldRef] = fieldVal;
         this.setState({ draftModel: newModel });
     }
 
-    private showPane(classModel: CategoryModel): void {
+    private showPane(classModel: PirModel): void {
         this.setState({ draftModel: classModel, showPane: true });
     }
     private closePane(ignoreChanges?: boolean): void {
@@ -114,12 +107,12 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
     }
 
     private saveCategories(): void {
-        const categories = AppService.AppSettings.categories
-        .filter(f => f.categoryId !== this.state.draftModel.categoryId)
+        const categories = AppService.AppSettings.pirs
+        .filter(f => f.pirId !== this.state.draftModel.pirId)
         .concat(this.state.draftModel)
-        .sort((a, b) => a.categoryText > b.categoryText ? 1 : (a.categoryText < b.categoryText ? -1 : 0));
+        .sort((a, b) => a.pirText > b.pirText ? 1 : (a.pirText < b.pirText ? -1 : 0));
 
-        AppService.UpdateAppSetting({ categories: categories })
+        AppService.UpdateAppSetting({ pirs: categories })
         .then(newSettings => {
             this.hasUpdates = false;
             this.setState({ draftModel: null, showPane: false });
@@ -134,7 +127,7 @@ export default class CategoryConfig extends React.Component <ICategoryConfigProp
                 <Stack>
                     <Stack.Item grow>
                         <Label style={{ fontSize: '1.5rem' }}>
-                            {this.state.draftModel.categoryText}
+                            {this.state.draftModel.pirText}
                         </Label>
                     </Stack.Item>
                     <Stack horizontal>

@@ -82,30 +82,37 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                                 />
                             </Stack.Item>
                             <Stack.Item grow={1}>
-                            <FormInputDropDown
-                                    labelValue={'PIR'}
-                                    fieldValue={this.state.draftProduct.categoryId}
-                                    fieldRef={'categoryId'}
-                                    onUpdated={this.fieldUpdated.bind(this)}
-                                    editing={this.state.isEditing}
-                                    options={AppService.AppSettings.categories.map(d => { return { key: d.categoryId, value: d.categoryText, selected: d.categoryId === this.state.draftProduct.categoryId } as KeyValPair; })}
-                                    allowNull={true}
-                                    disabledKeys={[]}
-                                />
-                            </Stack.Item>
-                            <Stack.Item grow={1}>
                                 <FormInputDropDown
                                     labelValue={'Classification'}
-                                    fieldValue={this.state.draftProduct.classificationId}
+                                    fieldValue={[this.state.draftProduct.classificationId]}
                                     fieldRef={'classificationId'}
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
-                                    options={AppService.AppSettings.classificationModels.map(d => { return { key: d.classificationId, value: d.classificationTitle, selected: d.classificationId === this.state.draftProduct.classificationId } as KeyValPair; })}
+                                    options={AppService.AppSettings.classificationModels.map(d => {
+                                        return {
+                                            key: d.classificationId, value: d.classificationTitle, selected: d.classificationId === this.state.draftProduct.classificationId
+                                        } as KeyValPair;
+                                    })}
                                     allowNull={true}
-                                    disabledKeys={[]}
+                                    disabledKeys={AppService.AppSettings.classificationModels.filter(f => !f.active).map(d => d.classificationId)}
                                 />
                             </Stack.Item>
                         </Stack>
+                        <FormInputDropDown
+                            labelValue={'PIR(s)'}
+                            fieldValue={this.state.draftProduct.pirIds}
+                            fieldRef={'pirIds'}
+                            onUpdated={this.fieldUpdated.bind(this)}
+                            editing={this.state.isEditing}
+                            options={AppService.AppSettings.pirs.map(d => {
+                                return {
+                                    key: d.pirId, value: d.pirText, longValue: d.pirDescription, selected: (this.state.draftProduct.pirIds || []).indexOf(d.pirId) >= 0
+                                } as KeyValPair;
+                            })}
+                            allowNull={true}
+                            disabledKeys={AppService.AppSettings.pirs.filter(f => !f.active).map(d => d.pirId)}
+                            allowMultiple={true}
+                        />
                         <FormInputText
                             labelValue={'Description'} editing={this.state.isEditing}
                             fieldValue={this.state.draftProduct.description} editLines={8}
@@ -122,7 +129,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                             <Stack.Item grow styles={stackItemStyles}>
                                 <FormInputDropDown
                                     labelValue={'Product Type'}
-                                    fieldValue={this.state.draftProduct.productType}
+                                    fieldValue={[this.state.draftProduct.productType]}
                                     fieldRef={'productType'}
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
@@ -134,7 +141,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                             <Stack.Item grow styles={stackItemStyles}>
                                 <FormInputDropDown
                                     labelValue={'Product Status'}
-                                    fieldValue={this.state.draftProduct.status}
+                                    fieldValue={[this.state.draftProduct.status]}
                                     fieldRef={'status'}
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}
@@ -152,7 +159,7 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                             <Stack.Item grow styles={stackItemStyles}>
                                 <FormInputDropDown
                                     labelValue={'Event Type'}
-                                    fieldValue={this.state.draftProduct.eventType}
+                                    fieldValue={[this.state.draftProduct.eventType]}
                                     fieldRef={'eventType'}
                                     onUpdated={this.fieldUpdated.bind(this)}
                                     editing={this.state.isEditing}

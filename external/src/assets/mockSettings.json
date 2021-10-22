@@ -213,10 +213,10 @@
             ]
         }
     ],
-    "categories": [
-        { "active": true, "categoryId": "category1Guid", "categoryText": "Cat 1", "description": ""},
-        { "active": true, "categoryId": "category2Guid", "categoryText": "Cat 2", "description": ""},
-        { "active": true, "categoryId": "category3Guid", "categoryText": "Cat 3", "description": ""}
+    "pirs": [
+        { "active": true, "pirId": "category1Guid", "pirText": "Cat 1", "description": "Description for CAT 1"},
+        { "active": true, "pirId": "category2Guid", "pirText": "Cat 2", "description": "Description for CAT 2"},
+        { "active": true, "pirId": "category3Guid", "pirText": "Cat 3", "description": "Description for CAT 3"}
     ],
     "eventTypes": [
         {

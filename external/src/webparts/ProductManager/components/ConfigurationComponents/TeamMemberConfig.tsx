@@ -100,7 +100,7 @@ export default class TeamMemberConfig extends React.Component <ITeamMemberConfig
                                 labelValue='Team Assignment'
                                 editing={true}
                                 fieldRef={'teamId'}
-                                fieldValue={this.state.draftMember.teamId}
+                                fieldValue={[this.state.draftMember.teamId]}
                                 onUpdated={this.updateMember.bind(this)}
                                 allowNull={false}
                                 options={

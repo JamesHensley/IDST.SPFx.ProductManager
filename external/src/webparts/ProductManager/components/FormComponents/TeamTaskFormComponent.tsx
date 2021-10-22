@@ -31,7 +31,7 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
                     <Stack.Item grow styles={stackItemStyles}>
                         <FormInputDropDown
                             labelValue={'Task Status'}
-                            fieldValue={this.state.draftTask.taskState}
+                            fieldValue={[this.state.draftTask.taskState]}
                             fieldRef={'taskState'}
                             onUpdated={this.fieldUpdated.bind(this)}
                             editing={this.props.isEditing}

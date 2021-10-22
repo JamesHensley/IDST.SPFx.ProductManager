@@ -34,7 +34,7 @@ export class ProductModel {
     public tasks?: Array<TaskModel>;
     public attachedDocuments: Array<AttachmentModel>;
     public productType: string;
-    public categoryId: string;
+    public pirIds: Array<string>;
     public eventType: string;
     public eventDateStart?: Date;
     public eventDateEnd?: Date;
@@ -49,7 +49,7 @@ export class ProductModel {
         const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === this.productType ? n.typeName : t, '');
         const eventTypeTitle = AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === this.eventType ? n.eventTitle : t, '');
         const teamNames = AppService.AppSettings.teams.reduce((t, n) => this.tasks.map(d => d.taskedTeamId).indexOf(n.teamId) >= 0 ? t + n.name : t, '');
-        const category = AppService.AppSettings.categories.reduce((t, n) => n.categoryId === this.categoryId ? n.categoryText : t, '');
+        const category = AppService.AppSettings.pirs.reduce((t, n) => this.pirIds && this.pirIds.indexOf(n.pirId) >= 0 ? n.pirText : t, '');
 
         return `${this.title} ${this.description} ${prodTypeTitle} ${eventTypeTitle} ${teamNames} ${category}`;
     }

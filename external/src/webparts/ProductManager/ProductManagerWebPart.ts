@@ -18,7 +18,7 @@ import { TeamMemberModel, TeamModel } from '../../models/TeamModel';
 import { ProductTypeModel } from '../../models/ProductTypeModel';
 import { EventModel } from '../../models/EventModel';
 import { ClassificationModel } from '../../models/ClassificationModel';
-import { CategoryModel } from '../../models/CategoryModel';
+import { PirModel } from '../../models/PirModel';
 import { MiscSettingsModel } from '../../models/MiscSettingsModel';
 import { TemplateDocumentModel } from '../../models/TemplateDocumentModel';
 import { IIconOptions } from '@fluentui/style-utilities';
@@ -41,7 +41,7 @@ export interface IAppSettings {
   teamMembers: Array<TeamMemberModel>;
   templateDocuments: Array<TemplateDocumentModel>;
   productTypes: Array<ProductTypeModel>;
-  categories: Array<CategoryModel>;
+  pirs: Array<PirModel>;
   eventTypes: Array<EventModel>;
   classificationModels: Array<ClassificationModel>;
 }
@@ -111,10 +111,10 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
           },
           groups: [
             {
-              groupName: '',
+              groupName: 'App Settings',
               groupFields: [
                 PropertyPaneTextField('description', {
-                   label: 'Application Description',
+                    label: 'Application Description',
                     multiline: true,
                     rows: 4
                 }),
@@ -159,7 +159,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
           settings.teamMembers = data.teamMembers.map((d: TeamMemberModel) => new TeamMemberModel(d));
           settings.templateDocuments = data.templateDocuments.map((d: TemplateDocumentModel) => new TemplateDocumentModel(d));
           settings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
-          settings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
+          settings.pirs = data.pirs.map((d: PirModel) => new PirModel(d));
           settings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
           settings.classificationModels = data.classificationModels.map(d => new ClassificationModel(d));
           return Promise.resolve(settings);
@@ -189,7 +189,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
       settings.teamMembers = data.teamMembers.map((d: TeamMemberModel) => new TeamMemberModel(d));
       settings.templateDocuments = data.templateDocuments.map((d: TemplateDocumentModel) => new TemplateDocumentModel(d));
       settings.productTypes = data.productTypes.map((d: ProductTypeModel) => new ProductTypeModel(d));
-      settings.categories = data.categories.map((d: CategoryModel) => new CategoryModel(d));
+      settings.pirs = data.pirs.map((d: PirModel) => new PirModel(d));
       settings.eventTypes = data.eventTypes.map((d: EventModel) => new EventModel(d));
       settings.classificationModels = data.classificationModels.map(d => new ClassificationModel(d));
       this.appSettings = settings;
