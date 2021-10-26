@@ -57,15 +57,16 @@ export default class PirConfig extends React.Component <IPirConfigProps, IPirCon
                             labelValue={'Title'}
                             editing={true}
                             fieldValue={this.state.draftModel.pirText}
-                            fieldRef={'categoryText'}
+                            fieldRef={'pirText'}
                             onUpdated={this.updateVal.bind(this)}
                         />
                         <FormInputText
                             labelValue={'Description'}
                             editing={true}
                             fieldValue={this.state.draftModel.pirDescription}
-                            fieldRef={'categoryDescription'}
+                            fieldRef={'pirDescription'}
                             onUpdated={this.updateVal.bind(this)}
+                            editLines={3}
                         />
                     </Panel>
                 }
@@ -82,7 +83,7 @@ export default class PirConfig extends React.Component <IPirConfigProps, IPirCon
     }
     private cmdBarEvent(item: ICommandBarItemProps): Promise<void> {
         if (item['data-automation-id'] === 'newCategoryModel') {
-                const newRecord = RecordService.GetNewCategoryModel();
+                const newRecord = RecordService.GetNewPirModel();
                 this.setState({ draftModel: newRecord, showPane: true });
         }
         return Promise.resolve();

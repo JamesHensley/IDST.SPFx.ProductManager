@@ -1,3 +1,4 @@
+
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 
 div[class*='ms-Persona-details'] {
@@ -20,6 +21,17 @@ div[class*="pageContent"] {
   max-width: none;
 }
 
+.ms-Toggle button {
+  min-width: unset;
+}
+
+.ms-button button {
+  padding-left: unset;
+}
+
+.ms-TextField input {
+  border: unset;
+}
 
 /* implementations of the Office UI Fabric grid */
 .grid { @include ms-Grid; }

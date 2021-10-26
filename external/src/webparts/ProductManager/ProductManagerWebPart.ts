@@ -4,9 +4,6 @@ import { DisplayMode, Version } from '@microsoft/sp-core-library';
 import { BaseClientSideWebPart, WebPartContext, IPropertyPaneConfiguration, PropertyPaneTextField, IPropertyPaneCustomFieldProps } from '@microsoft/sp-webpart-base';
 import PnPTelemetry from '@pnp/telemetry-js';
 
-import { initializeIcons } from '@fluentui/react/lib/Icons';
-import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
-
 import AppService, { GlobalMsg } from '../../services/AppService';
 import RecordService from '../../services/RecordService';
 
@@ -21,7 +18,9 @@ import { ClassificationModel } from '../../models/ClassificationModel';
 import { PirModel } from '../../models/PirModel';
 import { MiscSettingsModel } from '../../models/MiscSettingsModel';
 import { TemplateDocumentModel } from '../../models/TemplateDocumentModel';
-import { IIconOptions } from '@fluentui/style-utilities';
+
+import { IIconOptions, initializeIcons } from 'office-ui-fabric-react';
+import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 
 export interface IProductManagerWebPartProps {
   description: string;
@@ -69,7 +68,7 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     AppService.Init(this);
     this.appSettings = await this.getAppSettings()
     .then(d => {
-      initializeIcons(`${d.miscSettings.fluentUiCDN}/icons/`, { disableWarnings: true } as IIconOptions);
+      initializeIcons(`${d.miscSettings.fluentUiCDN}/icons`, { disableWarnings: true } as IIconOptions);
       initializeFileTypeIcons(`${d.miscSettings.fluentUiCDN}/item-types/`, { disableWarnings: true } as IIconOptions);
       AppService.TriggerGlobalMessage(GlobalMsg.IconsInitialized);
       return d;

@@ -49,8 +49,8 @@ export class ProductModel {
         const prodTypeTitle = AppService.AppSettings.productTypes.reduce((t,n) => n.typeId === this.productType ? n.typeName : t, '');
         const eventTypeTitle = AppService.AppSettings.eventTypes.reduce((t,n) => n.eventTypeId === this.eventType ? n.eventTitle : t, '');
         const teamNames = AppService.AppSettings.teams.reduce((t, n) => this.tasks.map(d => d.taskedTeamId).indexOf(n.teamId) >= 0 ? t + n.name : t, '');
-        const category = AppService.AppSettings.pirs.reduce((t, n) => this.pirIds && this.pirIds.indexOf(n.pirId) >= 0 ? n.pirText : t, '');
+        const pirs = AppService.AppSettings.pirs.reduce((t, n) => this.pirIds && this.pirIds.indexOf(n.pirId) >= 0 ? t + `${n.pirText} - ${n.pirDescription} ` : t, '');
 
-        return `${this.title} ${this.description} ${prodTypeTitle} ${eventTypeTitle} ${teamNames} ${category}`;
+        return `${this.title} ${this.description} ${prodTypeTitle} ${eventTypeTitle} ${teamNames} ${pirs}`;
     }
 }

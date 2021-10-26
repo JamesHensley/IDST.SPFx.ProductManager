@@ -1,8 +1,9 @@
-import { ICommandBarItemProps } from '@fluentui/react';
+// import { ICommandBarItemProps } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 import ProductManagerWebPart, { IAppSettings } from '../webparts/ProductManager/ProductManagerWebPart';
 import { SPUser } from '@microsoft/sp-page-context';
+import { ICommandBarItemProps } from 'office-ui-fabric-react';
 
 export enum GlobalMsg {
     IconsInitialized,

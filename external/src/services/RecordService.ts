@@ -204,10 +204,10 @@ export default class RecordService {
         });
     }
 
-    public static GetNewCategoryModel(): PirModel {
+    public static GetNewPirModel(): PirModel {
         return new PirModel({
-            pirText: 'New Category',
-            pirDescription: 'New Category description',
+            pirText: 'New PIR',
+            pirDescription: 'New PIR description',
             pirId: uuidv4()
         });
     }

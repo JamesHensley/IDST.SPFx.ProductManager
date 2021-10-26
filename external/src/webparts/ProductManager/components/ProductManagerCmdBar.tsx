@@ -2,12 +2,9 @@ import * as React from 'react';
 import * as styles from './ProductManager.module.scss';
 
 import AppService from '../../../services/AppService';
-import RecordService from '../../../services/RecordService';
-
-import { CommandBar, ICommandBarItemProps, IContextualMenuItem } from '@fluentui/react';
-import { IAppSettings } from '../ProductManagerWebPart';
-import { EventModel } from '../../../models/EventModel';
-import { TeamModel } from '../../../models/TeamModel';
+// import { CommandBar, ICommandBarItemProps, IContextualMenuItem, IIconOptions, initializeIcons } from '@fluentui/react';
+import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
+import { CommandBar, ICommandBarItemProps, IContextualMenuItem, IIconOptions, initializeIcons } from 'office-ui-fabric-react';
 
 export interface IProductManagerCmdBarProps {
     appView: string;
@@ -79,6 +76,12 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
             } as IContextualMenuItem
         ]);
     }
+
+    constructor(props: IProductManagerCmdBarProps) {
+        super(props);
+        initializeIcons(`${AppService.AppSettings.miscSettings.fluentUiCDN}/icons`, { disableWarnings: true } as IIconOptions);
+        initializeFileTypeIcons(`${AppService.AppSettings.miscSettings.fluentUiCDN}/item-types/`, { disableWarnings: true } as IIconOptions);
+      }
 
     public render(): React.ReactElement<IProductManagerCmdBarProps> {
         return (
