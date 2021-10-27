@@ -71,7 +71,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
 
     public render(): React.ReactElement<IRollupViewProps> {
         return (
-            <Stack>
+            <Stack styles={{ root: { width: `${AppService.WebPartWidth}px` } }}>
                 <Stack horizontal tokens={{ childrenGap: 30 }}>
                     <Toggle
                         label={'Show events row'}

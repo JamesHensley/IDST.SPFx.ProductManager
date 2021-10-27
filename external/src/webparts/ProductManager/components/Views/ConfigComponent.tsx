@@ -41,7 +41,7 @@ export default class ConfigurationView extends React.Component <{}, IConfigurati
                     <ProductTypeConfig showInactive={this.state.showInactive} />
                 </Stack.Item>
                 <Stack.Item grow>
-                    <Stack horizontal tokens={{ childrenGap: 10 }} verticalFill={true}>
+                    <Stack horizontal wrap tokens={{ childrenGap: 10 }} verticalFill={true}>
                         <Stack.Item grow verticalFill={true} align={'stretch'}>
                             <StringConfig />
                         </Stack.Item>

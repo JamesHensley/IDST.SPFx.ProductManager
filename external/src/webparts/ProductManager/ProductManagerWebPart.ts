@@ -22,6 +22,8 @@ import { TemplateDocumentModel } from '../../models/TemplateDocumentModel';
 import { IIconOptions, initializeIcons } from 'office-ui-fabric-react';
 import { initializeFileTypeIcons } from '@fluentui/react-file-type-icons';
 
+import './components/Overrides.css';
+
 export interface IProductManagerWebPartProps {
   description: string;
   appSettingsListName: string;

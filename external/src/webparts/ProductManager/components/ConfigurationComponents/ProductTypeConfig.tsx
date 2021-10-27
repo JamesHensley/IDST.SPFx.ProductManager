@@ -44,7 +44,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
         return (
             <Stack className={styles.configZone} verticalFill={true}>
                 <Label style={{ fontSize: '1.5rem' }}>Product Types</Label>
-                <Stack horizontal key={new Date().getTime()}>
+                <Stack horizontal wrap key={new Date().getTime()}>
                     {
                         AppService.AppSettings.productTypes
                         .filter(f => this.props.showInactive ? true : f.active)
@@ -150,6 +150,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                                 key={new Date().getTime()}
                                 optSelectedCallback={this.teamSelected.bind(this)}
                                 title='Team Selector'
+                                dropdownLabel='Team'
                                 opts={
                                     AppService.AppSettings.teams
                                     .map(d => { return { key: d.teamId, text: d.name }; })
@@ -167,6 +168,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                                 key={new Date().getTime()}
                                 optSelectedCallback={this.docSelected.bind(this)}
                                 title='Document Selector'
+                                dropdownLabel='Document'
                                 opts={
                                     AppService.AppSettings.templateDocuments
                                     .map(d => { return { key: d.templateId, text: d.title }; })
@@ -174,7 +176,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                                 }
                                 selectedOpt={''}
                                 showInputText={true}
-                                extraTextLabel={'Document Name'}
+                                extraTextLabel={'Destination Document Name'}
                                 extraText={''}
                             />
                         }

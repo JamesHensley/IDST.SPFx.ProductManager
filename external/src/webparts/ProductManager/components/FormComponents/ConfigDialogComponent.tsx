@@ -4,6 +4,7 @@ import { DefaultButton, Dropdown, IconButton, IDropdownOption, Label, Stack, Dia
 export interface IConfigDialogProps {
     optSelectedCallback: (optId: string, eText: string) => void;
     title: string;
+    dropdownLabel?: string;
     opts: Array<IDropdownOption>;
     selectedOpt?: string;
     showInputText?: boolean;
@@ -31,7 +32,7 @@ export const ConfigDialogComponent: React.FunctionComponent<IConfigDialogProps> 
                         options={props.opts}
                         defaultSelectedKey={opt}
                         onChange={(e, o, i) => setOpt(o.key.toString())}
-                        label={''}
+                        label={props.dropdownLabel ? props.dropdownLabel : ''}
                     />
                     { props.extraTextLabel && <Label>{props.extraTextLabel}</Label> }
                     { props.showInputText &&

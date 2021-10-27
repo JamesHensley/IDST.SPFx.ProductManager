@@ -38,7 +38,7 @@ export default class TeamConfig extends React.Component <ITeamConfigProps, ITeam
         return (
             <Stack className={styles.configZone}>
                 <Label style={{ fontSize: '1.5rem' }}>Teams</Label>
-                <Stack horizontal key={new Date().getTime()}>
+                <Stack horizontal wrap key={new Date().getTime()}>
                     {
                         AppService.AppSettings.teams
                         .filter(f => this.props.showInactive ? true : f.active)

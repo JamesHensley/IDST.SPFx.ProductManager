@@ -37,16 +37,22 @@ export interface IEmailObj {
 }
 
 export default class AppService {
+    private static _webpartWidth: number;
     private static _webpart: ProductManagerWebPart;
     private static _productListeners: Array<() => Promise<void>> = [];
     private static _cmdBarListeners: Array<ICmdBarListenerProps> = [];
     private static _globalListeners: Array<IGlobalListenerProps> = [];
 
-    public static Init(webpart: ProductManagerWebPart): void { this._webpart = webpart; }
+    public static Init(webpart: ProductManagerWebPart): void {
+        this._webpart = webpart;
+        this._webpartWidth = parseInt(window.getComputedStyle(document.querySelector('.Placeholder-spinnerContainer')).width, 10) * .96;
+    }
 
     public static get AppSettings(): IAppSettings { return this._webpart.AppProps; }
 
     public static get AppContext(): WebPartContext { return this._webpart.context; }
+
+    public static get WebPartWidth(): number { return this._webpartWidth; }
 
     public static async UpdateAppSetting(val: Partial<IAppSettings>): Promise<IAppSettings> {
         const settings = await this._webpart.UpdateAppSettings(val)

@@ -62,9 +62,9 @@
         }        
     ],
     "templateDocuments": [
-        { "templateId": "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10", "documentUrl": "/", "documentName": "docType1.txt", "active": true },
-        { "templateId": "0ca8e54b-cf78-44e3-880d-723e3e3d7473", "documentUrl": "/", "documentName": "docType2.txt", "active": true },
-        { "templateId": "b28fab67-2863-45b0-93bf-932fa5f28645", "documentUrl": "/", "documentName": "docType3.txt", "active": true }
+        { "templateId": "f8e73fd9-deb0-4966-bb3c-9a63dc9f9e10", "documentUrl": "/", "title": "docType1.txt", "active": true },
+        { "templateId": "0ca8e54b-cf78-44e3-880d-723e3e3d7473", "documentUrl": "/", "title": "docType2.txt", "active": true },
+        { "templateId": "b28fab67-2863-45b0-93bf-932fa5f28645", "documentUrl": "/", "title": "docType3.txt", "active": true }
     ],
     "productTypes": [
         {

@@ -28,7 +28,7 @@ export default class DocumentTemplateConfig extends React.Component <IDocumentTe
         return (
             <Stack className={styles.configZone} verticalFill={true}>
                 <Label style={{ fontSize: '1.5rem' }}>Document Templates</Label>
-                <Stack horizontal key={new Date().getTime()}>
+                <Stack horizontal wrap key={new Date().getTime()}>
                     {
                         AppService.AppSettings.templateDocuments
                         .filter(f => this.props.showInactive ? true : f.active)
