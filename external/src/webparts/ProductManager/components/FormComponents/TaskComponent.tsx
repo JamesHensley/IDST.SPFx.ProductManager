@@ -92,6 +92,7 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
                         key={new Date().getTime()}
                         optSelectedCallback={this.teamSelected.bind(this)}
                         opts={AppService.AppSettings.teams
+                            .filter(f => f.active)
                             .map(d => { return { key: d.teamId, text: d.name }; })
                             .sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0))
                         }

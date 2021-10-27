@@ -119,9 +119,12 @@ export default class ProductManagerCmdBar extends React.Component <IProductManag
                                 {
                                     key: 'teamView',
                                     text: 'Team Views',
+                                    disabled: true,
                                     iconProps: { iconName: 'WorkforceManagement' },
                                     subMenuProps: {
-                                        items: AppService.AppSettings.teams.map(d => {
+                                        items: AppService.AppSettings.teams
+                                        .filter(f => f.active)
+                                        .map(d => {
                                             return {
                                                 key: d.teamId,
                                                 text: d.name,

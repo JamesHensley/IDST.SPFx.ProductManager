@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { DisplayMode, Version } from '@microsoft/sp-core-library';
-import { BaseClientSideWebPart, WebPartContext, IPropertyPaneConfiguration, PropertyPaneTextField, IPropertyPaneCustomFieldProps } from '@microsoft/sp-webpart-base';
+import { BaseClientSideWebPart, WebPartContext, IPropertyPaneConfiguration, PropertyPaneTextField } from '@microsoft/sp-webpart-base';
 import PnPTelemetry from '@pnp/telemetry-js';
 
 import AppService, { GlobalMsg } from '../../services/AppService';
@@ -66,6 +66,9 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
   protected async onInit(): Promise<void> {
     PnPTelemetry.getInstance().optOut();
     (window as any).disableBeaconLogToConsole = true;
+
+    this.properties.siteRootUrl = this.properties.siteRootUrl ? this.properties.siteRootUrl : '/sites/jise';
+    this.properties.appSettingsListName = this.properties.appSettingsListName ? this.properties.appSettingsListName : 'JiseToolAppSettings';
 
     AppService.Init(this);
     this.appSettings = await this.getAppSettings()

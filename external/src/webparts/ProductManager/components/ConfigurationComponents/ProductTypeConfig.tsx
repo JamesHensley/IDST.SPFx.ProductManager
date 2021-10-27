@@ -153,6 +153,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                                 dropdownLabel='Team'
                                 opts={
                                     AppService.AppSettings.teams
+                                    .filter(f => f.active)
                                     .map(d => { return { key: d.teamId, text: d.name }; })
                                     .sort((a, b) => a.text > b.text ? 1 : (a.text < b.text ? -1 : 0))
                                 }

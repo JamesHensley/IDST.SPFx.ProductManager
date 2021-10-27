@@ -6,6 +6,7 @@
 .ms-TextField input { border: unset; }
 .ms-WPBorder { border: unset; }
 
+/* Miscellaneous things for modern-webpages */
 div[class*='ms-Persona-details'] { display: none; }
 div[class*='homePageContent'] { max-width: none!important; }
 div[class*="Canvas"] { max-width: none; }
