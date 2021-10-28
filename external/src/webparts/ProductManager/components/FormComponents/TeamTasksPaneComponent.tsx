@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Panel, PanelType, Stack, DefaultButton, Separator } from '@fluentui/react';
+import { Panel, PanelType, Stack, DefaultButton, Separator, IconButton } from '@fluentui/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import * as styles from '../ProductManager.module.scss';
@@ -13,6 +13,7 @@ export interface ITeamTasksPaneComponentProps {
     teamModel: TeamModel;
     isEditing: boolean;
     updateTasksCallback: (tasks: Array<TaskModel>) => void;
+    removeTeamTasksCallback: (teamId: string) => void;
     cancelCallBack: () => void;
 }
 
@@ -46,7 +47,7 @@ export class TeamTasksPaneComponent extends React.Component<ITeamTasksPaneCompon
                                 {this.props.isEditing && <DefaultButton onClick={this.cancelUpdateTasks.bind(this)} disabled={!this.props.isEditing}>Cancel</DefaultButton>}
                             </Stack>
                         </Stack.Item>
-                        <Stack.Item>
+                        <Stack.Item grow>
                             {this.props.isEditing && <DefaultButton onClick={this.addTask.bind(this)} disabled={!this.props.isEditing}>Add Task</DefaultButton>}
                         </Stack.Item>
                     </Stack>
@@ -62,6 +63,7 @@ export class TeamTasksPaneComponent extends React.Component<ITeamTasksPaneCompon
                                             committedTask={d}
                                             isEditing={this.props.isEditing}
                                             updateCallback={this.taskUpdated.bind(this)}
+                                            removeCallBack={this.removeTask.bind(this)}
                                         />
                                     </div>
                                 );
@@ -84,6 +86,15 @@ export class TeamTasksPaneComponent extends React.Component<ITeamTasksPaneCompon
 
         const newTasks = this.state.draftTasks.concat([newTask]);
         this.setState({ draftTasks: newTasks });
+    }
+
+    private removeTask(task: TaskModel): void {
+        const newTasks = this.state.draftTasks.filter(f => f.taskGuid !== task.taskGuid);
+        if (newTasks.length === 0) {
+            this.props.removeTeamTasksCallback(task.taskedTeamId);
+        } else {
+            this.setState({ draftTasks: newTasks });
+        }
     }
 
     private taskUpdated(task: TaskModel): void {

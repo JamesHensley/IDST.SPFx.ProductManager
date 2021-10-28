@@ -129,6 +129,13 @@
   }
 }
 
+.appIconLg {
+  i {
+    color:#6a7373;
+    font-size: 1.2rem;
+  }
+}
+
 .padTop0 { padding-top: 0px; }
 .padTop1 { padding-top: 5px; }
 .padTop2 { padding-top: 10px; }
@@ -165,6 +172,10 @@
   font-size: 0.6rem;
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.tinyText {
+  font-size: .3rem;
 }
 
 .hidden {

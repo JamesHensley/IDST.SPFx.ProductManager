@@ -9,6 +9,7 @@ import { FormInputDropDown, KeyValPair } from '../FormComponents/FormInputDropDo
 export interface ITaskConfigProps {
     task: TaskTemplate;
     saveTask: (task: TaskTemplate) => void;
+    removeTask: (taskId: string) => void;
 }
 
 export interface ITaskConfigState {
@@ -124,9 +125,16 @@ export default class TaskTemplateConfig extends React.Component <ITaskConfigProp
                                 <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
                             </Stack>
                         </Stack.Item>
+                        <Stack.Item>
+                            <DefaultButton onClick={this.removeTeamTask.bind(this)}>Delete</DefaultButton>
+                        </Stack.Item>
                     </Stack>
                 </Stack>
             </div>
         );
+    }
+
+    private removeTeamTask(): void {
+        this.props.removeTask(this.state.draftModel.taskId);
     }
 }

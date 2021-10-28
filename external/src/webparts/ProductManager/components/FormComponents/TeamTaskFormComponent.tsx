@@ -3,14 +3,16 @@ import { TaskModel, TaskState } from '../../../../models/TaskModel';
 import { FormInputDate } from './FormInputDate';
 import { FormInputText } from './FormInputText';
 import { FormInputDropDown, KeyValPair } from './FormInputDropDown';
-import { IStackItemStyles, Stack } from '@fluentui/react';
+import { IconButton, IStackItemStyles, Stack } from '@fluentui/react';
 import { startOfDay } from 'date-fns';
 import { differenceInHours, subHours } from 'date-fns/esm';
+import * as styles from '../ProductManager.module.scss';
 
 export interface ITeamTaskFormComponentProps {
     committedTask: TaskModel;
     isEditing: boolean;
     updateCallback: (task: TaskModel) => void;
+    removeCallBack: (task: TaskModel) => void;
 }
 
 export interface ITeamTaskFormComponentState {
@@ -52,6 +54,7 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
                             editing={this.props.isEditing}
                         />
                     </Stack.Item>
+                    {this.props.isEditing && <IconButton iconProps={{ iconName: 'delete' }} className={styles.appIconLg} title='' ariaLabel='' onClick={this.removeTask.bind(this)} />}
                 </Stack>
                 <Stack horizontal>
                     <Stack.Item grow styles={stackItemStyles}>
@@ -84,5 +87,9 @@ export class TeamTaskFormComponent extends React.Component<ITeamTaskFormComponen
 
         this.setState({ draftTask: newDraft });
         this.props.updateCallback(newDraft);
+    }
+
+    private removeTask(): void {
+        this.props.removeCallBack(this.state.draftTask);
     }
 }

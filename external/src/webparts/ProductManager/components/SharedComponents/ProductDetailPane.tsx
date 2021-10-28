@@ -301,6 +301,9 @@ export default class ProductDetailPane extends React.Component<IProductDetailPan
                     <Label style={{ fontSize: '1.5rem' }}>
                         {this.state.draftProduct ? `${this.state.draftProduct.title} [${this.state.draftProduct.status}]` : ''}
                     </Label>
+                    {this.state.draftProduct.spGuid &&
+                        <Stack.Item styles={{ root: { fontSize: '0.7rem', marginBottom: '10px' } }}>Product GUID: {this.state.draftProduct.spGuid}</Stack.Item>
+                    }
                     {!this.props.readOnly &&
                     <Stack horizontal>
                         <Stack.Item grow>

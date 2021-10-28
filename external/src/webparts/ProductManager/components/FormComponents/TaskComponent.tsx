@@ -79,6 +79,7 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
                                         isPaneVisible={paneState.isPaneVisible}
                                         editing={this.props.isEditing}
                                         tasksUpdated={this.teamTasksUpdated.bind(this)}
+                                        removeTeamTasks={this.removeTeamTasks.bind(this)}
                                         teamClicked={this.teamClicked.bind(this)}
                                     />
                                 );
@@ -123,6 +124,13 @@ export class TaskComponent extends React.Component<ITaskComponentProps, ITaskCom
             // User canceled
             newDrafts = this.props.TaskItems;
         }
+        const newPanes = this.state.taskPanes.map(d => { return { teamId: d.teamId, isPaneVisible: false } as ITaskPaneState; });
+        this.setState({ taskPanes: newPanes, draftTasks: newDrafts });
+        this.props.onUpdated(newDrafts);
+    }
+
+    private removeTeamTasks(teamId: string): void {
+        const newDrafts = this.state.draftTasks.filter(f => f.taskedTeamId !== teamId);
         const newPanes = this.state.taskPanes.map(d => { return { teamId: d.teamId, isPaneVisible: false } as ITaskPaneState; });
         this.setState({ taskPanes: newPanes, draftTasks: newDrafts });
         this.props.onUpdated(newDrafts);

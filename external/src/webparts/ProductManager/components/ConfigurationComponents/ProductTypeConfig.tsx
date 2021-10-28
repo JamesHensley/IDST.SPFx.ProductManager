@@ -128,7 +128,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                                         </Stack>
                                         {this.state.draftModel.defaultTeamTasks
                                         .sort((a,b) => a.taskOrder > b.taskOrder ? 1 : (a.taskOrder < b.taskOrder ? -1 : 0))
-                                        .map((d,i,e) => <TaskTemplateConfig task={d} key={`${d.taskOrder}-${i}`} saveTask={this.updateTask.bind(this)} />)}
+                                        .map((d,i,e) => <TaskTemplateConfig task={d} key={d.taskId} saveTask={this.updateTask.bind(this)} removeTask={this.removeTeamTask.bind(this)} />)}
                                     </Stack>
                                 </Stack.Item>
                                 <Stack.Item grow>
@@ -139,7 +139,7 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
                                         </Stack>
                                         {this.state.draftModel.defaultTemplateDocs
                                         .sort((a,b) => a.destDocName > b.destDocName ? 1 : (a.destDocName < b.destDocName ? -1 : 0))
-                                        .map((d,i,e) => <DocumentConfig model={d} key={i} saveModel={this.updateDoc.bind(this)} />)}
+                                        .map((d,i,e) => <DocumentConfig model={d} key={d.docId} saveModel={this.updateDoc.bind(this)} removeModel={this.removeDocTemplate.bind(this)} />)}
                                     </Stack>
                                 </Stack.Item>
                             </Stack>
@@ -289,6 +289,13 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
         this.setState({ isTeamDialogVisible: true, isDocDialogVisible: false });
     }
 
+    private removeTeamTask(taskId: string): void {
+        const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
+        newModel.defaultTeamTasks = this.state.draftModel.defaultTeamTasks.filter(f => f.taskId !== taskId);
+        this.hasUpdates = true;
+        this.setState({ draftModel: newModel });
+    }
+
     private addDocTemplate(): void {
         this.setState({ isTeamDialogVisible: false, isDocDialogVisible: true });
     }
@@ -314,5 +321,12 @@ export default class ProductTypeConfig extends React.Component <IProductTypeConf
         this.state.draftModel.defaultTemplateDocs = [].concat.apply((this.state.draftModel.defaultTemplateDocs || []), [newDoc]);
         const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
         this.setState({ draftModel: newModel, isDocDialogVisible: false });
+    }
+
+    private removeDocTemplate(docId: string): void {
+        const newModel = Object.assign(new ProductTypeModel(), this.state.draftModel);
+        newModel.defaultTemplateDocs = this.state.draftModel.defaultTemplateDocs.filter(f => f.docId !== docId);
+        this.hasUpdates = true;
+        this.setState({ draftModel: newModel });
     }
 }

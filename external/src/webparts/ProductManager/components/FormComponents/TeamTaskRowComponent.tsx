@@ -14,6 +14,7 @@ export interface ITeamTaskComponentProps {
     teamTasks: Array<TaskModel>;
     teamClicked: (taskId: string) => void;
     tasksUpdated: (newTasks: Array<TaskModel>) => void;
+    removeTeamTasks: (teamId: string) => void;
 
     isPaneVisible: boolean;
     editing: boolean;
@@ -29,6 +30,7 @@ export class TeamTaskRowComponent extends React.Component<ITeamTaskComponentProp
                     <TeamTasksPaneComponent
                         updateTasksCallback={this.teamTasksUpdated.bind(this)}
                         cancelCallBack={this.taskPaneCancel.bind(this)}
+                        removeTeamTasksCallback={this.removeTasks.bind(this)}
                         committedTasks={this.props.teamTasks}
                         isEditing={this.props.editing}
                         teamModel={this.props.teamModel}
@@ -53,6 +55,10 @@ export class TeamTaskRowComponent extends React.Component<ITeamTaskComponentProp
 
     private taskPaneCancel(): void {
         this.props.tasksUpdated(null);
+    }
+
+    private removeTasks(): void {
+        this.props.removeTeamTasks(this.props.teamModel.teamId);
     }
 
     public componentDidMount(): void {

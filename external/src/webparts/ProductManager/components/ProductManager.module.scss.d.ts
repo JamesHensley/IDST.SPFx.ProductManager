@@ -2,6 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   'appIcon': string;
+  'appIconLg': string;
   'attachmentManager': string;
   'bordered': string;
   'card': string;
@@ -53,6 +54,7 @@ interface CssExports {
   'taskedTeamItem': string;
   'teamPanel': string;
   'tinyButton': string;
+  'tinyText': string;
 }
 declare var cssExports: CssExports;
 export = cssExports;

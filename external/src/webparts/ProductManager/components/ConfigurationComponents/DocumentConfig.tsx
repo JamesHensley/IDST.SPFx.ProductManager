@@ -10,6 +10,7 @@ import { DocumentTemplate } from '../../../../models/DocumentTemplate';
 export interface IDocumentConfigProps {
     model: DocumentTemplate;
     saveModel: (task: DocumentTemplate) => void;
+    removeModel: (docId: string) => void;
 }
 
 export interface IDocumentConfigState {
@@ -95,6 +96,10 @@ export default class DocumentConfig extends React.Component <IDocumentConfigProp
         this.setState({ showPane: false });
     }
 
+    private removeDocument(): void {
+        this.props.removeModel(this.state.draftModel.docId);
+    }
+
     /** Returns a header for the detail pane with buttons */
     private getPaneHeader(props: IPanelHeaderRenderer, renderer: IPanelHeaderRenderer): JSX.Element {
         return (
@@ -111,6 +116,9 @@ export default class DocumentConfig extends React.Component <IDocumentConfigProp
                                 <DefaultButton onClick={this.saveDocument.bind(this)} disabled={!this.hasUpdates}>Save</DefaultButton>
                                 <DefaultButton onClick={this.closePane.bind(this, true)}>Cancel</DefaultButton>
                             </Stack>
+                        </Stack.Item>
+                        <Stack.Item>
+                            <DefaultButton onClick={this.removeDocument.bind(this)}>Delete</DefaultButton>
                         </Stack.Item>
                     </Stack>
                 </Stack>
