@@ -20,6 +20,7 @@ export class MailService {
         }
 
         if (AppService.AppSettings.isDebugging) {
+            console.log('Would be sending this email: ', toList, subject, msgBody);
             AppService.TriggerGlobalMessage(GlobalMsg.EmailSent);
             return Promise.resolve('');
         } else {
@@ -37,6 +38,17 @@ export class MailService {
                         From: AppService.AppSettings.miscSettings.emailSenderName,
                         To: { results: toList },
                         Body: msgBody,
+                        AdditionalHeaders: {
+                            __metadata: { 'type': 'Collection(SP.KeyValue)' },
+                            results: [
+                                {
+                                    __metadata: { 'type': 'SP.KeyValue' },
+                                    'Key': 'content-type',
+                                    'Value': 'text/html',
+                                    'ValueType': 'Edm.String'
+                                }
+                            ]
+                        },
                         Subject: subject
                     }
                 });

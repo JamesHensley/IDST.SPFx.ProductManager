@@ -5,7 +5,7 @@ import { DetailsList, DetailsListLayoutMode, DetailsRow, Facepile, IColumn, ICom
 import { addDays, format } from 'date-fns';
 import AppService, { ICmdBarListenerProps } from '../../../../services/AppService';
 import { TaskModel } from '../../../../models/TaskModel';
-import { TeamModel } from '../../../../models/TeamModel';
+import { TeamMemberModel, TeamModel } from '../../../../models/TeamModel';
 import { FilterService } from '../../../../services/FilterService';
 import RecordService from '../../../../services/RecordService';
 import ProductDetailPane from '../SharedComponents/ProductDetailPane';
@@ -126,6 +126,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 
 	public render(): React.ReactElement<IProductListProps> {
 		const items = this.allItems;
+
 		return (
 			<Stack>
 				<Stack.Item>
@@ -190,16 +191,29 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		RecordService.SaveProduct(newModel)
 		.then(result => result.productModel)
 		.then(model => {
-			const toList = AppService.AppSettings.teamMembers
+			const toList = AppService.AppSettings.teams
 				.filter(f => newModel.tasks.map(d => d.taskedTeamId).indexOf(f.teamId) >= 0)
 				.filter(f => f.active)
+				.map(d => AppService.AppSettings.teamMembers.filter(f => f.teamId === d.teamId))
+				.reduce((t: Array<TeamMemberModel>, n: Array<TeamMemberModel>) => [].concat.apply(t, n), [])
+				.filter((f: TeamMemberModel) => f.active)
+				.map((d: TeamMemberModel) => d.email);
+
+			const xtoList = AppService.AppSettings.teamMembers
+				.filter(f => newModel.tasks.map(d => d.taskedTeamId).indexOf(f.teamId) >= 0 && AppService.AppSettings.teams)
+				.filter(f => f.active)
 				.map(d => d.email);
+
+			const productUrl = `${window.location.href.split('#')[0]}#${model.spGuid}`;
+
 			if (newModel.spGuid) {
-				MailService.SendEmail(`Product Updated: "${model.title}"`, toList, `${model.title} Has Been Updated By ${AppService.CurrentSpUser.displayName}`)
-				.catch(e => console.log('MailService returned a rejected promise: ', e));
+				MailService.SendEmail(`Product Updated: "${model.title}"`, toList,
+					`<h3>${model.title} Has Been Updated By ${AppService.CurrentSpUser.displayName}</h3><br /><a href="${productUrl}">Link To Product</a>`
+				).catch(e => console.log('MailService returned a rejected promise: ', e));
 			} else {
-				MailService.SendEmail(`Product Created: "${model.title}"`, toList, `${model.title} Has Been Updated By ${AppService.CurrentSpUser.displayName}`)
-				.catch(e => console.log('MailService returned a rejected promise: ', e));
+				MailService.SendEmail(`Product Created: "${model.title}"`, toList,
+					`<h3>${model.title} Has Been Created By ${AppService.CurrentSpUser.displayName}</h3><br /><a href="${productUrl}">Link To Product</a>`
+				).catch(e => console.log('MailService returned a rejected promise: ', e));
 			}
 
 			RecordService.GetProducts()
@@ -220,7 +234,13 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		AppService.RegisterCmdBarListener({ callback: this.menuReceiver } as ICmdBarListenerProps);
 
 		RecordService.GetProducts()
-		.then(prods => { this.setState({ allProducts: prods }); })
+		.then(prods => {
+			const selectedGuid = window.location.hash ? window.location.hash.replace('#', '') : null;
+			const selProd = prods.reduce((t, n) => selectedGuid && n.spGuid === selectedGuid ? n : t, null);
+			window.location.hash = '';
+
+			this.setState({ allProducts: prods, currentProd: selProd });
+		})
 		.catch(e => Promise.reject(e));
 	}
 
