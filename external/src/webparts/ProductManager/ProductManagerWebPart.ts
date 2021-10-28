@@ -67,8 +67,8 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
     PnPTelemetry.getInstance().optOut();
     (window as any).disableBeaconLogToConsole = true;
 
-    this.properties.siteRootUrl = this.properties.siteRootUrl ? this.properties.siteRootUrl : '/sites/jise';
-    this.properties.appSettingsListName = this.properties.appSettingsListName ? this.properties.appSettingsListName : 'JiseToolAppSettings';
+    this.properties.siteRootUrl = '/sites/jise';
+    this.properties.appSettingsListName = 'JiseToolAppSettings';
 
     AppService.Init(this);
     this.appSettings = await this.getAppSettings()
