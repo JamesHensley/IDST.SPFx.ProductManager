@@ -1,9 +1,12 @@
 /* Unset corev15 CSS affecting FluentUI & @PNP controls */
 .ms-Toggle button { margin-left: unset; min-width: unset; }
-.ms-ComboBox button.ms-button { margin-left: unset; padding-left: unset; min-width: unset; }
+.ms-ComboBox button.ms-Button { margin-left: unset; padding-left: unset; min-width: unset; }
+.ms-ComboBox input { border: unset; }
 .ms-ContextualMenu button.ms-ContextualMenu-link { margin-left: unset; padding-left: unset; min-width: unset; }
+.ms-Fabric button[class*='dayButton'] { min-width: unset; margin-left: unset; }
 .ms-Fabric input { border: unset; }
 .ms-TextField input { border: unset; }
+input[type=button], input[type=reset], input[type=submit], button { margin-left: unset; padding-left: unset; min-width: unset; }
 .ms-WPBorder { border: unset; }
 
 /* Miscellaneous things for modern-webpages */

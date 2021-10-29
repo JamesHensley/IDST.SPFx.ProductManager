@@ -7,10 +7,10 @@ export interface IProductManagerState { lastUpdated: number; }
 export class ProductManager extends React.Component <{}, IProductManagerState> {
     public render(): React.ReactElement<{}> {
         return (
-            <>
+            <div id='productManager'>
                 <PageComponent />
                 <ToasterComponent />
-            </>
+            </div>
         );
     }
 }

@@ -42,7 +42,7 @@ export default class RollupView extends React.Component <IRollupViewProps, IRoll
         super(props);
         this.calendarStart = startOfMonth(new Date());
         this.calendarEnd = endOfMonth(new Date());
-        this.state = { mergeTeamTasks: true, colorBySuspense: true, hideOpenProducts: true, showEventsRow: false, products: [], currentProduct: null };
+        this.state = { mergeTeamTasks: true, colorBySuspense: false, hideOpenProducts: false, showEventsRow: false, products: [], currentProduct: null };
     }
 
     private get calendarGroups(): Array<ITimelineTeamGroup> {

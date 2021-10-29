@@ -52,10 +52,12 @@ export default class ProductManagerWebPart extends BaseClientSideWebPart<IProduc
 
   public render(): void {
     console.log('ProductManagerWebPart.render: ', this.properties);
-    const element: React.ReactElement<IPageComponentProps> = this.appSettings ? React.createElement(ProductManager, {}) :
+    const element: React.ReactElement<IPageComponentProps> = this.appSettings ?
+      React.createElement(ProductManager, {}) :
       React.createElement(
         ConfigErrorComponent, { displayStr: 'Application settings could not be loaded or are invalid' }
       );
+    this.domElement.setAttribute('id', 'productManagerDomElem');
     ReactDom.render(element, this.domElement);
   }
 

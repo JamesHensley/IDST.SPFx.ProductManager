@@ -191,6 +191,7 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 		RecordService.SaveProduct(newModel)
 		.then(result => result.productModel)
 		.then(model => {
+			/*
 			const toList = AppService.AppSettings.teams
 				.filter(f => newModel.tasks.map(d => d.taskedTeamId).indexOf(f.teamId) >= 0)
 				.filter(f => f.active)
@@ -198,14 +199,17 @@ export default class ProductList extends React.Component<IProductListProps, IPro
 				.reduce((t: Array<TeamMemberModel>, n: Array<TeamMemberModel>) => [].concat.apply(t, n), [])
 				.filter((f: TeamMemberModel) => f.active)
 				.map((d: TeamMemberModel) => d.email);
+			*/
 
-			const xtoList = AppService.AppSettings.teamMembers
-				.filter(f => newModel.tasks.map(d => d.taskedTeamId).indexOf(f.teamId) >= 0 && AppService.AppSettings.teams)
+			const toList = AppService.AppSettings.teamMembers
 				.filter(f => f.active)
+				.filter(f => AppService.AppSettings.teams
+					.reduce((t, n) => n.active ? [].concat.apply(t, [n.teamId]) : t, [])
+					.indexOf(f.teamId) >= 0)
+				.filter(f => newModel.tasks.map(d => d.taskedTeamId).indexOf(f.teamId) >= 0)
 				.map(d => d.email);
 
 			const productUrl = `${window.location.href.split('#')[0]}#${model.spGuid}`;
-
 			if (newModel.spGuid) {
 				MailService.SendEmail(`Product Updated: "${model.title}"`, toList,
 					`<h3>${model.title} Has Been Updated By ${AppService.CurrentSpUser.displayName}</h3><br /><a href="${productUrl}">Link To Product</a>`
