@@ -7,12 +7,12 @@ Management tool for tracking requests, tasks, and responses for information
 [Experimental use of modern react with SP2016 SPFx](https://spblog.net/post/2019/08/08/build-sharepoint-framework-solutions-for-on-premises-sharepoint-with-any-version-of-react-typescript-or-office-ui-fabric-react)
 
 ## TODO
-~~- Implement CRUD for SharePoint list data and attachments~~
-~~- Reassess how teams are tasked (how attachments are managed)~~
-~~- Refine UI~~
-~~- Fix classNames~~
-~~- Troubleshoot FluentUI button icons not showing~~
-~~- Lots more~~
+~~ - Implement CRUD for SharePoint list data and attachments~~
+~~ - Reassess how teams are tasked (how attachments are managed)~~
+~~ - Refine UI~~
+~~ - Fix classNames~~
+~~ - Troubleshoot FluentUI button icons not showing~~
+~~ - Lots more~~
 - Update this
 
 ## Prerequisites
